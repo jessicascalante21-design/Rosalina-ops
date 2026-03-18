@@ -423,11 +423,13 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
               <div class="fi full"><label>Notas de Handoff</label><textarea id="meta-notes" oninput="onMetaChange()"></textarea></div>
             </div>
           </div>
-          <div style="display:flex;gap:6px;margin-top:8px;">
-            <button class="btn btn-teal" onclick="loadTodayReport()" style="flex:1;font-size:10px;">↻ Cargar</button>
-            <button class="btn btn-green" onclick="sendAndNotify()" style="flex:1;font-size:10px;" id="send-all-btn" data-roles="gs,gerencia">✉ Enviar a todos</button>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+            <button class="btn btn-teal" onclick="loadTodayReport()" style="flex:1;font-size:10px;min-width:80px;">↻ Cargar</button>
+            <button class="btn btn-gold" onclick="forceSave()" style="flex:1;font-size:10px;min-width:80px;">💾 Guardar</button>
+            <button class="btn btn-green" onclick="sendAndNotify()" style="flex:1;font-size:10px;min-width:80px;" id="send-all-btn" data-roles="gs,gerencia">✉ Enviar</button>
           </div>
           <div class="save-indicator" id="save-ind">Guardado ✓</div>
+          <div id="save-error" style="display:none;font-size:9px;color:var(--maint);padding:4px 8px;background:#FFEBEE;border-radius:4px;margin-top:4px;"></div>
         </div>
         <div class="fsec" id="units-form"></div>
       </div>
@@ -590,6 +592,61 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
           <div class="card-hdr" style="background:var(--navy)">Unidades del dia — selecciona para asignar</div>
           <div class="card-body"><div class="hk-assign-grid" id="hk-units-grid"></div></div>
         </div>
+        <!-- HK Pendientes Internos -->
+        <div class="card">
+          <div class="card-hdr" style="background:#5A1A7A;display:flex;align-items:center;justify-content:space-between;">
+            Pendientes Internos HK
+            <span style="font-size:8px;opacity:0.7;">(solo visible para HK)</span>
+            <button class="card-add-btn" onclick="addHKTask()">+ Nuevo</button>
+          </div>
+          <div class="card-body" style="padding:8px;">
+            <div id="hk-tasks-list"></div>
+          </div>
+        </div>
+
+        <!-- Lost & Found -->
+        <div class="card">
+          <div class="card-hdr" style="background:#1A3A6A;display:flex;align-items:center;justify-content:space-between;">
+            Lost & Found — Objetos Olvidados
+            <button class="card-add-btn" onclick="addLostFound()">+ Agregar</button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="gtable" id="lf-table">
+              <thead><tr>
+                <th>Fecha</th><th>Unidad</th><th>Descripcion</th>
+                <th>Reportado por</th><th>Estado</th><th></th>
+              </tr></thead>
+              <tbody id="lf-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Enviar mensaje a todos -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--teal)">Enviar Mensaje al Equipo</div>
+          <div class="card-body">
+            <div class="fg2" style="gap:8px;margin-bottom:8px;">
+              <div class="fi full"><label>Mensaje</label>
+                <textarea id="hk-msg" placeholder="Escribe tu mensaje para el equipo..." style="min-height:60px;"></textarea></div>
+            </div>
+            <button class="btn btn-teal" onclick="sendHKMessage()" style="width:100%">Enviar a todos</button>
+          </div>
+        </div>
+
+        <!-- Reportes Historicos HK -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--iv)">Reporte Historico de Ocupacion</div>
+          <div class="card-body">
+            <div class="fg2" style="margin-bottom:10px;">
+              <div class="fi"><label>Fecha</label><input type="date" id="hk-hist-date"></div>
+              <div class="fi" style="align-self:flex-end;">
+                <button class="btn btn-teal" onclick="loadHKHistoric()" style="font-size:10px;width:100%">Ver Ocupacion</button>
+              </div>
+            </div>
+            <div id="hk-hist-result" style="display:none;"></div>
+          </div>
+        </div>
+
         <!-- HK Time off request with name selector -->
         <div class="card">
           <div class="card-hdr" style="background:var(--gold)">Solicitar Permiso / Dia Libre</div>
@@ -840,6 +897,7 @@ let currentUser = null, currentProfile = null;
 let saveTimer = null, currentReportId = null;
 let UNITS = { op: Array.from({length:19},()=>emptyUnit()), iv: Array.from({length:6},()=>emptyUnit()) };
 let activities=[], incidents=[], preArrivals=[], tasks=[], notifications=[];
+let hkTasks=[], lostFound=[];
 let clStatus = Array(14).fill(false);
 let hkAssignments = {};
 let tFilter = 'all';
@@ -952,7 +1010,7 @@ function goTab(id,btn){
   page.classList.add('active'); btn.classList.add('active');
   if(id==='occ')      renderOccupancy();
   if(id==='shiftlog') loadAndRenderShiftLog();
-  if(id==='hk')       initHK();
+  if(id==='hk')       {initHK();loadHKData();}
   if(id==='tasks')    {loadTasks();renderFilterBtns();}
   if(id==='maint')    loadMaint();
   if(id==='gerencia') initGerencia();
@@ -1029,15 +1087,23 @@ function setF(el){
   const p=el.dataset.p,u=parseInt(el.dataset.u),f=el.dataset.f;
   UNITS[p][u][f]=f==='mal'?!!el.value:el.value;
   const d=UNITS[p][u];
-  const hdr=el.closest('.ur').querySelector('.ur-sum');
-  const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
-  hdr.textContent=isMaint?d.maint:isVac?'Vacante':d.ocup&&d.hues?`${d.ocup} → ${d.hues}`:d.ocup||d.hues||'—';
-
-  scheduleSave(); updateReport();
+  const hdr=el.closest('.ur')?.querySelector('.ur-sum');
+  if(hdr){
+    const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
+    hdr.textContent=isMaint?d.maint:isVac?'Vacante':d.ocup&&d.hues?`${d.ocup} → ${d.hues}`:d.ocup||d.hues||'—';
+  }
+  scheduleSave();
+  updateReport();
 }
+
 
 // ── SAVE / LOAD ───────────────────────────────────────────
 function scheduleSave(){setSyncStatus('saving');clearTimeout(saveTimer);saveTimer=setTimeout(saveReport,1500);}
+async function forceSave(){
+  clearTimeout(saveTimer);
+  setSyncStatus('saving');
+  await saveReport();
+}
 function setSyncStatus(s){const el=document.getElementById('sync-lbl');if(!el)return;el.className=`sync-status ss-${s}`;el.textContent=s==='saved'?'Sincronizado':s==='saving'?'Guardando...':'Error';}
 
 async function saveReport(){
@@ -1069,7 +1135,12 @@ async function saveReport(){
     if(uErr)throw uErr;
     setSyncStatus('saved');
     const si=document.getElementById('save-ind');if(si){si.textContent='Guardado ✓';si.classList.add('show');setTimeout(()=>si.classList.remove('show'),2000);}
-  }catch(e){console.error(e);setSyncStatus('error');}
+  }catch(e){
+    console.error('Save error:',e);
+    setSyncStatus('error');
+    const errEl=document.getElementById('save-error');
+    if(errEl){errEl.textContent='Error: '+( e.message||JSON.stringify(e));errEl.style.display='block';setTimeout(()=>errEl.style.display='none',5000);}
+  }
 }
 
 async function loadTodayReport(){
@@ -1094,27 +1165,49 @@ async function loadTodayReport(){
           ct:u.contact||'',cotime:u.co_time||'',mal:u.luggage||false,
           g:u.guests_count||'',deco:u.decoration||'',maint:u.maintenance||'',notes:u.notes||''};
       });
-      buildForm();updateReport();setSyncStatus('saved');
+      buildForm();
+      setTimeout(()=>{updateReport();setSyncStatus('saved');},100);
     }else{
-      // Try carry forward from yesterday
-      const yesterday=new Date(dateVal+'T12:00:00');yesterday.setDate(yesterday.getDate()-1);
-      const yd=yesterday.toISOString().split('T')[0];
-      const{data:prev}=await sb.from('daily_reports').select('*,unit_data(*)').eq('report_date',yd).single();
-      if(prev?.unit_data){
+      // Try carry forward - search last 3 days
+      let prevRep=null;
+      for(let dBack=1;dBack<=3;dBack++){
+        const pd=new Date(dateVal+'T12:00:00');pd.setDate(pd.getDate()-dBack);
+        const pyd=pd.toISOString().split('T')[0];
+        const{data:pd2}=await sb.from('daily_reports').select('*,unit_data(*)').eq('report_date',pyd).single();
+        if(pd2){prevRep=pd2;break;}
+      }
+      if(prevRep?.unit_data){
         const today=new Date(dateVal+'T12:00:00');
         const todayMMDD=`${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
-        prev.unit_data.forEach(u=>{
+        let autoSales=0;
+        prevRep.unit_data.forEach(u=>{
           if(!UNITS[u.property])return;const idx=u.unit_number-1;if(idx<0)return;
+          const cur=UNITS[u.property][idx];
+          // If CO date matches today → auto-fill Sale Hoy (only if empty)
+          if(u.co_date===todayMMDD&&(u.ocup_name||u.hues_name)){
+            if(!cur.sale){cur.sale=u.ocup_name||u.hues_name||'';autoSales++;}
+          }
+          // Carry forward occupant if still staying
           if(u.co_date!==todayMMDD){
-            UNITS[u.property][idx].ocup=u.hues_name||u.ocup_name||'';
-            UNITS[u.property][idx].ci=u.ci_date||'';UNITS[u.property][idx].co=u.co_date||'';
+            if(!cur.ocup)cur.ocup=u.hues_name||u.ocup_name||'';
+            if(!cur.ci)cur.ci=u.ci_date||'';
+            if(!cur.co)cur.co=u.co_date||'';
           }
         });
         buildForm();updateReport();
+        if(autoSales>0){
+          const si=document.getElementById('save-ind');
+          if(si){si.textContent=`↑ ${autoSales} salida${autoSales>1?'s':''} del dia cargada${autoSales>1?'s':''} automaticamente`;si.classList.add('show');setTimeout(()=>si.classList.remove('show'),4000);}
+        }
       }
       setSyncStatus('saved');
     }
-  }catch(e){console.error(e);setSyncStatus('error');}
+  }catch(e){
+    console.error('Save error:',e);
+    setSyncStatus('error');
+    const errEl=document.getElementById('save-error');
+    if(errEl){errEl.textContent='Error: '+( e.message||JSON.stringify(e));errEl.style.display='block';setTimeout(()=>errEl.style.display='none',5000);}
+  }
 }
 
 function onMetaChange(){scheduleSave();updateReport();}
@@ -1981,6 +2074,148 @@ function goTabMobile(id, btn) {
   if(id==='tasks'){loadTasks();renderFilterBtns();}
   if(id==='gerencia') initGerencia();
 }
+
+
+// ── HK INTERNAL ──────────────────────────────────────────
+async function loadHKData(){
+  // Load HK tasks from tasks table filtered by visible_to hk
+  const{data:t}=await sb.from('tasks').select('*')
+    .contains('visible_to',['hk']).order('created_at',{ascending:false});
+  hkTasks=t||[];
+  // Load lost & found from incidents table with type Lost&Found
+  const{data:lf}=await sb.from('incidents').select('*')
+    .eq('incident_type','Lost & Found').order('created_at',{ascending:false});
+  lostFound=lf||[];
+  renderHKTasks();renderLostFound();
+}
+
+function renderHKTasks(){
+  const list=document.getElementById('hk-tasks-list');if(!list)return;
+  list.innerHTML='';
+  if(!hkTasks.length){
+    list.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;text-align:center;">Sin pendientes</div>';
+    return;
+  }
+  hkTasks.forEach((t,i)=>{
+    const done=t.status==='d';
+    const div=document.createElement('div');
+    div.style.cssText=`display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:${done?'#F0FAF5':'#F8F9FA'};border-radius:6px;border:1px solid ${done?'#B0E0C8':'var(--bdr)'};margin-bottom:5px;`;
+    div.innerHTML=`
+      <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${done?'var(--green)':'var(--bdr)'};
+        display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+        background:${done?'var(--green)':'transparent'};color:#fff;font-size:11px;"
+        onclick="toggleHKTask('${t.id}',${done})">${done?'✓':''}</div>
+      <div style="flex:1;">
+        <div style="font-size:10px;color:var(--txt);${done?'text-decoration:line-through;color:var(--txt2);':''}">${t.description}</div>
+        <div style="font-size:8px;color:var(--txt2);margin-top:2px;">${t.assigned_to||''} ${t.due_date?'· Vence: '+t.due_date:''}</div>
+      </div>
+      <button onclick="deleteHKTask('${t.id}')" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:14px;padding:0;">×</button>`;
+    list.appendChild(div);
+  });
+}
+
+async function addHKTask(){
+  const desc=prompt('Descripcion del pendiente:');if(!desc)return;
+  const assignee=document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK';
+  const{data,error}=await sb.from('tasks').insert({
+    description:desc,priority:'media',task_type:'HK Interno',
+    assigned_to:assignee,status:'p',
+    visible_to:['hk'],created_by:currentUser?.id
+  }).select().single();
+  if(error){alert('Error: '+error.message);return;}
+  if(data)hkTasks.unshift(data);
+  renderHKTasks();
+}
+
+async function toggleHKTask(id,isDone){
+  const newStatus=isDone?'p':'d';
+  const t=hkTasks.find(x=>x.id===id);if(t)t.status=newStatus;
+  renderHKTasks();
+  await sb.from('tasks').update({status:newStatus}).eq('id',id);
+}
+
+async function deleteHKTask(id){
+  hkTasks=hkTasks.filter(x=>x.id!==id);renderHKTasks();
+  await sb.from('tasks').delete().eq('id',id);
+}
+
+function renderLostFound(){
+  const tbody=document.getElementById('lf-tbody');if(!tbody)return;
+  tbody.innerHTML='';
+  lostFound.forEach((lf,i)=>{
+    const sc=lf.status==='done'?'ab-ok':'ab-pend';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${lf.report_date||''}</td>
+      <td><input value="${lf.unit_ref||''}" style="border:none;font-size:10px;font-family:inherit;width:60px" oninput="lostFound[${i}].unit_ref=this.value"></td>
+      <td><input value="${lf.description||''}" style="border:none;font-size:10px;font-family:inherit;min-width:150px;width:100%" oninput="lostFound[${i}].description=this.value"></td>
+      <td><input value="${lf.agent_name||''}" style="border:none;font-size:10px;font-family:inherit;width:90px" oninput="lostFound[${i}].agent_name=this.value"></td>
+      <td><button class="act-badge ${sc}" onclick="toggleLF(${i})">${lf.status==='done'?'Entregado':'Guardado'}</button></td>
+      <td><button onclick="deleteLF(${i})" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:14px">×</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function addLostFound(){
+  const entry={
+    report_date:new Date().toISOString().split('T')[0],
+    unit_ref:'',incident_type:'Lost & Found',description:'',
+    agent_name:document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK',
+    status:'pend',created_by:currentUser?.id
+  };
+  const{data,error}=await sb.from('incidents').insert(entry).select().single();
+  if(error){alert('Error: '+error.message);return;}
+  lostFound.unshift(data||entry);renderLostFound();
+}
+
+async function toggleLF(i){
+  lostFound[i].status=lostFound[i].status==='done'?'pend':'done';
+  renderLostFound();
+  if(lostFound[i].id)await sb.from('incidents').update({status:lostFound[i].status}).eq('id',lostFound[i].id);
+}
+
+async function deleteLF(i){
+  const lf=lostFound[i];lostFound.splice(i,1);renderLostFound();
+  if(lf.id)await sb.from('incidents').delete().eq('id',lf.id);
+}
+
+async function sendHKMessage(){
+  const msg=document.getElementById('hk-msg')?.value.trim();
+  if(!msg){alert('Escribe un mensaje');return;}
+  const who=document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'Housekeeping';
+  await sb.from('notifications').insert({
+    from_user:currentUser?.id,from_name:who,
+    to_role:['gs','hk','gerencia','mant'],
+    title:`Mensaje HK: ${who}`,body:msg,type:'info'
+  });
+  document.getElementById('hk-msg').value='';
+  alert('Mensaje enviado a todo el equipo');
+}
+
+async function loadHKHistoric(){
+  const date=document.getElementById('hk-hist-date')?.value;
+  if(!date){alert('Selecciona una fecha');return;}
+  const{data}=await sb.from('daily_reports').select('*,unit_data(*)').eq('report_date',date).single();
+  const el=document.getElementById('hk-hist-result');if(!el)return;
+  if(!data){el.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;">No hay reporte para esa fecha.</div>';el.style.display='block';return;}
+  
+  let html=`<div style="font-size:10px;font-weight:600;color:var(--txt);margin-bottom:8px;">Ocupacion del ${date}</div>`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;">`;
+  (data.unit_data||[]).forEach(u=>{
+    const hasGuest=u.ocup_name||u.hues_name;
+    const bg=hasGuest?'#EAF8FB':'#FFF8E8';
+    const border=hasGuest?'var(--teal)':'var(--amber)';
+    html+=`<div style="background:${bg};border-left:3px solid ${border};border-radius:6px;padding:8px 10px;">
+      <div style="font-size:9px;font-weight:700;color:var(--txt2);">${u.property.toUpperCase()} · ${u.unit_number}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--txt);">${u.ocup_name||u.hues_name||'Vacante'}</div>
+      ${u.co_date?`<div style="font-size:8px;color:var(--orange);">CO: ${u.co_date}</div>`:''}
+      ${u.hues_name&&u.hues_name!==u.ocup_name?`<div style="font-size:8px;color:var(--teal);">Llega: ${u.hues_name}</div>`:''}
+    </div>`;
+  });
+  html+='</div>';
+  el.innerHTML=html;el.style.display='block';
+}
+
 
 // ── INIT ──────────────────────────────────────────────────
 async function init(){
