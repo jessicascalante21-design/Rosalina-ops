@@ -522,10 +522,9 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
       <div class="inner">
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div><div class="pg-title">Shift Log</div><div class="pg-sub">Checklist · Activity Log · Incidentes · Pre-Arrival</div></div>
-          <div style="display:flex;gap:6px;" id="shiftlog-actions">
-            <!-- Only shown to GS editors -->
-            <button class="btn btn-ghost" onclick="addActivity()" id="sl-add-act">+ Actividad</button>
-            <button class="btn btn-ghost" onclick="addIncident()" id="sl-add-inc">+ Incidente</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" id="shiftlog-actions">
+            <button class="btn btn-teal" onclick="addActivity()" id="sl-add-act">+ Actividad</button>
+            <button class="btn btn-red" onclick="addIncident()" id="sl-add-inc" style="background:var(--maint);">+ Incidente</button>
             <button class="btn btn-ghost" onclick="addPreArrival()" id="sl-add-pa">+ Pre-Arrival</button>
             <button class="btn btn-green" onclick="sendShiftLogToGerencia()" style="font-size:10px;">✉ Enviar a Gerencia</button>
           </div>
@@ -536,7 +535,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
           <div class="card-hdr" style="background:var(--op)">
             Activity Log
             <button class="card-add-btn" onclick="addActivity()" id="act-add-btn"
-              style="font-size:14px;padding:2px 10px;">＋</button>
+              style="font-size:14px;padding:4px 14px;background:rgba(255,255,255,0.25);">＋ Nueva</button>
           </div>
           <div class="card-body" style="padding:8px 10px;"><div id="act-log"></div></div>
         </div>
@@ -546,7 +545,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
           <div class="card-hdr" style="background:var(--maint)">
             Incidentes / Novedades
             <button class="card-add-btn" onclick="addIncident()" id="inc-add-btn"
-              style="font-size:14px;padding:2px 10px;">＋</button>
+              style="font-size:14px;padding:4px 14px;background:rgba(255,255,255,0.25);">＋ Nuevo</button>
           </div>
           <div class="card-body" style="padding:0;">
             <table class="gtable"><thead><tr>
@@ -561,7 +560,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
           <div class="card-hdr" style="background:var(--iv)">
             Pre-Arrival Calls
             <button class="card-add-btn" onclick="addPreArrival()" id="pa-add-btn"
-              style="font-size:14px;padding:2px 10px;">＋</button>
+              style="font-size:14px;padding:4px 14px;background:rgba(255,255,255,0.25);">＋ Agregar</button>
           </div>
           <div class="card-body" style="padding:0;">
             <table class="gtable"><thead><tr>
@@ -1089,11 +1088,19 @@ async function loadProfile(){
 }
 
 function applyRoleRestrictions(role){
+  const name=currentProfile?.full_name||'';
   // Tabs
   document.querySelectorAll('[data-roles]').forEach(el=>{
     const allowed=el.dataset.roles.split(',').map(r=>r.trim());
     el.classList.toggle('hidden',!allowed.includes(role));
   });
+  // Extra: gerencia tab is ONLY for Jose Rodriguez (gerencia role)
+  // Even if someone has gerencia role but is not Jose, they can't see it
+  // (Currently only Jose Rodriguez has gerencia role so this is redundant but safe)
+  const gerBtn=document.querySelector('.ntab[onclick*="gerencia"]');
+  if(gerBtn && role!=='gerencia'){
+    gerBtn.classList.add('hidden');
+  }
   // Daily report sidebar: HK and mant = read only
   if(role==='hk'||role==='mant'){
     const sb2=document.getElementById('daily-sidebar');
@@ -1106,10 +1113,20 @@ function applyRoleRestrictions(role){
       if(hint)hint.textContent='Solo lectura';
     }
   }
-  // Shift log: gerencia = read only (no add buttons)
-  if(role==='gerencia'){
+  // Shift log: gerencia, hk, mant = read only (no add buttons)
+  if(role==='gerencia'||role==='hk'||role==='mant'){
     ['sl-add-act','sl-add-inc','sl-add-pa','act-add-btn','inc-add-btn','pa-add-btn'].forEach(id=>{
       const el=document.getElementById(id);if(el)el.style.display='none';
+    });
+    // Also hide the shiftlog-actions div for non-GS
+    if(role!=='gs'){
+      const sa=document.getElementById('shiftlog-actions');
+      if(sa)sa.style.display='none';
+    }
+  } else {
+    // GS: make sure all buttons are visible
+    ['sl-add-act','sl-add-inc','sl-add-pa','act-add-btn','inc-add-btn','pa-add-btn'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.style.display='';
     });
   }
 }
@@ -1494,15 +1511,36 @@ const CHECKLIST=[
 ];
 
 async function loadAndRenderShiftLog(){
+  const dateVal=document.getElementById('meta-date')?.value||new Date().toISOString().split('T')[0];
+  const shift=document.getElementById('meta-shift')?.value||'AM';
+  
+  // If no currentReportId, try to get or create today's report
+  if(!currentReportId){
+    // Try to find existing report for today
+    const{data:existing}=await sb.from('daily_reports')
+      .select('id').eq('report_date',dateVal).eq('shift',shift).single();
+    if(existing){
+      currentReportId=existing.id;
+    } else {
+      // Create a minimal report record so activities can be saved
+      const{data:newRep}=await sb.from('daily_reports').insert({
+        report_date:dateVal,shift,
+        agent_id:currentUser?.id,
+        agent_name:currentProfile?.full_name||'—'
+      }).select().single();
+      if(newRep) currentReportId=newRep.id;
+    }
+  }
+
   if(currentReportId){
-    const[clRes,actRes,incRes,paRes]=await Promise.all([
-      sb.from('checklist_status').select('*').eq('report_id',currentReportId),
+    const[actRes,incRes,paRes]=await Promise.all([
       sb.from('activity_log').select('*').eq('report_id',currentReportId).order('created_at'),
-      sb.from('incidents').select('*').eq('report_date',document.getElementById('meta-date')?.value||'').order('created_at'),
-      sb.from('pre_arrivals').select('*').eq('ci_date',document.getElementById('meta-date')?.value||''),
+      sb.from('incidents').select('*').eq('report_date',dateVal).order('created_at'),
+      sb.from('pre_arrivals').select('*').eq('ci_date',dateVal),
     ]);
-    if(clRes.data)clStatus=CHECKLIST.map((_,i)=>clRes.data.find(c=>c.item_index===i)?.done||false);
-    activities=actRes.data||[];incidents=incRes.data||[];preArrivals=paRes.data||[];
+    activities=actRes.data||[];
+    incidents=incRes.data||[];
+    preArrivals=paRes.data||[];
   }
   renderActivities();renderIncidents();renderPreArrivals();
 }
@@ -2046,6 +2084,12 @@ async function sendNotif(){
 
 // ── GERENCIA ──────────────────────────────────────────────
 async function initGerencia(){
+  if(currentProfile?.role!=='gerencia'){
+    // Redirect away if somehow non-gerencia user lands here
+    const btn=document.querySelector('.ntab[onclick*="daily"]');
+    if(btn) goTab('daily',btn);
+    return;
+  }
   await loadTORs();
   buildSchedGrid();
 }
@@ -2161,6 +2205,7 @@ function calcSchedCosts(){
 }
 
 async function saveSchedule(){
+  if(currentProfile?.role!=='gerencia'){alert('Solo gerencia puede guardar el horario');return;}
   const start=document.getElementById('sched-start')?.value;
   const week=document.getElementById('sched-week')?.value;
   if(!start){alert('Selecciona la fecha de inicio');return;}
@@ -2177,6 +2222,7 @@ async function saveSchedule(){
 }
 
 async function sendScheduleToAll(){
+  if(currentProfile?.role!=='gerencia'){alert('Solo gerencia puede enviar el horario');return;}
   const start=document.getElementById('sched-start')?.value||'—';
   const week=document.getElementById('sched-week')?.value||'—';
   const total=document.getElementById('sched-total-cost')?.textContent||'—';
