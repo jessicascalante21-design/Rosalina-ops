@@ -1244,7 +1244,7 @@ function updateReport(){
       const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
       if(isMaint){mt++;return;}if(isVac){vc++;return;}
       if(prop.id==='op')ocOP++;else ocIV++;
-      if(d.hues)ci++;if(rd&&d.co===rd.mmdd&&d.ocup)co++;
+      if(d.hues)ci++;if(rd&&(d.sale||(d.co===rd.mmdd&&d.ocup)))co++;
       if(d.early)ea++;if(d.deco)dc++;if(d.ct==='Si')cn++;
     });
   });
@@ -1292,7 +1292,7 @@ async function sendAndNotify(){
   const date=rd?rd.full.toLocaleDateString('es-PR',{weekday:'long',day:'2-digit',month:'long'}):document.getElementById('meta-date')?.value||'Hoy';
   let entradas=0,salidas=0,vacantes=0;
   PROPS.forEach(prop=>{UNITS[prop.id].forEach(d=>{
-    if(!d.maint){if(d.hues)entradas++;if(rd&&d.co===rd.mmdd&&d.ocup)salidas++;if(!d.ocup&&!d.hues)vacantes++;}
+    if(!d.maint){if(d.hues)entradas++;if(rd&&(d.sale||(d.co===rd.mmdd&&d.ocup)))salidas++;if(!d.ocup&&!d.hues&&!d.sale)vacantes++;}
   });});
   const title=`Daily Report ${shift} — ${date}`;
   const body=`Entradas: ${entradas} | Salidas: ${salidas} | Vacantes: ${vacantes}\nAgente: ${document.getElementById('meta-agent')?.value||'—'}\nHandoff: ${document.getElementById('meta-notes')?.value||'—'}`;
@@ -1321,20 +1321,22 @@ function renderOccupancy(){
     sep.textContent=prop.name;grid.appendChild(sep);
     UNITS[prop.id].forEach((d,u)=>{
       const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
-      const saleToday=rd&&d.co===rd.mmdd&&!!d.ocup;
+      const saleToday=!!d.sale||(rd&&d.co===rd.mmdd&&!!d.ocup);
       const ciToday=rd&&d.ci===rd.mmdd&&!!d.hues;
       const nts=nightsSoFar(d.ci,rd);
       if(isMaint)mt++;else if(isVac)vac++;else{occ++;if(saleToday)co++;if(ciToday||d.hues)ci++;}
-      const ctype=isMaint?'maint':isVac?'vacant':saleToday?'checkout':ciToday?'checkin':'occupied';
+      const ctype=isMaint?'maint':isVac?'vacant':saleToday?'checkout':(ciToday||!!d.hues)?'checkin':'occupied';
       const gname=isMaint?d.maint:isVac?'Vacante':d.ocup||d.hues||'—';
+      const saleName=d.sale||'';
       const c=document.createElement('div');c.className=`occ-unit-card ${ctype}`;
       c.innerHTML=`
         <div style="font-size:9px;font-weight:700;color:var(--txt2);margin-bottom:3px">${prop.short} · Unidad ${u+1}</div>
         <div style="font-size:13px;font-weight:600;color:var(--txt)">${gname}</div>
         <div style="font-size:9px;color:var(--txt2)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
+        ${saleName?`<div style="font-size:9px;font-weight:600;color:var(--orange);">→ Sale: ${saleName}</div>`:''}
         ${nts!==''?`<div class="occ-nights">${nts}</div><div class="occ-nts-lbl">noches</div>`:''}
         <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
-          ${saleToday?'<span class="ur-tag ut-co">Sale Hoy</span>':''}
+          ${(saleToday||d.sale)?'<span class="ur-tag ut-co">Sale Hoy</span>':''}
           ${(ciToday||d.hues)&&!isVac?'<span class="ur-tag ut-ci">Llega Hoy</span>':''}
           ${d.early?`<span class="ur-tag ut-deco">Early ${d.early}</span>`:''}
           ${d.deco?`<span class="ur-tag ut-deco">${d.deco}</span>`:''}
