@@ -382,6 +382,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
       <button class="ntab" onclick="goTab('tasks',this)" data-roles="gs,gerencia,mant">Pendientes</button>
       <button class="ntab" onclick="goTab('maint',this)" data-roles="mant,gs,gerencia">Mantenimiento</button>
       <button class="ntab" onclick="goTab('gerencia',this)" data-roles="gerencia">Gerencia</button>
+      <button class="ntab" onclick="goTab('inventory',this)" data-roles="gs,gerencia,hk,mant">Inventario</button>
     </div>
     <div style="display:flex;gap:6px;align-items:center;">
       <button class="notif-btn" onclick="toggleNotif()" id="notif-btn">🔔<span class="notif-dot" id="notif-dot"></span></button>
@@ -472,7 +473,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
               <col style="width:110px"><col style="width:110px"><col style="width:110px">
               <col style="width:52px"><col style="width:52px">
               <col style="width:48px"><col style="width:28px">
-              <col style="width:80px"><col style="width:32px"><col>
+              <col style="width:80px"><col style="width:32px"><col style="width:40px"><col>
             </colgroup>
             <thead><tr>
               <th class="tn">Prop</th><th class="tn">#</th>
@@ -484,7 +485,9 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
               <th class="tcot">Hora Sal</th>
               <th class="tmal">Mal</th>
               <th class="tdec">Decoracion</th>
-              <th class="tman">Mnt</th><th class="tn">Notas</th>
+              <th class="tman">Mnt</th>
+              <th style="background:#2C3E50;">Cont.</th>
+              <th class="tn">Notas</th>
             </tr></thead>
             <tbody id="rtbody"></tbody>
           </table>
@@ -593,55 +596,81 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
           <div class="card-body"><div class="hk-assign-grid" id="hk-units-grid"></div></div>
         </div>
         <!-- HK Pendientes Internos -->
-        <div class="card">
-          <div class="card-hdr" style="background:#5A1A7A;display:flex;align-items:center;justify-content:space-between;">
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-hdr" style="background:#5A1A7A;">
             Pendientes Internos HK
-            <span style="font-size:8px;opacity:0.7;">(solo visible para HK)</span>
-            <button class="card-add-btn" onclick="addHKTask()">+ Nuevo</button>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:8px;opacity:0.7;">(solo visible para HK)</span>
+              <button class="card-add-btn" onclick="addHKTask()" style="font-size:16px;padding:2px 10px;">＋</button>
+            </div>
           </div>
-          <div class="card-body" style="padding:8px;">
-            <div id="hk-tasks-list"></div>
+          <div class="card-body" style="padding:12px;min-height:60px;">
+            <div id="hk-tasks-list"><div style="color:var(--txt2);font-size:11px;text-align:center;padding:12px;">Sin pendientes</div></div>
+          </div>
+        </div>
+
+        <!-- GS Nocturno → HK Preparacion -->
+        <div class="card" style="margin-bottom:12px;" id="gs-hk-card">
+          <div class="card-hdr" style="background:#1A3A6A;">
+            Preparacion Nocturna → HK
+            <span style="font-size:8px;opacity:0.7;">Solo GS Noche (Gabriel / Jose V.)</span>
+          </div>
+          <div class="card-body" style="padding:14px;">
+            <div style="font-size:10px;color:var(--txt2);margin-bottom:10px;">Envia un reporte a HK con lo preparado esta noche</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="fi full"><label>Fecha de salidas preparadas</label>
+                <input type="date" id="gs-hk-date"></div>
+              <div class="fi full"><label>Sabanas preparadas (unidades)</label>
+                <input id="gs-hk-sabanas" placeholder="OP-1, OP-3, IV-2..."></div>
+              <div class="fi full"><label>Faltan / Pendientes</label>
+                <textarea id="gs-hk-pendientes" placeholder="Faltan sabanas OP-5, secadora ocupada, pendiente OP-12..." style="min-height:60px;width:100%;padding:8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;outline:none;resize:vertical;"></textarea></div>
+              <div class="fi full"><label>Notas de mantenimiento</label>
+                <textarea id="gs-hk-mant" placeholder="Foco fundido OP-7, A/C ruidoso IV-3..." style="min-height:50px;width:100%;padding:8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;outline:none;resize:vertical;"></textarea></div>
+              <button class="btn btn-teal" onclick="sendGSNightToHK()" style="width:100%;padding:10px;">Enviar a Housekeeping</button>
+            </div>
           </div>
         </div>
 
         <!-- Lost & Found -->
-        <div class="card">
-          <div class="card-hdr" style="background:#1A3A6A;display:flex;align-items:center;justify-content:space-between;">
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-hdr" style="background:#1A3A6A;">
             Lost & Found — Objetos Olvidados
-            <button class="card-add-btn" onclick="addLostFound()">+ Agregar</button>
+            <button class="card-add-btn" onclick="addLostFound()" style="font-size:16px;padding:2px 10px;">＋</button>
           </div>
-          <div class="card-body" style="padding:0;">
-            <table class="gtable" id="lf-table">
+          <div class="card-body" style="padding:0;overflow-x:auto;">
+            <table class="gtable" style="min-width:600px;">
               <thead><tr>
-                <th>Fecha</th><th>Unidad</th><th>Descripcion</th>
-                <th>Reportado por</th><th>Estado</th><th></th>
+                <th style="min-width:80px">Fecha</th>
+                <th style="min-width:70px">Unidad</th>
+                <th style="min-width:180px">Descripcion del objeto</th>
+                <th style="min-width:100px">Reportado por</th>
+                <th style="min-width:90px">Estado</th>
+                <th style="width:30px"></th>
               </tr></thead>
               <tbody id="lf-tbody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- Enviar mensaje a todos -->
-        <div class="card">
+        <!-- Enviar mensaje al equipo -->
+        <div class="card" style="margin-bottom:12px;">
           <div class="card-hdr" style="background:var(--teal)">Enviar Mensaje al Equipo</div>
-          <div class="card-body">
-            <div class="fg2" style="gap:8px;margin-bottom:8px;">
-              <div class="fi full"><label>Mensaje</label>
-                <textarea id="hk-msg" placeholder="Escribe tu mensaje para el equipo..." style="min-height:60px;"></textarea></div>
+          <div class="card-body" style="padding:14px;">
+            <div class="fi full" style="margin-bottom:10px;">
+              <label>Mensaje</label>
+              <textarea id="hk-msg" placeholder="Escribe tu mensaje para el equipo..." style="min-height:80px;width:100%;padding:8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:12px;outline:none;resize:vertical;"></textarea>
             </div>
-            <button class="btn btn-teal" onclick="sendHKMessage()" style="width:100%">Enviar a todos</button>
+            <button class="btn btn-teal" onclick="sendHKMessage()" style="width:100%;padding:10px;font-size:12px;">✉ Enviar a todos</button>
           </div>
         </div>
 
-        <!-- Reportes Historicos HK -->
-        <div class="card">
+        <!-- Reporte historico -->
+        <div class="card" style="margin-bottom:12px;">
           <div class="card-hdr" style="background:var(--iv)">Reporte Historico de Ocupacion</div>
-          <div class="card-body">
-            <div class="fg2" style="margin-bottom:10px;">
-              <div class="fi"><label>Fecha</label><input type="date" id="hk-hist-date"></div>
-              <div class="fi" style="align-self:flex-end;">
-                <button class="btn btn-teal" onclick="loadHKHistoric()" style="font-size:10px;width:100%">Ver Ocupacion</button>
-              </div>
+          <div class="card-body" style="padding:14px;">
+            <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap;">
+              <div class="fi" style="flex:1;min-width:160px;"><label>Fecha del reporte</label><input type="date" id="hk-hist-date"></div>
+              <button class="btn btn-teal" onclick="loadHKHistoric()" style="padding:8px 16px;font-size:11px;white-space:nowrap;">Ver Ocupacion</button>
             </div>
             <div id="hk-hist-result" style="display:none;"></div>
           </div>
@@ -776,6 +805,101 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
             <div id="hist-result" style="font-size:11px;color:var(--txt2);padding:8px;background:#F7F8FA;border-radius:6px;display:none;"></div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- TAB: INVENTARIO -->
+    <div class="page" id="tab-inventory">
+      <div class="inner">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="pg-title">Inventario de Unidades</div>
+            <div class="pg-sub">Revision cada 2 semanas · GS + HK + Mantenimiento</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-teal" onclick="addInventoryUnit()" data-roles="gs,gerencia,hk,mant">+ Nueva Unidad</button>
+            <button class="btn btn-gold" onclick="sendInventoryNotif()" data-roles="gs,gerencia">📢 Notificar Equipo</button>
+          </div>
+        </div>
+
+        <!-- Summary bar -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+          <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal)" id="inv-total">0</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Unidades</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--maint)" id="inv-issues">0</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Con pendientes</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--green)" id="inv-ok">0</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Completas</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-size:11px;font-weight:600;color:var(--txt)" id="inv-last-date">—</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Ultima revision</div>
+          </div>
+        </div>
+
+        <!-- Add unit form -->
+        <div class="add-form" id="add-inv-form">
+          <div class="add-form-title">AGREGAR / EDITAR UNIDAD</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="fi"><label>Propiedad</label>
+              <select id="inv-prop">
+                <option value="op">Ocean Park</option>
+                <option value="iv">Isla Verde</option>
+              </select>
+            </div>
+            <div class="fi"><label>Unidad #</label>
+              <input type="number" id="inv-unit" placeholder="1" min="1" max="19">
+            </div>
+            <div class="fi"><label>Tipo</label>
+              <select id="inv-type">
+                <option>Estudio</option>
+                <option>1 habitacion</option>
+                <option>2 habitaciones</option>
+                <option>Suite</option>
+              </select>
+            </div>
+            <div class="fi" style="grid-column:1/4"><label>Camas / Configuracion</label>
+              <input id="inv-beds" placeholder="1 King, 2 Queens, sofa cama...">
+            </div>
+            <div class="fi" style="grid-column:1/4"><label>Utensilios de cocina (cantidad)</label>
+              <input id="inv-kitchen" placeholder="4 platos, 4 vasos, 4 tenedores, 2 cucharones, 1 sarten...">
+            </div>
+            <div class="fi" style="grid-column:1/4"><label>Amenidades presentes</label>
+              <input id="inv-amenities" placeholder="Letrero WiFi, control A/C, control TV, secador, plancha...">
+            </div>
+            <div class="fi" style="grid-column:1/4"><label>Pendientes / Faltantes</label>
+              <textarea id="inv-missing" placeholder="Foco fundido bano, letrero WiFi faltante, control TV sin pilas..." style="min-height:70px;width:100%;padding:8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;outline:none;resize:vertical;"></textarea>
+            </div>
+            <div class="fi" style="grid-column:1/4"><label>Notas adicionales</label>
+              <input id="inv-notes" placeholder="Observaciones generales...">
+            </div>
+            <div class="fi"><label>Revisado por</label>
+              <input id="inv-reviewer" placeholder="Tu nombre">
+            </div>
+            <div class="fi"><label>Fecha de revision</label>
+              <input type="date" id="inv-date">
+            </div>
+            <div class="fi"><label>Estado general</label>
+              <select id="inv-status">
+                <option value="ok">Completo ✓</option>
+                <option value="pending">Pendientes ⚠</option>
+                <option value="urgent">Urgente 🔴</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-teal" onclick="saveInventoryUnit()" style="padding:10px 20px;">Guardar</button>
+            <button class="btn btn-ghost" onclick="toggleAddInv()" style="color:#555">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Inventory grid -->
+        <div id="inventory-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;"></div>
       </div>
     </div>
 
@@ -1010,10 +1134,11 @@ function goTab(id,btn){
   page.classList.add('active'); btn.classList.add('active');
   if(id==='occ')      renderOccupancy();
   if(id==='shiftlog') loadAndRenderShiftLog();
-  if(id==='hk')       {initHK();loadHKData();}
+  if(id==='hk')       {initHK();loadHKData();setTimeout(applyGSNightRestrictions,300);}
   if(id==='tasks')    {loadTasks();renderFilterBtns();}
   if(id==='maint')    loadMaint();
   if(id==='gerencia') initGerencia();
+  if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
 }
 
 // ── META COLLAPSE ─────────────────────────────────────────
@@ -1278,6 +1403,7 @@ function updateReport(){
         <td class="${d.mal?'td-mal':''}">${d.mal?'Si':''}</td>
         <td class="${d.deco?'td-dec':''}" style="font-size:7.5px">${d.deco||''}</td>
         <td class="${isMaint?'td-man':''}">${d.maint||''}</td>
+        <td style="font-size:8px;font-weight:700;color:var(--teal);text-align:center;">${nts!==''&&!isMaint&&!isVac?(nts+' N'):'—'}</td>
         <td class="nt">${d.notes||''}</td>`;
       tbody.appendChild(tr);ri++;
     });
@@ -2075,6 +2201,7 @@ function goTabMobile(id, btn) {
   if(id==='shiftlog') loadAndRenderShiftLog();
   if(id==='tasks'){loadTasks();renderFilterBtns();}
   if(id==='gerencia') initGerencia();
+  if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
 }
 
 
@@ -2218,6 +2345,208 @@ async function loadHKHistoric(){
   el.innerHTML=html;el.style.display='block';
 }
 
+
+
+// ── GS NIGHT → HK ────────────────────────────────────────
+async function sendGSNightToHK(){
+  const role=currentProfile?.role;
+  const name=currentProfile?.full_name||'';
+  // Only Gabriel and Jose V. can send this
+  const allowed=['Gabriel','Jose V.','gerencia'];
+  if(!allowed.includes(name)&&role!=='gerencia'){
+    alert('Esta funcion es solo para GS Nocturno (Gabriel y Jose V.)');return;
+  }
+  const date=document.getElementById('gs-hk-date')?.value;
+  const sabanas=document.getElementById('gs-hk-sabanas')?.value;
+  const pend=document.getElementById('gs-hk-pendientes')?.value;
+  const mant=document.getElementById('gs-hk-mant')?.value;
+  if(!sabanas&&!pend){alert('Agrega al menos la informacion de sabanas o pendientes');return;}
+  
+  let body=`Turno nocturno ${date||'hoy'} — Preparado por: ${name}
+`;
+  if(sabanas) body+=`
+Sabanas preparadas: ${sabanas}`;
+  if(pend)    body+=`
+Faltan / Pendientes: ${pend}`;
+  if(mant)    body+=`
+Mantenimiento: ${mant}`;
+  
+  await sb.from('notifications').insert({
+    from_user:currentUser?.id,from_name:name,
+    to_role:['hk','gerencia'],
+    title:`Preparacion nocturna → HK (${date||'hoy'})`,
+    body,type:'info'
+  });
+  
+  // Clear fields
+  ['gs-hk-date','gs-hk-sabanas','gs-hk-pendientes','gs-hk-mant'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  alert('Mensaje enviado a Housekeeping y Gerencia');
+}
+
+// Restrict GS-HK card visibility
+function applyGSNightRestrictions(){
+  const card=document.getElementById('gs-hk-card');if(!card)return;
+  const name=currentProfile?.full_name||'';
+  const role=currentProfile?.role||'';
+  const allowed=['Gabriel','Jose V.','gerencia'];
+  if(!allowed.includes(name)&&role!=='gerencia'){
+    card.style.display='none';
+  }
+}
+
+// ── INVENTORY ─────────────────────────────────────────────
+let inventoryItems=[];
+
+async function loadInventory(){
+  // Use tasks table with task_type='Inventario'
+  const{data}=await sb.from('maintenance_reports').select('*')
+    .eq('issue_type','Inventario').order('created_at',{ascending:false});
+  inventoryItems=data||[];
+  renderInventory();
+}
+
+function renderInventory(){
+  const grid=document.getElementById('inventory-grid');if(!grid)return;
+  grid.innerHTML='';
+  
+  let total=0,issues=0,ok=0,lastDate='—';
+  
+  if(!inventoryItems.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.3);padding:40px;font-size:13px;">Sin unidades en inventario. Da clic en + Nueva Unidad.</div>';
+    document.getElementById('inv-total').textContent='0';
+    return;
+  }
+  
+  inventoryItems.forEach((item,i)=>{
+    total++;
+    const data=JSON.parse(item.description||'{}');
+    const status=data.status||'ok';
+    if(status==='ok')ok++;else issues++;
+    if(item.report_date>lastDate)lastDate=item.report_date;
+    
+    const statusColor=status==='ok'?'var(--green)':status==='urgent'?'var(--maint)':'var(--amber)';
+    const statusLabel=status==='ok'?'Completo ✓':status==='urgent'?'Urgente 🔴':'Pendientes ⚠';
+    const propColor=data.prop==='op'?'var(--op)':'var(--iv)';
+    
+    const card=document.createElement('div');
+    card.style.cssText='background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+    card.innerHTML=`
+      <div style="background:${propColor};padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#fff;font-weight:700;font-size:12px;">${data.prop?.toUpperCase()||'—'} · Unidad ${data.unit||'—'}</span>
+        <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:8px;font-weight:700;padding:2px 8px;border-radius:10px;">${data.type||''}</span>
+      </div>
+      <div style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;color:${statusColor}">${statusLabel}</span>
+          <span style="font-size:9px;color:var(--txt2);">Rev: ${item.report_date||'—'} · ${data.reviewer||'—'}</span>
+        </div>
+        ${data.beds?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Camas:</span> ${data.beds}</div>`:''}
+        ${data.kitchen?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Cocina:</span> ${data.kitchen}</div>`:''}
+        ${data.amenities?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Amenidades:</span> ${data.amenities}</div>`:''}
+        ${data.missing?`<div style="font-size:10px;margin-bottom:5px;padding:6px 8px;background:#FFEBEE;border-radius:4px;"><span style="font-weight:700;color:var(--maint);">⚠ Faltantes:</span> ${data.missing}</div>`:''}
+        ${data.notes?`<div style="font-size:9px;color:var(--txt2);margin-top:4px;font-style:italic;">${data.notes}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:10px;">
+          <button onclick="editInventoryUnit(${i})" style="flex:1;font-size:9px;padding:5px;background:var(--tealP);color:var(--teal);border:1px solid var(--teal2);border-radius:5px;cursor:pointer;font-weight:600;">✏ Editar</button>
+          <button onclick="deleteInventoryUnit('${item.id}')" style="font-size:9px;padding:5px 10px;background:#FFEBEE;color:var(--maint);border:1px solid #FFCDD2;border-radius:5px;cursor:pointer;font-weight:600;">×</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  
+  document.getElementById('inv-total').textContent=total;
+  document.getElementById('inv-issues').textContent=issues;
+  document.getElementById('inv-ok').textContent=ok;
+  document.getElementById('inv-last-date').textContent=lastDate!=='—'?new Date(lastDate+'T12:00:00').toLocaleDateString('es-PR',{month:'short',day:'numeric',year:'numeric'}):lastDate;
+}
+
+function toggleAddInv(){document.getElementById('add-inv-form')?.classList.toggle('open');}
+function addInventoryUnit(){
+  document.getElementById('add-inv-form')?.classList.add('open');
+  document.getElementById('inv-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('inv-reviewer').value=currentProfile?.full_name||'';
+}
+
+async function saveInventoryUnit(){
+  const prop=document.getElementById('inv-prop')?.value;
+  const unit=document.getElementById('inv-unit')?.value;
+  if(!prop||!unit){alert('Selecciona propiedad y unidad');return;}
+  
+  const data={
+    prop,unit,
+    type:document.getElementById('inv-type')?.value,
+    beds:document.getElementById('inv-beds')?.value,
+    kitchen:document.getElementById('inv-kitchen')?.value,
+    amenities:document.getElementById('inv-amenities')?.value,
+    missing:document.getElementById('inv-missing')?.value,
+    notes:document.getElementById('inv-notes')?.value,
+    reviewer:document.getElementById('inv-reviewer')?.value,
+    status:document.getElementById('inv-status')?.value,
+  };
+  
+  const entry={
+    unit_ref:`${prop.toUpperCase()}-${unit}`,
+    issue_type:'Inventario',
+    description:JSON.stringify(data),
+    report_date:document.getElementById('inv-date')?.value,
+    reported_by:data.reviewer,
+    status:data.status==='ok'?'done':'open',
+    priority:data.status==='urgent'?'urgente':data.status==='pending'?'media':'baja',
+    created_by:currentUser?.id,
+    assigned_to:'General'
+  };
+  
+  const{data:saved,error}=await sb.from('maintenance_reports').insert(entry).select().single();
+  if(error){alert('Error: '+error.message);return;}
+  if(saved)inventoryItems.unshift(saved);
+  document.getElementById('add-inv-form')?.classList.remove('open');
+  // Clear form
+  ['inv-unit','inv-beds','inv-kitchen','inv-amenities','inv-missing','inv-notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  renderInventory();
+}
+
+function editInventoryUnit(i){
+  const item=inventoryItems[i];if(!item)return;
+  let data={};
+  try{data=JSON.parse(item.description||'{}');}catch(e){}
+  const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  setV('inv-prop',data.prop);setV('inv-unit',data.unit);setV('inv-type',data.type);
+  setV('inv-beds',data.beds);setV('inv-kitchen',data.kitchen);setV('inv-amenities',data.amenities);
+  setV('inv-missing',data.missing);setV('inv-notes',data.notes);setV('inv-reviewer',data.reviewer);
+  setV('inv-date',item.report_date);setV('inv-status',data.status);
+  document.getElementById('add-inv-form')?.classList.add('open');
+  // scroll to form
+  document.getElementById('add-inv-form')?.scrollIntoView({behavior:'smooth'});
+}
+
+async function deleteInventoryUnit(id){
+  if(!confirm('Eliminar este registro de inventario?'))return;
+  inventoryItems=inventoryItems.filter(x=>x.id!==id);
+  renderInventory();
+  await sb.from('maintenance_reports').delete().eq('id',id);
+}
+
+async function sendInventoryNotif(){
+  const total=inventoryItems.length;
+  const issues=inventoryItems.filter(i=>{
+    try{return JSON.parse(i.description||'{}').status!=='ok';}catch{return false;}
+  }).length;
+  await sb.from('notifications').insert({
+    from_user:currentUser?.id,from_name:currentProfile?.full_name,
+    to_role:['gs','hk','gerencia','mant'],
+    title:`Inventario actualizado — ${new Date().toLocaleDateString('es-PR',{month:'short',day:'numeric'})}`,
+    body:`Total unidades revisadas: ${total}
+Con pendientes: ${issues}
+Completas: ${total-issues}
+
+Revisa el tab Inventario para ver el detalle de cada unidad.`,
+    type:'info'
+  });
+  alert('Notificacion de inventario enviada a todo el equipo');
+}
 
 // ── INIT ──────────────────────────────────────────────────
 async function init(){
