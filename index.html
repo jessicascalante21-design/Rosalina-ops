@@ -1260,6 +1260,8 @@ async function saveReport(){
     if(uErr)throw uErr;
     setSyncStatus('saved');
     const si=document.getElementById('save-ind');if(si){si.textContent='Guardado ✓';si.classList.add('show');setTimeout(()=>si.classList.remove('show'),2000);}
+    // Auto-enrich from previous report silently
+    await autoEnrichFromPrev(dateVal);
   }catch(e){
     console.error('Save error:',e);
     setSyncStatus('error');
@@ -1977,7 +1979,7 @@ function renderNotifications(){
         </div>
         <button onclick="hideNotif('${n.id}',event)" style="border:none;background:none;color:#BBB;cursor:pointer;font-size:14px;padding:0;line-height:1;flex-shrink:0;">×</button>
       </div>
-      <div class="notif-title" style="cursor:pointer" onclick="markRead('${n.id}')">${n.title}</div>
+      <div class="notif-title" style="cursor:pointer" onclick="handleNotifClick('${n.id}','${n.title}',\`${n.body||''}\`)">${n.title}</div>
       ${n.body?`<div class="notif-body">${n.body}</div>`:''}
       <div class="notif-meta">De: ${n.from_name||'Sistema'} · ${new Date(n.created_at).toLocaleString('es-PR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>`;
     list.appendChild(div);
@@ -1997,6 +1999,37 @@ function hideNotif(id, event){
   renderNotifications();
   const unread=notifications.filter(x=>!x.read_by?.includes(currentUser?.id)).length;
   const dot=document.getElementById('notif-dot');if(dot)dot.classList.toggle('show',unread>0);
+}
+
+async function handleNotifClick(id, title, body){
+  await markRead(id);
+  // If it's a Daily Report notification, navigate there and load the report
+  if(title.includes('Daily Report')){
+    toggleNotif(); // close panel
+    // Switch to daily tab
+    const btn=document.querySelector('.ntab[onclick*="daily"]');
+    if(btn) goTab('daily', btn);
+    // Try to extract date from title — format: "Daily Report AM — miércoles, 18 de marzo"
+    // Or from body: check if body has a date pattern
+    // Just reload current report
+    setTimeout(()=>loadTodayReport(), 200);
+  } else if(title.includes('Inventario')){
+    toggleNotif();
+    const btn=document.querySelector('.ntab[onclick*="inventory"]');
+    if(btn) goTab('inventory', btn);
+  } else if(title.includes('Mant') || title.includes('mantenimiento')){
+    toggleNotif();
+    const btn=document.querySelector('.ntab[onclick*="maint"]');
+    if(btn) goTab('maint', btn);
+  } else if(title.includes('permiso') || title.includes('Solicitud')){
+    toggleNotif();
+    const btn=document.querySelector('.ntab[onclick*="gerencia"]');
+    if(btn && currentProfile?.role==='gerencia') goTab('gerencia', btn);
+  } else if(title.includes('HK') || title.includes('Preparacion nocturna')){
+    toggleNotif();
+    const btn=document.querySelector('.ntab[onclick*="hk"]');
+    if(btn) goTab('hk', btn);
+  }
 }
 function toggleNotif(){document.getElementById('notif-panel')?.classList.toggle('open');}
 async function sendNotif(){
@@ -2346,6 +2379,82 @@ async function loadHKHistoric(){
 }
 
 
+
+
+// ── AUTO-ENRICH FROM PREVIOUS REPORT ─────────────────────
+// Called after save — fills Sale Hoy (if CO=today) and
+// carries forward continuing guests — never overwrites manual entries
+async function autoEnrichFromPrev(dateVal){
+  if(!dateVal) return;
+  const today = new Date(dateVal+'T12:00:00');
+  const todayMMDD = `${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+  
+  // Find most recent previous report (up to 3 days back)
+  let prevRep = null;
+  for(let d=1; d<=3; d++){
+    const pd = new Date(dateVal+'T12:00:00');
+    pd.setDate(pd.getDate()-d);
+    const pyd = pd.toISOString().split('T')[0];
+    const{data} = await sb.from('daily_reports')
+      .select('*,unit_data(*)')
+      .eq('report_date', pyd)
+      .single();
+    if(data){ prevRep=data; break; }
+  }
+  if(!prevRep?.unit_data) return;
+  
+  let changed = false;
+  prevRep.unit_data.forEach(u => {
+    if(!UNITS[u.property]) return;
+    const idx = u.unit_number - 1;
+    if(idx < 0) return;
+    const cur = UNITS[u.property][idx];
+    
+    // Auto-fill Sale Hoy if CO date = today AND field is empty
+    if(u.co_date === todayMMDD && (u.ocup_name||u.hues_name)){
+      if(!cur.sale){
+        cur.sale = u.ocup_name || u.hues_name || '';
+        changed = true;
+      }
+    }
+    // Carry forward continuing guests (CO not today) — only if fields empty
+    if(u.co_date !== todayMMDD && (u.ocup_name||u.hues_name)){
+      if(!cur.ocup && !cur.hues){
+        cur.ocup = u.hues_name || u.ocup_name || '';
+        cur.ci   = u.ci_date || '';
+        cur.co   = u.co_date || '';
+        changed = true;
+      }
+    }
+  });
+  
+  if(changed){
+    buildForm();
+    updateReport();
+    // Save the enriched data back
+    if(currentReportId){
+      const unitRows=[];
+      PROPS.forEach(prop=>{
+        UNITS[prop.id].forEach((d,u)=>{
+          unitRows.push({report_id:currentReportId,property:prop.id,unit_number:u+1,
+            ci_date:d.ci||null,co_date:d.co||null,ocup_name:d.ocup||null,
+            hues_name:d.hues||null,sale_name:d.sale||null,arrival_time:d.arr||null,
+            early_ci:d.early||null,contact:d.ct||null,co_time:d.cotime||null,
+            luggage:d.mal,guests_count:d.g?parseInt(d.g):null,decoration:d.deco||null,
+            maintenance:d.maint||null,notes:d.notes||null,updated_by:currentUser?.id});
+        });
+      });
+      await sb.from('unit_data').upsert(unitRows,{onConflict:'report_id,property,unit_number'});
+    }
+    const si=document.getElementById('save-ind');
+    if(si){
+      const sales=Object.values(UNITS).flat().filter(d=>d.sale).length;
+      si.textContent=`✓ Guardado · ${sales} salida${sales!==1?'s':''} del dia cargada${sales!==1?'s':''}`;
+      si.classList.add('show');
+      setTimeout(()=>si.classList.remove('show'),3500);
+    }
+  }
+}
 
 // ── GS NIGHT → HK ────────────────────────────────────────
 async function sendGSNightToHK(){
