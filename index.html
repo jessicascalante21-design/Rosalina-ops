@@ -1580,34 +1580,29 @@ function applyRoleRestrictions(role){
   if(gerBtn && role!=='gerencia'){
     gerBtn.classList.add('hidden');
   }
-  // Daily report: only GS can edit
+  // Daily report: only GS sees the form sidebar
+  const sidebar=document.getElementById('daily-sidebar');
+  const preview=document.querySelector('.preview');
   if(role!=='gs'){
-    const sb2=document.getElementById('daily-sidebar');
-    if(sb2){
-      sb2.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=true; });
-      // Disable action buttons too
-      ['send-all-btn'].forEach(id=>{
-        const el=document.getElementById(id);if(el)el.style.display='none';
+    // Hide sidebar completely — only show the report
+    if(sidebar) sidebar.style.display='none';
+    if(preview) preview.style.flex='1';
+    // Also hide PNG/send buttons in preview bar for non-GS
+    const pbar=document.querySelector('.pbar');
+    if(pbar){
+      pbar.querySelectorAll('button').forEach(b=>{
+        if(b.textContent.includes('Cargar')||b.textContent.includes('Guardar'))
+          b.style.display='none';
       });
-      const hint=document.getElementById('sb-hint');
-      if(hint){
-        hint.textContent='Solo lectura';
-        hint.style.color='var(--amber)';
-      }
-      // Show read-only badge
-      const hdr=sb2.querySelector('.sb-hdr h2');
-      if(hdr&&!hdr.querySelector('.ro-badge')){
-        hdr.innerHTML+=' <span class="ro-badge" style="font-size:8px;background:rgba(224,123,0,0.3);color:var(--amber);padding:2px 7px;border-radius:4px;font-family:DM Sans,sans-serif;vertical-align:middle;">Solo lectura</span>';
-      }
     }
   } else {
-    // GS: make sure everything is enabled
+    // GS: show sidebar, enable all fields
+    if(sidebar){ sidebar.style.display=''; }
+    if(preview) preview.style.flex='1';
     const sb2=document.getElementById('daily-sidebar');
-    if(sb2){
-      sb2.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=false; });
-      const hint=document.getElementById('sb-hint');
-      if(hint){ hint.textContent='Los cambios se guardan automaticamente'; hint.style.color=''; }
-    }
+    if(sb2) sb2.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=false; });
+    const hint=document.getElementById('sb-hint');
+    if(hint){ hint.textContent='Los cambios se guardan automaticamente'; hint.style.color=''; }
   }
   // Shift log: gerencia, hk, mant = read only (no add buttons)
   if(role==='gerencia'||role==='hk'||role==='mant'){
