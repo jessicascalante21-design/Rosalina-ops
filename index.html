@@ -1495,7 +1495,7 @@ let clStatus = Array(14).fill(false);
 let hkAssignments = {};
 let tFilter = 'all';
 
-function emptyUnit(){return{ci:'',co:'',ocup:'',hues:'',sale:'',arr:'',early:'',ct:'',pa:'No',cotime:'',mal:false,g:'',deco:'',maint:'',notes:''};}
+function emptyUnit(){return{ci:'',co:'',ocup:'',hues:'',sale:'',arr:'',early:'',ct:'',cotime:'',mal:false,g:'',deco:'',maint:'',notes:''};}
 
 // ── AUTH ──────────────────────────────────────────────────
 sb.auth.onAuthStateChange(async(event,session)=>{
@@ -1737,11 +1737,7 @@ function buildForm(){
         <div class="fi full"><label>Llega Hoy</label><input value="${d.hues}" placeholder="Nombre del huesped que llega" data-p="${prop.id}" data-u="${u}" data-f="hues" oninput="setF(this)"></div>
         <div class="fi"><label>Hora llegada</label><select data-p="${prop.id}" data-u="${u}" data-f="arr" onchange="setF(this)">${ARR_O.map(o=>`<option ${d.arr===o?'selected':''}>${o||'— Sin confirmar'}</option>`).join('')}</select></div>
         <div class="fi"><label>Early CI</label><select data-p="${prop.id}" data-u="${u}" data-f="early" onchange="setF(this)">${EARL_O.map(o=>`<option ${d.early===o?'selected':''}>${o||'— No'}</option>`).join('')}</select></div>
-        <div class="fi"><label>Pre-Arrival llamado</label><select data-p="${prop.id}" data-u="${u}" data-f="pa" onchange="setF(this)">
-          <option value="No" ${(d.pa||'No')==='No'?'selected':''}>— No</option>
-          <option value="Si" ${d.pa==='Si'?'selected':''}>Si ✓</option>
-          <option value="No contesta" ${d.pa==='No contesta'?'selected':''}>No contesta</option>
-        </select></div>
+
         <div class="fi"><label>Hora salida</label><select data-p="${prop.id}" data-u="${u}" data-f="cotime" onchange="setF(this)">${COT_O.map(o=>`<option ${d.cotime===o?'selected':''}>${o||'— Estandar'}</option>`).join('')}</select></div>
         <div class="fi"><label>Maletas</label><select data-p="${prop.id}" data-u="${u}" data-f="mal" onchange="setF(this)"><option value="" ${!d.mal?'selected':''}>— No</option><option value="1" ${d.mal?'selected':''}>Si</option></select></div>
         <div class="fi"><label>Guests #</label><input type="number" value="${d.g}" placeholder="0" data-p="${prop.id}" data-u="${u}" data-f="g" oninput="setF(this)"></div>
@@ -1816,7 +1812,7 @@ async function saveReport(){
         unitRows.push({report_id:rep.id,property:prop.id,unit_number:u+1,
           ci_date:d.ci||null,co_date:d.co||null,ocup_name:d.ocup||null,
           hues_name:d.hues||null,sale_name:d.sale||null,arrival_time:d.arr||null,early_ci:d.early||null,
-          contact:d.ct||null,pre_arrival_called:d.pa||null,co_time:d.cotime||null,luggage:d.mal,
+          contact:d.ct||null,co_time:d.cotime||null,luggage:d.mal,
           guests_count:d.g?parseInt(d.g):null,decoration:d.deco||null,
           maintenance:d.maint||null,notes:d.notes||null,updated_by:currentUser.id});
       });
@@ -1854,7 +1850,7 @@ async function loadTodayReport(){
         const idx=u.unit_number-1;if(idx<0||idx>=UNITS[u.property].length)return;
         UNITS[u.property][idx]={ci:u.ci_date||'',co:u.co_date||'',ocup:u.ocup_name||'',
           hues:u.hues_name||'',sale:u.sale_name||'',arr:u.arrival_time||'',early:u.early_ci||'',
-          ct:u.contact||'',pa:u.pre_arrival_called||'No',cotime:u.co_time||'',mal:u.luggage||false,
+          ct:u.contact||'',cotime:u.co_time||'',mal:u.luggage||false,
           g:u.guests_count||'',deco:u.decoration||'',maint:u.maintenance||'',notes:u.notes||''};
       });
       buildForm();
@@ -1937,7 +1933,7 @@ function updateReport(){
       if(isMaint&&!d.ocup&&!d.hues){mt++;return;}if(isVac){vc++;return;}
       if(prop.id==='op')ocOP++;else ocIV++;
       if(d.hues)ci++;if(rd&&(d.sale||(d.co===rd.mmdd&&d.ocup)))co++;
-      if(d.early)ea++;if(d.deco)dc++;if(d.pa==='Si'||d.ct==='Si')cn++;
+      if(d.early)ea++;if(d.deco)dc++;
     });
   });
   ['op','iv','tot','mt','ci','co','ea','dc','vc','cn'].forEach((k,i)=>{
@@ -3067,7 +3063,7 @@ async function autoEnrichFromPrev(dateVal){
           unitRows.push({report_id:currentReportId,property:prop.id,unit_number:u+1,
             ci_date:d.ci||null,co_date:d.co||null,ocup_name:d.ocup||null,
             hues_name:d.hues||null,sale_name:d.sale||null,arrival_time:d.arr||null,
-            early_ci:d.early||null,contact:d.ct||null,pre_arrival_called:d.pa||null,co_time:d.cotime||null,
+            early_ci:d.early||null,contact:d.ct||null,co_time:d.cotime||null,
             luggage:d.mal,guests_count:d.g?parseInt(d.g):null,decoration:d.deco||null,
             maintenance:d.maint||null,notes:d.notes||null,updated_by:currentUser?.id});
         });
@@ -3444,7 +3440,7 @@ async function loadDashboard(){
   const alerts=[];
   const arrivals=units.filter(u=>u.hues_name&&!u.ocup_name);
   const departures=units.filter(u=>u.sale_name||(u.co_date===todayMMDD&&u.ocup_name));
-  const uncont=arrivals.filter(u=>!u.pre_arrival_called||u.pre_arrival_called==='No');
+  const uncont=[];
   const noEarly=arrivals.filter(u=>u.arrival_time&&u.arrival_time<'12:00'&&!u.early_ci);
 
   if(uncont.length>0) alerts.push({type:'warn',msg:`${uncont.length} llegada${uncont.length>1?'s':''} sin contactar`});
@@ -3482,12 +3478,12 @@ async function loadDashboard(){
   // ── ARRIVALS / DEPARTURES ─────────────────────────────
   document.getElementById('dash-arrivals').innerHTML=arrivals.length
     ? arrivals.map(u=>`
-      <div style="padding:6px 10px;background:${u.pre_arrival_called==='Si'?'#F0FAF5':'#FFF9C4'};border-radius:6px;font-size:11px;">
+      <div style="padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:11px;">
         <span style="font-weight:600">${u.hues_name}</span>
         <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
         ${u.arrival_time?`<span style="font-size:9px;color:var(--teal);"> ${u.arrival_time}</span>`:''}
         ${u.early_ci?`<span style="font-size:9px;color:var(--purple);"> Early</span>`:''}
-        ${u.pre_arrival_called==='Si'?'<span style="font-size:9px;color:var(--green);"> ✓</span>':'<span style="font-size:9px;color:var(--maint);"> Sin llamar</span>'}
+
       </div>`).join('')
     : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin llegadas hoy</div>';
 
@@ -3953,7 +3949,7 @@ async function loadHub(){
   const departures=units.filter(u=>u.sale_name||(u.co_date===todayMMDD&&u.ocup_name));
   const ocup=units.filter(u=>u.ocup_name||u.hues_name).length;
   const totalUnits=PROPS.reduce((s,p)=>s+p.units,0);
-  const uncont=arrivals.filter(u=>!u.pre_arrival_called||u.pre_arrival_called==='No');
+  const uncont=[];
 
   // KPIs
   const kpis=[
@@ -3986,13 +3982,13 @@ async function loadHub(){
   if(arrEl) arrEl.innerHTML=arrivals.length
     ? arrivals.map(u=>`
       <div style="padding:5px 8px;background:rgba(255,255,255,0.05);border-radius:6px;
-        border-left:3px solid ${u.pre_arrival_called==='Si'?'var(--green)':'var(--amber)'};">
+        border-left:3px solid var(--teal);">
         <div style="font-size:11px;font-weight:600;color:#fff;">${u.hues_name}</div>
         <div style="font-size:9px;color:rgba(255,255,255,0.4);">${u.property?.toUpperCase()}-${u.unit_number}
           ${u.arrival_time?' · '+u.arrival_time:''}
           ${u.early_ci?' · Early':''}
-          <span style="color:${u.pre_arrival_called==='Si'?'var(--green)':'var(--amber)'};">
-            ${u.pre_arrival_called==='Si'?'✓ Contactado':'⚠ Sin llamar'}</span>
+          <span style="color:var(--teal);">
+  
         </div>
       </div>`).join('')
     : '<div style="font-size:10px;color:rgba(255,255,255,0.25);">Sin llegadas hoy</div>';
