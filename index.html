@@ -318,114 +318,179 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);
-  border-top:1px solid rgba(255,255,255,0.1);z-index:200;padding:4px 0;justify-content:space-around;}
-.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;
-  border:none;background:transparent;color:rgba(255,255,255,0.45);
-  font-size:8px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;
-  padding:4px 6px;cursor:pointer;min-width:44px;}
-.mobile-nav-btn.active{color:var(--teal2);}
-.mobile-nav-btn span{font-size:18px;line-height:1;}
 
-/* ── USER PICKER ── */
-.user-pick-card{display:flex;align-items:center;gap:10px;padding:10px 12px;
-  border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;}
-.user-pick-card:hover{border-color:var(--teal2);background:#EAF8FB;}
-.user-pick-card.selected{border-color:var(--teal2);background:var(--tealP);}
-.upc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
-.upc-name{font-size:13px;font-weight:600;color:var(--txt);}
-.upc-role{font-size:10px;color:var(--txt2);}
-.upc-check{width:20px;height:20px;background:var(--teal);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;margin-left:auto;}
+/* ══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Complete overhaul
+   ══════════════════════════════════════════════════════ */
 
-/* ── MOBILE FULL RESPONSIVE ── */
-@media (max-width:768px){
-  /* Topbar */
-  .topbar{padding:0 8px;gap:4px;height:48px;}
-  .brand{font-size:12px;}
-  .nav-tabs{display:none;}
-  .user-role{display:none;}
-  .user-name{font-size:10px;}
-  .btn-gold,.btn-green{font-size:8px;padding:4px 8px;}
-  .notif-btn{padding:5px 6px;}
+@media (max-width: 768px) {
 
-  /* Main layout */
-  .main{flex-direction:column;height:auto;overflow-y:auto;min-height:calc(100vh - 48px - 60px);}
-  .page.active{flex-direction:column;width:100%;min-height:auto;}
-
-  /* Daily report: sidebar on top, preview below */
-  #tab-daily{flex-direction:column;}
-  .sidebar{width:100%;min-width:unset;max-height:none;border-right:none;border-bottom:1px solid var(--bdr);}
-  .preview{padding:8px;min-height:300px;overflow-x:auto;}
-  #report{width:1200px;min-width:unset;}
-
-  /* Inner pages */
-  .inner{padding:10px;padding-bottom:80px;}
-  .occ-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;}
-  .occ-unit-card{padding:8px 10px;}
-  .occ-nights{font-size:16px;top:6px;right:8px;}
-  .occ-sumbar{grid-template-columns:repeat(3,1fr);gap:6px;padding:10px;}
+  /* ── TOPBAR ── */
+  .topbar { padding: 0 8px; gap: 4px; height: 48px; flex-wrap: nowrap; }
+  .brand { font-size: 11px; white-space: nowrap; }
+  .nav-tabs { display: none !important; }
+  .user-role { display: none; }
+  .user-name { font-size: 10px; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-pill { padding: 3px 8px 3px 6px; }
+  .user-avatar { width: 22px; height: 22px; font-size: 9px; }
   
-  /* Task cards */
-  .task-card{flex-direction:column;gap:8px;}
-  .tp{font-size:8px;}
+  /* Hide PNG and Enviar from topbar on mobile — accessible in Hub */
+  .topbar .btn-gold, .topbar .btn-green { display: none; }
+  .logout-btn { font-size: 9px; padding: 4px 8px; }
+  .notif-btn { padding: 5px 6px; font-size: 12px; }
 
-  /* Shift log tables - horizontal scroll */
-  .card-body{overflow-x:auto;}
-  .gtable{min-width:600px;}
-  .gtable th,.gtable td{padding:6px 8px;font-size:10px;}
+  /* ── APP SHELL ── */
+  .app { flex-direction: column; }
+  .main { flex-direction: column; height: calc(100vh - 48px - 56px); overflow: hidden; }
+  .page { display: none; width: 100%; height: 100%; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+  .page.active { display: flex; flex-direction: column; }
 
-  /* HK section */
-  .hk-assign-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  /* ── DAILY REPORT ── */
+  #tab-daily { flex-direction: column !important; overflow-y: auto; }
+  .sidebar { 
+    width: 100% !important; min-width: unset !important; 
+    max-height: none; border-right: none !important; 
+    border-bottom: 1px solid var(--bdr); 
+    overflow-y: visible;
+  }
+  .preview { 
+    padding: 8px; flex: none;
+    min-height: 300px; overflow-x: auto; background: #12253A;
+  }
+  #report { width: 1400px !important; min-width: unset !important; }
+  .pbar { flex-wrap: wrap; gap: 4px; }
 
-  /* Schedule */
-  .sched-emp-row{padding:10px;}
-  .sched-days{grid-template-columns:repeat(7,1fr);gap:2px;}
-  .sched-day select{font-size:7px;padding:2px 1px;}
+  /* ── SIDEBAR FORM ── */
+  .fsec { padding: 8px 10px; }
+  .fg2 { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .fi label { font-size: 9px; }
+  .fi input, .fi select, .fi textarea { font-size: 12px; padding: 8px 10px; }
+  .ur-hdr { padding: 8px 10px; }
+  .ur-num { width: 22px; height: 22px; font-size: 9px; }
+  .ur-sum { font-size: 10px; }
+  .ur-fields { grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px 10px 12px; }
 
-  /* Inventory */
-  #inventory-grid{grid-template-columns:1fr;}
+  /* ── INNER PAGES ── */
+  .inner { 
+    padding: 12px 10px; 
+    padding-bottom: 20px;
+    gap: 10px; 
+    overflow-y: auto;
+    height: 100%;
+  }
+  .pg-title { font-size: 16px; }
+  .pg-sub { font-size: 10px; }
 
-  /* Login card */
-  .login-card{padding:24px 20px;margin:12px;}
+  /* ── OCCUPANCY ── */
+  .occ-sumbar { 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 6px; padding: 10px 8px; 
+  }
+  .osb-n { font-size: 20px; }
+  .osb-l { font-size: 7px; }
+  .occ-grid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 6px; 
+  }
+  .occ-unit-card { padding: 8px 10px; }
+  .occ-nights { font-size: 16px; top: 6px; right: 8px; }
+  .occ-nts-lbl { font-size: 6px; }
 
-  /* Notification panel */
-  .notif-panel{width:100%;}
+  /* ── CARDS ── */
+  .card { border-radius: 8px; }
+  .card-hdr { padding: 8px 12px; font-size: 9px; }
+  .card-body { padding: 10px !important; }
 
-  /* Bottom nav */
-  .mobile-nav{display:flex !important;padding:4px 0;}
-  body{padding-bottom:60px;}
+  /* ── TASKS ── */
+  .task-card { flex-direction: row; gap: 8px; padding: 8px 10px; }
+  .tp { font-size: 7px; }
+  #task-filters { gap: 4px; }
+  #task-filters .btn { font-size: 8px; padding: 4px 8px; }
+
+  /* ── SHIFT LOG TABLES ── */
+  .gtable { min-width: 550px; font-size: 10px; }
+  .gtable th { padding: 5px 6px; font-size: 8px; }
+  .gtable td { padding: 5px 6px; }
+  .act-entry { grid-template-columns: 60px 50px 100px auto 70px 80px 24px; gap: 3px; }
+
+  /* ── HK ── */
+  .hk-assign-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .hk-unit-chip { padding: 8px 10px; }
+  .hku-num { font-size: 10px; }
+  .hku-guest { font-size: 9px; }
+
+  /* ── HUB ── */
+  #tab-hub > div { flex-direction: column !important; height: auto !important; }
+  #tab-hub > div > div:first-child { 
+    width: 100% !important; min-width: unset !important; 
+    border-right: none !important; 
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    overflow-y: visible !important;
+  }
+  #hub-kpis { grid-template-columns: repeat(3, 1fr) !important; gap: 5px !important; }
+  #tab-hub > div > div:last-child { 
+    flex: none !important;
+    height: 420px;
+    min-height: 420px;
+  }
+  #chat-messages { flex: 1; min-height: 200px; }
+
+  /* ── CLEANING ── */
+  #cleaning-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+
+  /* ── INVENTORY ── */
+  #inventory-grid { grid-template-columns: 1fr; }
+  .add-form { padding: 10px; }
+  .add-form div[style*="grid-template-columns:1fr 1fr 1fr"] { 
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; 
+    gap: 8px;
+  }
+
+  /* ── SCHEDULE (GERENCIA) ── */
+  .sched-emp-row { padding: 10px 8px; }
+  .sched-days { grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .sched-day select { font-size: 7px; padding: 2px 1px; }
+  .sched-emp-header { flex-wrap: wrap; gap: 6px; }
+
+  /* ── GERENCIA TABLES ── */
+  .gtable th, .gtable td { white-space: normal; }
+
+  /* ── NOTIFICATION PANEL ── */
+  .notif-panel { width: 100%; }
+
+  /* ── BOTTOM NAV ── */
+  .mobile-nav { 
+    display: flex !important; 
+    height: 56px;
+    padding: 4px 0 8px;
+  }
+  .mobile-nav-btn { 
+    font-size: 8px; 
+    padding: 3px 4px;
+    min-width: 40px;
+    flex: 1;
+  }
+  .mobile-nav-btn span { font-size: 16px; }
+  
+  body { padding-bottom: 0; }
 }
 
-@media (max-width:480px){
-  .occ-grid{grid-template-columns:1fr 1fr;}
-  .occ-sumbar{grid-template-columns:repeat(2,1fr);}
-  .fg2{grid-template-columns:1fr;}
-  .fi.full{grid-column:1;}
+@media (max-width: 400px) {
+  .occ-sumbar { grid-template-columns: repeat(2, 1fr); }
+  .occ-grid { grid-template-columns: 1fr; }
+  .fg2 { grid-template-columns: 1fr; }
+  .fi.full { grid-column: 1; }
+  .hub-kpis { grid-template-columns: repeat(2, 1fr) !important; }
+  .hk-assign-grid { grid-template-columns: 1fr; }
 }
 
 
-/* ── CHAT ── */
-.chat-ch-btn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border:none;
-  border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;
-  transition:all .15s;font-family:'DM Sans',sans-serif;}
-.chat-ch-btn.active,.chat-ch-btn:hover{background:var(--teal);color:#fff;}
-.chat-ch-btn[data-roles]{display:none;}
-
-/* Hub layout mobile */
-@media(max-width:768px){
-  #tab-hub > div{flex-direction:column !important;}
-  #tab-hub > div > div:first-child{width:100% !important;min-width:unset !important;
-    max-height:50vh;border-right:none !important;border-bottom:1px solid rgba(255,255,255,0.08);}
-  #hub-kpis{grid-template-columns:repeat(3,1fr) !important;}
-}
-
-
-@keyframes pulse-alarm{
-  0%{transform:scale(1);box-shadow:0 4px 16px rgba(204,17,17,0.4);}
-  50%{transform:scale(1.03);box-shadow:0 6px 24px rgba(204,17,17,0.8);}
-  100%{transform:scale(1);box-shadow:0 4px 16px rgba(204,17,17,0.4);}
+#mobile-more-menu { display: none; }
+@media (max-width: 768px) {
+  #mobile-more-menu { display: none; }
+  #mobile-more-menu.open { display: grid !important; }
+  #mobile-more-menu [data-roles] { display: none; }
 }
 
 </style>
@@ -544,8 +609,8 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
     </div>
     <div style="display:flex;gap:6px;align-items:center;">
       <button class="notif-btn" onclick="toggleNotif()" id="notif-btn">🔔<span class="notif-dot" id="notif-dot"></span></button>
-      <button class="btn btn-gold" onclick="downloadPNG()" style="font-size:9px;">⬇ PNG</button>
-      <button class="btn btn-green" onclick="sendAndNotify()" style="font-size:9px;" data-roles="gs,gerencia">✉ Enviar a Todos</button>
+      <button class="btn btn-gold" onclick="downloadPNG()" style="font-size:9px;" id="topbar-png">⬇ PNG</button>
+      <button class="btn btn-green" onclick="sendAndNotify()" style="font-size:9px;" data-roles="gs,gerencia" id="topbar-send">✉ Todos</button>
       <div class="user-pill">
         <div class="user-avatar" id="user-avatar">?</div>
         <span class="user-name" id="user-name">—</span>
@@ -1076,16 +1141,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;" id="hub-kpis"></div>
           </div>
 
-          <!-- 🚨 BOTÓN ALARMA -->
-          <div style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.07);">
-            <button onclick="triggerDoorAlert()" id="door-alert-btn"
-              style="width:100%;padding:12px;background:var(--maint);color:#fff;border:none;
-              border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
-              cursor:pointer;letter-spacing:0.3px;transition:all .2s;
-              box-shadow:0 4px 16px rgba(204,17,17,0.4);">
-              🚪 HUESPED EN PUERTA
-            </button>
-          </div>
+
 
           <!-- Alertas -->
           <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.07);" id="hub-alerts"></div>
@@ -1236,11 +1292,65 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobile-nav">
-  <button class="mobile-nav-btn active" onclick="goTabMobile('hub',this)" data-roles="gs,gerencia,hk,mant"><span>⚡</span>Inicio</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant"><span>📋</span>Reporte</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('chat',this)" data-roles="gs,gerencia,hk,mant"><span>💬</span>Chat</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('cleaning',this)" data-roles="gs,gerencia,hk"><span>🧹</span>Limpieza</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('tasks',this)" data-roles="gs,gerencia,mant"><span>✓</span>Tareas</button>
+  <button class="mobile-nav-btn active" onclick="goTabMobile('hub',this)" data-roles="gs,gerencia,hk,mant">
+    <span>⚡</span><span style="font-size:7px;margin-top:1px;">Inicio</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant">
+    <span>📋</span><span style="font-size:7px;margin-top:1px;">Reporte</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('occ',this)" data-roles="gs,gerencia,hk,mant">
+    <span>🏠</span><span style="font-size:7px;margin-top:1px;">Ocup.</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('cleaning',this)" data-roles="gs,gerencia,hk">
+    <span>🧹</span><span style="font-size:7px;margin-top:1px;">Limpieza</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('tasks',this)" data-roles="gs,gerencia,mant">
+    <span>✓</span><span style="font-size:7px;margin-top:1px;">Tareas</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="showMobileMenu()" data-roles="gs,gerencia,hk,mant">
+    <span>⋯</span><span style="font-size:7px;margin-top:1px;">Más</span>
+  </button>
+</div>
+
+<!-- MOBILE MORE MENU -->
+<div id="mobile-more-menu" style="display:none;position:fixed;bottom:56px;left:0;right:0;
+  background:var(--navy);border-top:1px solid rgba(255,255,255,0.1);z-index:199;
+  padding:10px;display:none;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+    <button onclick="goTabMobile('shiftlog',document.querySelector('.ntab[onclick*=shiftlog]'));toggleMoreMenu()" data-roles="gs,gerencia"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">📝</span>Shift Log
+    </button>
+    <button onclick="goTabMobile('hk',document.querySelector('.ntab[onclick*=\'hk\']'));toggleMoreMenu()" data-roles="hk,gerencia"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">🧹</span>HK
+    </button>
+    <button onclick="goTabMobile('maint',document.querySelector('.ntab[onclick*=maint]'));toggleMoreMenu()" data-roles="gs,gerencia,mant"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">🔧</span>Mant.
+    </button>
+    <button onclick="goTabMobile('inventory',document.querySelector('.ntab[onclick*=inventory]'));toggleMoreMenu()"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">📦</span>Inventario
+    </button>
+    <button onclick="goTabMobile('calendar',document.querySelector('.ntab[onclick*=calendar]'));toggleMoreMenu()"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">📅</span>Calendario
+    </button>
+    <button onclick="goTabMobile('gerencia',document.querySelector('.ntab[onclick*=gerencia]'));toggleMoreMenu()" data-roles="gerencia"
+      style="padding:10px 6px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;
+      color:#fff;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span style="font-size:18px;">👔</span>Admin
+    </button>
+  </div>
+  <button onclick="downloadPNG()" 
+    style="width:100%;margin-top:8px;padding:10px;background:var(--gold);color:#fff;border:none;
+    border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">⬇ Descargar PNG del Reporte</button>
 </div>
 
 
@@ -1503,16 +1613,33 @@ function applyRoleRestrictions(role){
   if(gerBtn && role!=='gerencia'){
     gerBtn.classList.add('hidden');
   }
-  // Daily report sidebar: HK and mant = read only
-  if(role==='hk'||role==='mant'){
+  // Daily report: only GS can edit
+  if(role!=='gs'){
     const sb2=document.getElementById('daily-sidebar');
     if(sb2){
-      sb2.querySelectorAll('input,select,textarea,button').forEach(el=>{
-        if(!el.classList.contains('btn-gold')&&!el.classList.contains('btn-ghost'))
-          el.disabled=true;
+      sb2.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=true; });
+      // Disable action buttons too
+      ['send-all-btn'].forEach(id=>{
+        const el=document.getElementById(id);if(el)el.style.display='none';
       });
       const hint=document.getElementById('sb-hint');
-      if(hint)hint.textContent='Solo lectura';
+      if(hint){
+        hint.textContent='Solo lectura';
+        hint.style.color='var(--amber)';
+      }
+      // Show read-only badge
+      const hdr=sb2.querySelector('.sb-hdr h2');
+      if(hdr&&!hdr.querySelector('.ro-badge')){
+        hdr.innerHTML+=' <span class="ro-badge" style="font-size:8px;background:rgba(224,123,0,0.3);color:var(--amber);padding:2px 7px;border-radius:4px;font-family:DM Sans,sans-serif;vertical-align:middle;">Solo lectura</span>';
+      }
+    }
+  } else {
+    // GS: make sure everything is enabled
+    const sb2=document.getElementById('daily-sidebar');
+    if(sb2){
+      sb2.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=false; });
+      const hint=document.getElementById('sb-hint');
+      if(hint){ hint.textContent='Los cambios se guardan automaticamente'; hint.style.color=''; }
     }
   }
   // Shift log: gerencia, hk, mant = read only (no add buttons)
@@ -2946,6 +3073,60 @@ async function autoEnrichFromPrev(dateVal){
 }
 
 
+
+function switchHubView(view, btn){
+  // Mobile only — switch between dashboard info and chat
+  const dashPanel=document.querySelector('#tab-hub > div > div:first-child');
+  const chatPanel=document.querySelector('#tab-hub > div > div:last-child');
+  document.querySelectorAll('.hub-sub-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,0.08)';b.style.color='rgba(255,255,255,0.6)';
+  });
+  btn.style.background='var(--teal)';btn.style.color='#fff';
+  if(view==='dash'){
+    if(dashPanel){dashPanel.style.display='';}
+    if(chatPanel){chatPanel.style.display='none';}
+  }else{
+    if(dashPanel){dashPanel.style.display='none';}
+    if(chatPanel){chatPanel.style.display='';}
+  }
+}
+
+// Show hub mobile tabs on small screens
+
+function showMobileMenu(){ toggleMoreMenu(); }
+function toggleMoreMenu(){
+  const m=document.getElementById('mobile-more-menu');
+  if(!m)return;
+  m.classList.toggle('open');
+}
+// Close more menu when tapping outside
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mobile-more-menu');
+  if(menu&&menu.style.display==='grid'){
+    if(!menu.contains(e.target)&&!e.target.closest('.mobile-nav-btn:last-child')){
+      menu.style.display='none';
+    }
+  }
+});
+
+function checkHubMobile(){
+  const mobileTabs=document.querySelector('.hub-mobile-tabs');
+  if(!mobileTabs)return;
+  if(window.innerWidth<=768){
+    mobileTabs.style.display='block';
+    // Default: show dash, hide chat panel
+    const chatPanel=document.querySelector('#tab-hub > div > div:last-child');
+    if(chatPanel)chatPanel.style.display='none';
+  }else{
+    mobileTabs.style.display='none';
+    // Restore both panels
+    document.querySelectorAll('#tab-hub > div > div').forEach(d=>d.style.display='');
+  }
+}
+
+window.addEventListener('resize',checkHubMobile);
+
+
 // ── HK NAME MANAGEMENT ───────────────────────────────────
 let hkCurrentName = '';      // name for this session
 let hkNameCallback = null;   // function to call after name is set
@@ -3792,7 +3973,7 @@ async function loadHub(){
         <div style="font-size:9px;color:rgba(255,255,255,0.4);">${u.property?.toUpperCase()}-${u.unit_number}
           ${u.co_time&&u.co_time!=='— Estandar'?' · '+u.co_time:''}</div>
       </div>`).join('')
-    : '<div style="font-size:10px;color:rgba(255,255,255,0.25);">Sin salidas hoy</div>';
+    : '<div style="color:rgba(255,255,255,0.25);">Sin salidas hoy</div>';
 
   // Handoff
   const hfEl=document.getElementById('hub-handoff');
@@ -3802,80 +3983,55 @@ async function loadHub(){
 
   // Load chat
   await loadChat();
+  // Check mobile layout
+  checkHubMobile();
 }
 
-// ── DOOR ALARM ────────────────────────────────────────────
-let alarmAudio=null;
-let alarmInterval=null;
-
-function triggerDoorAlert(){
-  const btn=document.getElementById('door-alert-btn');
-  if(alarmInterval){
-    // Stop alarm
-    stopAlarm();
-    return;
-  }
-
-  // Change button to STOP
-  btn.innerHTML='🔇 DETENER ALARMA';
-  btn.style.background='#7A0000';
-  btn.style.animation='pulse-alarm 0.5s ease-in-out infinite';
-
-  // Generate alarm sound with Web Audio API
-  playAlarmSound();
-  alarmInterval=setInterval(playAlarmSound,1800);
-
-  // Send notification to all
-  sb.from('notifications').insert({
-    from_user:currentUser?.id,
-    from_name:currentProfile?.full_name||'—',
-    to_role:['gs','hk','gerencia','mant'],
-    title:'🚪 HUESPED EN PUERTA',
-    body:`${currentProfile?.full_name||'Alguien'} reporta huesped esperando en puerta. Ir a recibir.`,
-    type:'alert'
+function switchHubView(view, btn){
+  const dashPanel=document.querySelector('#tab-hub > div > div:first-child');
+  const chatPanel=document.querySelector('#tab-hub > div > div:last-child');
+  document.querySelectorAll('.hub-sub-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,0.08)';b.style.color='rgba(255,255,255,0.6)';
   });
-
-  // Auto-stop after 30 seconds
-  setTimeout(()=>{if(alarmInterval)stopAlarm();},30000);
-}
-
-function stopAlarm(){
-  clearInterval(alarmInterval);
-  alarmInterval=null;
-  if(alarmAudio){alarmAudio.close();alarmAudio=null;}
-  const btn=document.getElementById('door-alert-btn');
-  if(btn){
-    btn.innerHTML='🚪 HUESPED EN PUERTA';
-    btn.style.background='var(--maint)';
-    btn.style.animation='none';
+  btn.style.background='var(--teal)';btn.style.color='#fff';
+  if(view==='dash'){
+    if(dashPanel){dashPanel.style.display='';}
+    if(chatPanel){chatPanel.style.display='none';}
+  }else{
+    if(dashPanel){dashPanel.style.display='none';}
+    if(chatPanel){chatPanel.style.display='';}
   }
 }
 
-function playAlarmSound(){
-  try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    // Two-tone alarm: 880Hz then 660Hz
-    const seq=[
-      {f:880,t:0,d:0.2},{f:660,t:0.25,d:0.2},
-      {f:880,t:0.5,d:0.2},{f:660,t:0.75,d:0.2},
-    ];
-    seq.forEach(({f,t,d})=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.type='sine';osc.frequency.value=f;
-      gain.gain.setValueAtTime(0,ctx.currentTime+t);
-      gain.gain.linearRampToValueAtTime(0.4,ctx.currentTime+t+0.02);
-      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+t+d);
-      osc.start(ctx.currentTime+t);
-      osc.stop(ctx.currentTime+t+d+0.05);
-    });
-    alarmAudio=ctx;
-  }catch(e){console.log('Audio not available:',e);}
+function checkHubMobile(){
+  const mobileTabs=document.querySelector('.hub-mobile-tabs');
+  if(!mobileTabs)return;
+  if(window.innerWidth<=768){
+    mobileTabs.style.display='block';
+    const chatPanel=document.querySelector('#tab-hub > div > div:last-child');
+    if(chatPanel)chatPanel.style.display='none';
+  }else{
+    mobileTabs.style.display='none';
+    document.querySelectorAll('#tab-hub > div > div').forEach(d=>d.style.display='');
+  }
 }
+window.addEventListener('resize',checkHubMobile);
 
+function showMobileMenu(){ toggleMoreMenu(); }
+function toggleMoreMenu(){
+  const m=document.getElementById('mobile-more-menu');
+  if(!m)return;
+  m.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mobile-more-menu');
+  if(menu&&menu.classList.contains('open')){
+    if(!menu.contains(e.target)&&!e.target.closest('.mobile-nav-btn:last-child')){
+      menu.classList.remove('open');
+    }
+  }
+});
 
 </script>
 </body>
 </html>
-<!-- placeholder - will be replaced -->
