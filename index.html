@@ -94,8 +94,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 .page.active{display:flex;flex-direction:column;}
 
 /* Inner pages scroll container */
-.inner{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;
-  gap:12px;-webkit-overflow-scrolling:touch;}
+.inner{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
 
 /* ── SIDEBAR (Daily Report) ── */
 #tab-daily{flex-direction:row !important;}
@@ -210,12 +209,13 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 .rf span{font-size:6.5px;color:rgba(255,255,255,0.25);}
 
 /* ── CARDS ── */
-.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.card{background:#fff;border-radius:10px;overflow:visible;box-shadow:0 2px 8px rgba(0,0,0,0.15);margin-bottom:12px;}
 .card-hdr{padding:9px 14px;font-size:9px;font-weight:700;letter-spacing:0.5px;
-  text-transform:uppercase;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+  text-transform:uppercase;color:#fff;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;}
 .card-add-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:10px;
   font-weight:700;padding:4px 10px;border-radius:4px;cursor:pointer;}
-.card-body{padding:12px;}
+.card-body{padding:14px;min-height:20px;}
 
 /* ── OCCUPANCY ── */
 .occ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
@@ -235,7 +235,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 /* ── TASKS ── */
 .task-card{background:#fff;border-radius:8px;padding:10px 12px;
   border-left:4px solid var(--bdr);display:flex;gap:10px;align-items:flex-start;
-  box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:6px;}
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:8px;}
 .task-card.urgente{border-left-color:var(--maint);background:#FFF8F8;}
 .task-card.alta{border-left-color:var(--orange);}
 .task-card.media{border-left-color:var(--gold);}
