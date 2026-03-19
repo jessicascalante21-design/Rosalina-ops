@@ -506,7 +506,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
   <div class="topbar">
     <div class="brand">Rosalina <em>Boutique Hotels</em></div>
     <div class="nav-tabs" id="nav-tabs">
-      <button class="ntab active" onclick="goTab('daily',this)" data-roles="gs,gerencia,hk,mant">Daily Report</button>
+      <button class="ntab" onclick="goTab('daily',this)" data-roles="gs,gerencia,hk,mant">Daily Report</button>
       <button class="ntab" onclick="goTab('occ',this)" data-roles="gs,gerencia,hk,mant">Ocupacion</button>
       <button class="ntab" onclick="goTab('shiftlog',this)" data-roles="gs,gerencia">Shift Log</button>
       <button class="ntab" onclick="goTab('hk',this)" data-roles="hk,gerencia">HK Asignacion</button>
@@ -514,6 +514,11 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
       <button class="ntab" onclick="goTab('maint',this)" data-roles="mant,gs,gerencia">Mantenimiento</button>
       <button class="ntab" onclick="goTab('gerencia',this)" data-roles="gerencia">Gerencia</button>
       <button class="ntab" onclick="goTab('inventory',this)" data-roles="gs,gerencia,hk,mant">Inventario</button>
+      <button class="ntab active" onclick="goTab('dashboard',this)" data-roles="gs,gerencia,hk,mant">Dashboard</button>
+      <button class="ntab" onclick="goTab('chat',this)" data-roles="gs,gerencia,hk,mant">Chat</button>
+      <button class="ntab" onclick="goTab('calendar',this)" data-roles="gs,gerencia,hk,mant">Calendario</button>
+      <button class="ntab" onclick="goTab('cleaning',this)" data-roles="gs,gerencia,hk">Limpieza</button>
+      <button class="ntab" onclick="goTab('owner',this)" data-roles="gerencia">Reportes</button>
     </div>
     <div style="display:flex;gap:6px;align-items:center;">
       <button class="notif-btn" onclick="toggleNotif()" id="notif-btn">🔔<span class="notif-dot" id="notif-dot"></span></button>
@@ -531,7 +536,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
   <div class="main" id="main">
 
     <!-- TAB: DAILY REPORT -->
-    <div class="page active" id="tab-daily">
+    <div class="page" id="tab-daily">
       <!-- SIDEBAR: only editable by GS -->
       <div class="sidebar" id="daily-sidebar">
         <div class="sb-hdr">
@@ -1033,19 +1038,219 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
       </div>
     </div>
 
+
+    <!-- TAB: DASHBOARD -->
+    <div class="page active" id="tab-dashboard">
+      <div class="inner" id="dashboard-inner" style="padding-bottom:80px;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div class="pg-title">Dashboard del Turno</div><div class="pg-sub" id="dash-subtitle">—</div></div>
+          <button class="btn btn-teal" onclick="loadDashboard()" style="font-size:10px;">↻ Actualizar</button>
+        </div>
+
+        <!-- Alert bar -->
+        <div id="dash-alerts" style="display:flex;flex-direction:column;gap:6px;"></div>
+
+        <!-- KPI row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;" id="dash-kpis"></div>
+
+        <!-- Today at a glance -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--teal);">Hoy — Entradas y Salidas</div>
+          <div class="card-body" style="padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--teal);margin-bottom:6px;">✈ Llegan hoy</div>
+              <div id="dash-arrivals" style="display:flex;flex-direction:column;gap:4px;"></div>
+            </div>
+            <div>
+              <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--orange);margin-bottom:6px;">🧳 Salen hoy</div>
+              <div id="dash-departures" style="display:flex;flex-direction:column;gap:4px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- From yesterday -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--navy);">Del turno anterior — Pendiente revisar</div>
+          <div class="card-body" style="padding:10px;">
+            <div id="dash-yesterday" style="font-size:11px;color:var(--txt2);"></div>
+          </div>
+        </div>
+
+        <!-- Open tasks + incidents -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="card">
+            <div class="card-hdr" style="background:var(--maint);">Incidentes abiertos</div>
+            <div class="card-body" style="padding:8px;" id="dash-incidents"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr" style="background:var(--gold);">Tareas urgentes</div>
+            <div class="card-body" style="padding:8px;" id="dash-tasks"></div>
+          </div>
+        </div>
+
+        <!-- Cleaning status -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--iv);">Estado de Limpieza</div>
+          <div class="card-body" style="padding:10px;">
+            <div id="dash-cleaning" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CHAT -->
+    <div class="page" id="tab-chat">
+      <div style="display:flex;flex-direction:column;height:100%;max-height:calc(100vh - 52px);">
+        <!-- Chat header with channel selector -->
+        <div style="background:var(--navy);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.1);">
+          <div style="font-size:11px;font-weight:700;color:#fff;">Canal:</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="chat-ch-btn active" onclick="setChannel('general',this)" style="background:var(--teal);color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">General</button>
+            <button class="chat-ch-btn" onclick="setChannel('gs',this)" data-roles="gs,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">GS</button>
+            <button class="chat-ch-btn" onclick="setChannel('hk',this)" data-roles="hk,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">HK</button>
+            <button class="chat-ch-btn" onclick="setChannel('mant',this)" data-roles="mant,gs,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">Mant.</button>
+            <button class="chat-ch-btn" onclick="setChannel('gs-hk',this)" data-roles="gs,gerencia,hk" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">GS→HK</button>
+          </div>
+        </div>
+        <!-- Messages -->
+        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F7F8FA;"></div>
+        <!-- Input -->
+        <div style="padding:10px 12px;background:#fff;border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-end;">
+          <textarea id="chat-input" placeholder="Escribe un mensaje... (@nombre para mencionar)" rows="1"
+            style="flex:1;border:1.5px solid var(--bdr);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12px;outline:none;resize:none;max-height:80px;"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+          <button onclick="sendChat()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:16px;flex-shrink:0;">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CALENDARIO -->
+    <div class="page" id="tab-calendar">
+      <div class="inner">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div class="pg-title">Calendario de Reservas</div><div class="pg-sub" id="cal-sub">—</div></div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="btn btn-ghost" onclick="calNav(-1)" style="font-size:14px;">‹</button>
+            <span id="cal-month-lbl" style="color:#fff;font-size:13px;font-weight:600;min-width:140px;text-align:center;"></span>
+            <button class="btn btn-ghost" onclick="calNav(1)" style="font-size:14px;">›</button>
+            <button class="btn btn-teal" onclick="calGoToday()" style="font-size:10px;">Hoy</button>
+          </div>
+        </div>
+        <!-- Legend -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--teal);"></div>Ocupado</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--green);"></div>CI</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--orange);"></div>CO</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--maint);"></div>Mant/Bloq</div>
+        </div>
+        <div id="cal-container" style="overflow-x:auto;"></div>
+      </div>
+    </div>
+
+    <!-- TAB: LIMPIEZA -->
+    <div class="page" id="tab-cleaning">
+      <div class="inner">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div><div class="pg-title">Coordinacion de Limpieza</div><div class="pg-sub">Estado en tiempo real por unidad</div></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-teal" onclick="resetAllCleaning()" style="font-size:10px;" data-roles="hk,gerencia">↺ Reset del dia</button>
+          </div>
+        </div>
+        <!-- Summary -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+          <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--maint)" id="cl-pend">0</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Pendiente</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--amber)" id="cl-prog">0</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">En proceso</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--green)" id="cl-done">0</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Lista</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--teal)" id="cl-rev">0</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Revisada</div>
+          </div>
+        </div>
+        <div id="cleaning-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB: REPORTES DUEÑO -->
+    <div class="page" id="tab-owner">
+      <div class="inner">
+        <div><div class="pg-title">Reportes para el Dueno</div><div class="pg-sub">Resumen semanal y mensual · Solo Gerencia</div></div>
+
+        <!-- Period selector -->
+        <div class="card">
+          <div class="card-hdr" style="background:var(--gold);">Generar Reporte</div>
+          <div class="card-body" style="padding:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+              <div class="fi"><label>Tipo</label>
+                <select id="owner-type">
+                  <option value="weekly">Semanal</option>
+                  <option value="monthly">Mensual</option>
+                </select>
+              </div>
+              <div class="fi"><label>Desde</label><input type="date" id="owner-from"></div>
+              <div class="fi"><label>Hasta</label><input type="date" id="owner-to"></div>
+            </div>
+            <button class="btn btn-gold" onclick="generateOwnerReport()" style="width:100%;padding:10px;font-size:12px;">Generar Reporte</button>
+          </div>
+        </div>
+
+        <div id="owner-report" style="display:none;"></div>
+      </div>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /app -->
 
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobile-nav">
-  <button class="mobile-nav-btn active" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant"><span>📋</span>Report</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('occ',this)" data-roles="gs,gerencia,hk,mant"><span>🏠</span>Ocup.</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('shiftlog',this)" data-roles="gs,gerencia" id="mn-shiftlog"><span>📝</span>Shift</button>
+  <button class="mobile-nav-btn active" onclick="goTabMobile('dashboard',this)" data-roles="gs,gerencia,hk,mant"><span>⚡</span>Inicio</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant"><span>📋</span>Reporte</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('chat',this)" data-roles="gs,gerencia,hk,mant"><span>💬</span>Chat</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('cleaning',this)" data-roles="gs,gerencia,hk"><span>🧹</span>Limpieza</button>
   <button class="mobile-nav-btn" onclick="goTabMobile('tasks',this)" data-roles="gs,gerencia,mant"><span>✓</span>Tareas</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('hk',this)" data-roles="hk,gerencia" id="mn-hk"><span>🧹</span>HK</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('gerencia',this)" data-roles="gerencia" id="mn-gerencia"><span>👔</span>Admin</button>
 </div>
+
+
+<!-- HK NAME MODAL -->
+<div id="hk-name-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  z-index:500;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:340px;max-width:92vw;
+    box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:6px;">
+      Housekeeping</div>
+    <div style="font-size:11px;color:var(--txt2);margin-bottom:16px;">¿Quien eres tu hoy?</div>
+    <div style="display:flex;flex-direction:column;gap:8px;" id="hk-name-options">
+      <button onclick="setHKName('Jailyn')"   class="hk-name-btn">Jailyn</button>
+      <button onclick="setHKName('Johanna')"  class="hk-name-btn">Johanna</button>
+      <button onclick="setHKName('Francis')"  class="hk-name-btn">Francis</button>
+      <button onclick="setHKName('Alondra')"  class="hk-name-btn">Alondra</button>
+    </div>
+    <div style="margin-top:12px;text-align:center;">
+      <div style="font-size:10px;color:var(--txt2);margin-bottom:6px;">O escribe tu nombre:</div>
+      <input id="hk-name-custom" placeholder="Nombre..." 
+        style="width:100%;padding:8px 12px;border:1.5px solid var(--bdr);border-radius:8px;
+        font-family:inherit;font-size:13px;outline:none;text-align:center;"
+        onkeydown="if(event.key==='Enter')setHKName(this.value)">
+    </div>
+  </div>
+</div>
+
+<style>
+.hk-name-btn{width:100%;padding:11px;background:#F7F8FA;border:1.5px solid var(--bdr);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--txt);cursor:pointer;transition:all .15s;text-align:left;padding-left:16px;}
+.hk-name-btn:hover{background:var(--tealP);border-color:var(--teal2);color:var(--teal);}
+</style>
 
 <!-- NOTIFICATIONS PANEL -->
 <div class="notif-panel" id="notif-panel">
@@ -1325,6 +1530,11 @@ function goTab(id,btn){
   if(id==='maint')    loadMaint();
   if(id==='gerencia') initGerencia();
   if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
+  if(id==='dashboard') loadDashboard();
+  if(id==='chat')      {loadChat();if(!chatInterval)chatInterval=setInterval(loadChat,15000);}
+  if(id==='calendar')  loadCalendar();
+  if(id==='cleaning')  {loadCleaningStatus().then(()=>renderCleaningFull());}
+  if(id==='owner')     {const t=new Date();document.getElementById('owner-from').value=new Date(t.getFullYear(),t.getMonth(),1).toISOString().split('T')[0];document.getElementById('owner-to').value=t.toISOString().split('T')[0];}
 }
 
 // ── META COLLAPSE ─────────────────────────────────────────
@@ -1928,6 +2138,12 @@ const HK_TEAM=['Jailyn','Johanna','Francis','Alondra'];
 function initHK(){
   document.getElementById('hk-date').value=document.getElementById('meta-date')?.value||new Date().toISOString().split('T')[0];
   renderHKStaff();renderHKUnits();
+  // Ask HK user for name if not set
+  if(currentProfile?.role==='hk'&&!hkCurrentName){
+    getHKName(name=>{
+      const rEl=document.getElementById('hk-reporter');if(rEl)rEl.value=name;
+    });
+  }
 }
 
 function renderHKStaff(){
@@ -1967,8 +2183,9 @@ function renderHKUnits(){
 }
 
 async function saveHKAssignment(){
+  if(currentProfile?.role==='hk'&&!hkCurrentName){requireHKName(()=>saveHKAssignment());return;}
   const hkDate=document.getElementById('hk-date')?.value;
-  const reporter=document.getElementById('hk-reporter')?.value;
+  const reporter=hkCurrentName||document.getElementById('hk-reporter')?.value||'HK';
   if(!hkDate){alert('Selecciona una fecha');return;}
   for(const name of HK_TEAM){
     const units=Object.entries(hkAssignments).filter(([,v])=>v===name).map(([k])=>({ref:k}));
@@ -2461,6 +2678,11 @@ function goTabMobile(id, btn) {
   if(id==='tasks'){loadTasks();renderFilterBtns();}
   if(id==='gerencia') initGerencia();
   if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
+  if(id==='dashboard') loadDashboard();
+  if(id==='chat')      {loadChat();if(!chatInterval)chatInterval=setInterval(loadChat,15000);}
+  if(id==='calendar')  loadCalendar();
+  if(id==='cleaning')  {loadCleaningStatus().then(()=>renderCleaningFull());}
+  if(id==='owner')     {const t=new Date();document.getElementById('owner-from').value=new Date(t.getFullYear(),t.getMonth(),1).toISOString().split('T')[0];document.getElementById('owner-to').value=t.toISOString().split('T')[0];}
 }
 
 
@@ -2503,8 +2725,9 @@ function renderHKTasks(){
 }
 
 async function addHKTask(){
+  if(currentProfile?.role==='hk'&&!hkCurrentName){requireHKName(()=>addHKTask());return;}
   const desc=prompt('Descripcion del pendiente:');if(!desc)return;
-  const assignee=document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK';
+  const assignee=hkCurrentName||document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK';
   const{data,error}=await sb.from('tasks').insert({
     description:desc,priority:'media',task_type:'HK Interno',
     assigned_to:assignee,status:'p',
@@ -2545,10 +2768,13 @@ function renderLostFound(){
 }
 
 async function addLostFound(){
+  if(currentProfile?.role==='hk'&&!hkCurrentName){
+    requireHKName(()=>addLostFound());return;
+  }
   const entry={
     report_date:new Date().toISOString().split('T')[0],
     unit_ref:'',incident_type:'Lost & Found',description:'',
-    agent_name:document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK',
+    agent_name:hkCurrentName||document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'HK',
     status:'pend',created_by:currentUser?.id
   };
   const{data,error}=await sb.from('incidents').insert(entry).select().single();
@@ -2568,9 +2794,10 @@ async function deleteLF(i){
 }
 
 async function sendHKMessage(){
+  if(currentProfile?.role==='hk'&&!hkCurrentName){requireHKName(()=>sendHKMessage());return;}
   const msg=document.getElementById('hk-msg')?.value.trim();
   if(!msg){alert('Escribe un mensaje');return;}
-  const who=document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'Housekeeping';
+  const who=hkCurrentName||document.getElementById('hk-reporter')?.value||currentProfile?.full_name||'Housekeeping';
   await sb.from('notifications').insert({
     from_user:currentUser?.id,from_name:who,
     to_role:['gs','hk','gerencia','mant'],
@@ -2688,6 +2915,43 @@ async function autoEnrichFromPrev(dateVal){
       setTimeout(()=>si.classList.remove('show'),3500);
     }
   }
+}
+
+
+// ── HK NAME MANAGEMENT ───────────────────────────────────
+let hkCurrentName = '';      // name for this session
+let hkNameCallback = null;   // function to call after name is set
+
+function getHKName(callback){
+  // If name already set this session, use it
+  if(hkCurrentName){callback(hkCurrentName);return;}
+  // Show modal
+  hkNameCallback = callback;
+  const modal=document.getElementById('hk-name-modal');
+  if(modal){modal.style.display='flex';}
+}
+
+function setHKName(name){
+  name=name?.trim();
+  if(!name){alert('Escribe o selecciona tu nombre');return;}
+  hkCurrentName=name;
+  // Update reporter fields throughout the app
+  const rEl=document.getElementById('hk-reporter');if(rEl)rEl.value=name;
+  // Hide modal
+  const modal=document.getElementById('hk-name-modal');
+  if(modal)modal.style.display='none';
+  // Update user pill display
+  const uName=document.getElementById('user-name');
+  if(uName&&currentProfile?.role==='hk')uName.textContent='HK · '+name;
+  const nd=document.getElementById('hk-name-display');if(nd)nd.textContent=name;
+  // Execute callback
+  if(hkNameCallback){hkNameCallback(name);hkNameCallback=null;}
+}
+
+// Wrap all HK actions that need a name
+function requireHKName(fn){
+  if(currentProfile?.role!=='hk'){fn(currentProfile?.full_name||'—');return;}
+  getHKName(fn);
 }
 
 // ── GS NIGHT → HK ────────────────────────────────────────
@@ -2898,6 +3162,7 @@ async function init(){
   document.getElementById('meta-date').value=dStr;
   buildForm();updateReport();
   await loadTodayReport();
+  loadDashboard();
   await loadNotifications();
   setInterval(loadNotifications,30000);
 
@@ -2907,6 +3172,516 @@ async function init(){
     if(el){el.addEventListener('change',onMetaChange);el.addEventListener('input',onMetaChange);}
   });
 }
+
+
+// ════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════
+async function loadDashboard(){
+  const today=new Date();
+  const todayStr=today.toISOString().split('T')[0];
+  const todayMMDD=`${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+  document.getElementById('dash-subtitle').textContent=
+    today.toLocaleDateString('es-PR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Load today's report
+  const{data:rep}=await sb.from('daily_reports')
+    .select('*,unit_data(*)').eq('report_date',todayStr).single();
+
+  // Load yesterday's report  
+  const yd=new Date(today);yd.setDate(yd.getDate()-1);
+  const ydStr=yd.toISOString().split('T')[0];
+  const{data:ydRep}=await sb.from('daily_reports')
+    .select('*,unit_data(*),activity_log(*),incidents(*)').eq('report_date',ydStr).single();
+
+  // Load open incidents
+  const{data:openInc}=await sb.from('incidents').select('*')
+    .eq('status','pend').order('created_at',{ascending:false}).limit(5);
+
+  // Load urgent tasks
+  const{data:urgTasks}=await sb.from('tasks').select('*')
+    .in('status',['p','g']).eq('priority','urgente').limit(5);
+
+  // Load cleaning status for today
+  const{data:cleaning}=await sb.from('tasks').select('*')
+    .eq('task_type','Limpieza').eq('due_date',todayStr);
+
+  const units=rep?.unit_data||[];
+
+  // ── ALERTS ────────────────────────────────────────────
+  const alerts=[];
+  const arrivals=units.filter(u=>u.hues_name&&!u.ocup_name);
+  const departures=units.filter(u=>u.sale_name||(u.co_date===todayMMDD&&u.ocup_name));
+  const uncont=arrivals.filter(u=>!u.pre_arrival_called||u.pre_arrival_called==='No');
+  const noEarly=arrivals.filter(u=>u.arrival_time&&u.arrival_time<'12:00'&&!u.early_ci);
+
+  if(uncont.length>0) alerts.push({type:'warn',msg:`${uncont.length} llegada${uncont.length>1?'s':''} sin contactar`});
+  if(openInc?.length>0) alerts.push({type:'err',msg:`${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
+  if(urgTasks?.length>0) alerts.push({type:'err',msg:`${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
+  if(ydRep?.handoff_notes) alerts.push({type:'info',msg:`Handoff anterior: ${ydRep.handoff_notes.slice(0,60)}${ydRep.handoff_notes.length>60?'...':''}`});
+
+  const alertsEl=document.getElementById('dash-alerts');
+  alertsEl.innerHTML=alerts.map(a=>`
+    <div style="padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;
+      background:${a.type==='err'?'#FFEBEE':a.type==='warn'?'#FFF9C4':'#EAF8FB'};
+      color:${a.type==='err'?'var(--maint)':a.type==='warn'?'#7A5000':'var(--teal)'};
+      border-left:4px solid ${a.type==='err'?'var(--maint)':a.type==='warn'?'var(--amber)':'var(--teal2)'};">
+      ${a.type==='err'?'🔴':a.type==='warn'?'⚠️':'ℹ️'} ${a.msg}
+    </div>`).join('');
+
+  // ── KPI TILES ─────────────────────────────────────────
+  const ocup=units.filter(u=>u.ocup_name||u.hues_name).length;
+  const vac=units.filter(u=>!u.ocup_name&&!u.hues_name&&!u.maintenance).length;
+  const mnt=units.filter(u=>u.maintenance).length;
+  const kpis=[
+    {n:arrivals.length,l:'Llegadas',c:'var(--green)'},
+    {n:departures.length,l:'Salidas',c:'var(--orange)'},
+    {n:ocup,l:'Ocupadas',c:'var(--teal)'},
+    {n:vac,l:'Vacantes',c:'var(--amber)'},
+    {n:mnt,l:'Mant/Bloq',c:'var(--maint)'},
+    {n:uncont.length,l:'Sin contactar',c:uncont.length>0?'var(--maint)':'var(--green)'},
+  ];
+  document.getElementById('dash-kpis').innerHTML=kpis.map(k=>`
+    <div style="background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:${k.c};line-height:1;">${k.n}</div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);margin-top:3px;">${k.l}</div>
+    </div>`).join('');
+
+  // ── ARRIVALS / DEPARTURES ─────────────────────────────
+  document.getElementById('dash-arrivals').innerHTML=arrivals.length
+    ? arrivals.map(u=>`
+      <div style="padding:6px 10px;background:${u.pre_arrival_called==='Si'?'#F0FAF5':'#FFF9C4'};border-radius:6px;font-size:11px;">
+        <span style="font-weight:600">${u.hues_name}</span>
+        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        ${u.arrival_time?`<span style="font-size:9px;color:var(--teal);"> ${u.arrival_time}</span>`:''}
+        ${u.early_ci?`<span style="font-size:9px;color:var(--purple);"> Early</span>`:''}
+        ${u.pre_arrival_called==='Si'?'<span style="font-size:9px;color:var(--green);"> ✓</span>':'<span style="font-size:9px;color:var(--maint);"> Sin llamar</span>'}
+      </div>`).join('')
+    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin llegadas hoy</div>';
+
+  document.getElementById('dash-departures').innerHTML=departures.length
+    ? departures.map(u=>`
+      <div style="padding:6px 10px;background:#FFF0E0;border-radius:6px;font-size:11px;">
+        <span style="font-weight:600">${u.sale_name||u.ocup_name}</span>
+        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        ${u.co_time&&u.co_time!=='— Estandar'?`<span style="font-size:9px;color:var(--orange);"> ${u.co_time}</span>`:''}
+      </div>`).join('')
+    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin salidas hoy</div>';
+
+  // ── YESTERDAY HANDOFF ─────────────────────────────────
+  const ydEl=document.getElementById('dash-yesterday');
+  if(ydRep){
+    const ydInc=(ydRep.incidents||[]).filter(i=>i.status==='pend');
+    ydEl.innerHTML=`
+      <div style="margin-bottom:6px;"><span style="font-weight:600;color:var(--txt);">Agente:</span> ${ydRep.agent_name||'—'}</div>
+      ${ydRep.handoff_notes?`<div style="margin-bottom:6px;padding:8px;background:#F0F8FB;border-radius:6px;font-size:11px;">${ydRep.handoff_notes}</div>`:''}
+      ${ydInc.length?`<div style="color:var(--maint);font-weight:600;font-size:11px;">⚠ ${ydInc.length} incidente${ydInc.length>1?'s':''} pendiente${ydInc.length>1?'s':''} del turno anterior</div>`:'<div style="color:var(--green);font-size:11px;">✓ Sin incidentes pendientes del turno anterior</div>'}`;
+  }else{
+    ydEl.innerHTML='<div style="color:var(--txt2);font-size:11px;">Sin reporte del dia anterior</div>';
+  }
+
+  // ── OPEN INCIDENTS ────────────────────────────────────
+  const incEl=document.getElementById('dash-incidents');
+  incEl.innerHTML=(openInc||[]).length
+    ? (openInc||[]).map(i=>`
+      <div style="padding:6px 10px;background:#FFF8F8;border-radius:6px;margin-bottom:4px;font-size:10px;">
+        <div style="font-weight:600;color:var(--maint);">${i.unit_ref||'General'}</div>
+        <div style="color:var(--txt2);">${(i.description||'').slice(0,60)}...</div>
+      </div>`).join('')
+    : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin incidentes abiertos</div>';
+
+  // ── URGENT TASKS ──────────────────────────────────────
+  const tEl=document.getElementById('dash-tasks');
+  tEl.innerHTML=(urgTasks||[]).length
+    ? (urgTasks||[]).map(t=>`
+      <div style="padding:6px 10px;background:#FFF8E8;border-radius:6px;margin-bottom:4px;font-size:10px;">
+        <div style="font-weight:600;color:var(--maint);">${t.unit_ref||'General'} — ${t.assigned_to||'Sin asignar'}</div>
+        <div style="color:var(--txt2);">${(t.description||'').slice(0,60)}</div>
+      </div>`).join('')
+    : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin tareas urgentes</div>';
+
+  // ── CLEANING STATUS ───────────────────────────────────
+  await loadCleaningStatus();
+  renderCleaningMini('dash-cleaning');
+}
+
+// ════════════════════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════════════════════
+let currentChannel='general';
+let chatMessages=[];
+let chatInterval=null;
+
+function setChannel(channel, btn){
+  currentChannel=channel;
+  document.querySelectorAll('.chat-ch-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,0.1)';b.style.color='rgba(255,255,255,0.6)';
+  });
+  btn.style.background='var(--teal)';btn.style.color='#fff';
+  loadChat();
+}
+
+async function loadChat(){
+  const{data}=await sb.from('notifications')
+    .select('*').eq('type','chat').contains('to_role',[currentChannel])
+    .order('created_at',{ascending:true}).limit(50);
+  chatMessages=data||[];
+  renderChat();
+}
+
+function renderChat(){
+  const el=document.getElementById('chat-messages');if(!el)return;
+  el.innerHTML='';
+  chatMessages.forEach(m=>{
+    const isMe=m.from_user===currentUser?.id;
+    const d=new Date(m.created_at);
+    const timeStr=d.toLocaleTimeString('es-PR',{hour:'2-digit',minute:'2-digit'});
+    const dateStr=d.toLocaleDateString('es-PR',{month:'short',day:'numeric'});
+    // Highlight @mentions
+    const body=(m.body||'').replace(/@(\w+)/g,'<span style="color:var(--teal);font-weight:700;">@$1</span>');
+    const div=document.createElement('div');
+    div.style.cssText=`display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};gap:2px;`;
+    div.innerHTML=`
+      ${!isMe?`<div style="font-size:9px;font-weight:700;color:var(--teal);margin-left:4px;">${m.from_name||'—'}</div>`:''}
+      <div style="max-width:75%;padding:8px 12px;border-radius:${isMe?'14px 14px 4px 14px':'14px 14px 14px 4px'};
+        background:${isMe?'var(--teal)':'#fff'};color:${isMe?'#fff':'var(--txt)'};
+        font-size:12px;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,0.1);">${body}</div>
+      <div style="font-size:8.5px;color:rgba(255,255,255,0.4);margin-${isMe?'right':'left'}:4px;">${dateStr} ${timeStr}</div>`;
+    el.appendChild(div);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const msg=inp?.value.trim();if(!msg)return;
+  const roles={'general':['gs','hk','gerencia','mant'],'gs':['gs','gerencia'],'hk':['hk','gerencia'],
+    'mant':['mant','gs','gerencia'],'gs-hk':['gs','hk','gerencia']};
+  const{data}=await sb.from('notifications').insert({
+    from_user:currentUser?.id,from_name:currentProfile?.full_name||'—',
+    to_role:roles[currentChannel]||['gs','gerencia'],
+    title:`[Chat ${currentChannel}]`,body:msg,type:'chat'
+  }).select().single();
+  if(data)chatMessages.push(data);
+  inp.value='';inp.style.height='auto';
+  renderChat();
+}
+
+// ════════════════════════════════════════════════════════
+// CALENDAR
+// ════════════════════════════════════════════════════════
+let calYear=new Date().getFullYear();
+let calMonth=new Date().getMonth();
+let calReports={};
+
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calGoToday(){calYear=new Date().getFullYear();calMonth=new Date().getMonth();renderCalendar();}
+
+async function loadCalendar(){
+  const from=`${calYear}-${String(calMonth+1).padStart(2,'0')}-01`;
+  const lastDay=new Date(calYear,calMonth+1,0).getDate();
+  const to=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+  const{data}=await sb.from('daily_reports').select('*,unit_data(*)').gte('report_date',from).lte('report_date',to);
+  calReports={};
+  (data||[]).forEach(r=>{calReports[r.report_date]=r;});
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-month-lbl').textContent=`${monthNames[calMonth]} ${calYear}`;
+  document.getElementById('cal-sub').textContent=`${Object.keys(calReports).length} dias con reporte`;
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const lastDay=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+  const todayStr=today.toISOString().split('T')[0];
+
+  let html=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;min-width:700px;">`;
+  ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'].forEach(d=>{
+    html+=`<div style="text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);padding:6px 0;">${d}</div>`;
+  });
+  for(let i=0;i<firstDay;i++){html+=`<div></div>`;}
+  for(let day=1;day<=lastDay;day++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const rep=calReports[dateStr];
+    const isToday=dateStr===todayStr;
+    const units=rep?.unit_data||[];
+    const arrivals=units.filter(u=>u.hues_name&&!u.ocup_name).length;
+    const departures=units.filter(u=>u.sale_name||u.co_date).length;
+    const maint=units.filter(u=>u.maintenance).length;
+    const occ=units.filter(u=>u.ocup_name||u.hues_name).length;
+
+    html+=`<div onclick="calDayClick('${dateStr}')" style="background:${isToday?'var(--teal)':rep?'rgba(255,255,255,0.08)':'rgba(255,255,255,0.03)'};
+      border-radius:8px;padding:6px;min-height:80px;cursor:pointer;transition:background .15s;
+      border:${isToday?'2px solid var(--teal2)':'1px solid rgba(255,255,255,0.06)'};"
+      onmouseover="this.style.background='rgba(11,122,138,0.25)'" onmouseout="this.style.background='${isToday?'var(--teal)':rep?'rgba(255,255,255,0.08)':'rgba(255,255,255,0.03)'}'">
+      <div style="font-size:12px;font-weight:${isToday?'700':'400'};color:${isToday?'#fff':'rgba(255,255,255,0.8)'};">${day}</div>
+      ${rep?`<div style="margin-top:3px;display:flex;flex-direction:column;gap:2px;">
+        ${occ?`<div style="font-size:8px;background:rgba(11,122,138,0.4);color:#7EC8D4;border-radius:3px;padding:1px 4px;">${occ} ocup</div>`:''}
+        ${arrivals?`<div style="font-size:8px;background:rgba(39,174,96,0.3);color:#7DCEA0;border-radius:3px;padding:1px 4px;">+${arrivals} CI</div>`:''}
+        ${departures?`<div style="font-size:8px;background:rgba(224,123,0,0.3);color:#F0B27A;border-radius:3px;padding:1px 4px;">${departures} CO</div>`:''}
+        ${maint?`<div style="font-size:8px;background:rgba(204,17,17,0.3);color:#F1948A;border-radius:3px;padding:1px 4px;">${maint} mnt</div>`:''}
+      </div>`:''}
+    </div>`;
+  }
+  html+='</div>';
+  document.getElementById('cal-container').innerHTML=html;
+}
+
+async function calDayClick(dateStr){
+  // Navigate to daily report for that date
+  const btn=document.querySelector('.ntab[onclick*="daily"]');
+  if(btn) goTab('daily',btn);
+  setTimeout(()=>{
+    const dateEl=document.getElementById('meta-date');
+    if(dateEl){dateEl.value=dateStr;loadTodayReport();}
+  },200);
+}
+
+// ════════════════════════════════════════════════════════
+// CLEANING COORDINATION
+// ════════════════════════════════════════════════════════
+let cleaningStatus={};// {prop-unit: 'pend'|'prog'|'done'|'reviewed'}
+
+const CL_STATUS=['pend','prog','done','reviewed'];
+const CL_LABELS={pend:'Pendiente',prog:'Limpiando',done:'Lista ✓',reviewed:'Revisada ★'};
+const CL_COLORS={pend:'#FFEBEE',prog:'#FFF9C4',done:'#F0FAF5',reviewed:'#EAF8FB'};
+const CL_BORDER={pend:'var(--maint)',prog:'var(--amber)',done:'var(--green)',reviewed:'var(--teal)'};
+const CL_ROLE={pend:'all',prog:'hk',done:'hk',reviewed:'gs'}; // who can set each status
+
+async function loadCleaningStatus(){
+  const today=new Date().toISOString().split('T')[0];
+  const{data}=await sb.from('tasks').select('*')
+    .eq('task_type','Limpieza').eq('due_date',today);
+  cleaningStatus={};
+  (data||[]).forEach(t=>{
+    const key=t.unit_ref;
+    cleaningStatus[key]={status:t.status==='d'?'done':t.status==='g'?'prog':'pend',id:t.id,reviewer:t.result||''};
+  });
+}
+
+function renderCleaningMini(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML='';
+  PROPS.forEach(prop=>{
+    UNITS[prop.id].forEach((_,u)=>{
+      const key=`${prop.id}-${u+1}`;
+      const cs=cleaningStatus[key]||{status:'pend'};
+      const div=document.createElement('div');
+      div.style.cssText=`padding:5px 8px;border-radius:6px;border-left:3px solid ${CL_BORDER[cs.status]||CL_BORDER.pend};
+        background:${CL_COLORS[cs.status]||CL_COLORS.pend};font-size:10px;`;
+      div.innerHTML=`<div style="font-weight:700;">${prop.short}-${u+1}</div>
+        <div style="font-size:9px;color:var(--txt2);">${CL_LABELS[cs.status]||'Pendiente'}</div>`;
+      el.appendChild(div);
+    });
+  });
+}
+
+async function renderCleaningFull(){
+  const grid=document.getElementById('cleaning-grid');if(!grid)return;
+  grid.innerHTML='';
+  let pend=0,prog=0,done=0,rev=0;
+
+  PROPS.forEach(prop=>{
+    const sep=document.createElement('div');
+    sep.style.cssText=`grid-column:1/-1;font-size:9px;font-weight:700;text-transform:uppercase;
+      color:${prop.color};margin-top:8px;padding:4px 0;`;
+    sep.textContent=prop.name;grid.appendChild(sep);
+
+    UNITS[prop.id].forEach((d,u)=>{
+      const key=`${prop.id}-${u+1}`;
+      const cs=cleaningStatus[key]||{status:'pend'};
+      if(cs.status==='pend')pend++;else if(cs.status==='prog')prog++;
+      else if(cs.status==='done')done++;else rev++;
+
+      const card=document.createElement('div');
+      card.style.cssText=`background:${CL_COLORS[cs.status]||CL_COLORS.pend};
+        border-radius:10px;padding:12px;border:1.5px solid ${CL_BORDER[cs.status]||CL_BORDER.pend};
+        cursor:pointer;transition:all .15s;`;
+      
+      const guestName=d.ocup||d.hues||'Vacante';
+      const isSaleToday=!!d.sale;
+      
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+          <div>
+            <div style="font-weight:700;font-size:12px;color:var(--txt);">${prop.short} · Unidad ${u+1}</div>
+            <div style="font-size:10px;color:var(--txt2);">${guestName}</div>
+          </div>
+          ${isSaleToday?'<span style="font-size:8px;font-weight:700;background:#FFE0B2;color:#7A3A00;padding:2px 6px;border-radius:4px;">SALE HOY</span>':''}
+        </div>
+        <div style="font-size:10px;font-weight:700;color:${CL_BORDER[cs.status]||CL_BORDER.pend};margin-bottom:8px;">${CL_LABELS[cs.status]||'Pendiente'}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${CL_STATUS.map(s=>`
+            <button onclick="setCleaningStatus('${key}','${s}',event)"
+              style="font-size:8px;padding:3px 7px;border-radius:4px;cursor:pointer;font-weight:600;
+              background:${cs.status===s?CL_BORDER[s]:'rgba(0,0,0,0.06)'};
+              color:${cs.status===s?'#fff':'var(--txt2)'};border:none;">
+              ${CL_LABELS[s]}
+            </button>`).join('')}
+        </div>
+        ${cs.reviewer?`<div style="font-size:8.5px;color:var(--txt2);margin-top:5px;">Actualizado: ${cs.reviewer}</div>`:''}`;
+      grid.appendChild(card);
+    });
+  });
+
+  document.getElementById('cl-pend').textContent=pend;
+  document.getElementById('cl-prog').textContent=prog;
+  document.getElementById('cl-done').textContent=done;
+  document.getElementById('cl-rev').textContent=rev;
+}
+
+async function setCleaningStatus(key,status,event){
+  event.stopPropagation();
+  if(currentProfile?.role==='hk'&&!hkCurrentName){
+    requireHKName(()=>setCleaningStatus(key,status,event));return;
+  }
+  const today=new Date().toISOString().split('T')[0];
+  const who=hkCurrentName||currentProfile?.full_name||'—';
+  
+  if(!cleaningStatus[key]){
+    // Create new task
+    const{data}=await sb.from('tasks').insert({
+      task_type:'Limpieza',unit_ref:key,status:status==='done'?'d':status==='prog'?'g':'p',
+      description:`Limpieza ${key}`,due_date:today,assigned_to:who,
+      priority:'media',visible_to:['gs','hk','gerencia'],
+      result:who,created_by:currentUser?.id
+    }).select().single();
+    if(data)cleaningStatus[key]={status,id:data.id,reviewer:who};
+  }else{
+    const id=cleaningStatus[key].id;
+    const dbStatus=status==='done'?'d':status==='prog'?'g':'p';
+    await sb.from('tasks').update({status:dbStatus,result:who,updated_by:currentUser?.id}).eq('id',id);
+    cleaningStatus[key]={...cleaningStatus[key],status,reviewer:who};
+  }
+  renderCleaningFull();
+  
+  // Notify GS when room is ready
+  if(status==='done'){
+    await sb.from('notifications').insert({
+      from_user:currentUser?.id,from_name:who,
+      to_role:['gs','gerencia'],
+      title:`Unidad lista: ${key}`,body:`${key} marcada como lista por ${who}`,type:'info'
+    });
+  }
+}
+
+async function resetAllCleaning(){
+  if(!confirm('Resetear todas las unidades a Pendiente para el dia de hoy?'))return;
+  const today=new Date().toISOString().split('T')[0];
+  await sb.from('tasks').delete().eq('task_type','Limpieza').eq('due_date',today);
+  cleaningStatus={};
+  renderCleaningFull();
+}
+
+// ════════════════════════════════════════════════════════
+// OWNER REPORTS
+// ════════════════════════════════════════════════════════
+async function generateOwnerReport(){
+  const from=document.getElementById('owner-from')?.value;
+  const to=document.getElementById('owner-to')?.value;
+  if(!from||!to){alert('Selecciona el rango de fechas');return;}
+
+  const{data:reports}=await sb.from('daily_reports')
+    .select('*,unit_data(*)').gte('report_date',from).lte('report_date',to)
+    .order('report_date');
+
+  if(!reports?.length){
+    document.getElementById('owner-report').innerHTML=
+      '<div style="background:#fff;border-radius:10px;padding:20px;text-align:center;color:var(--txt2);">No hay reportes en ese periodo.</div>';
+    document.getElementById('owner-report').style.display='block';
+    return;
+  }
+
+  // Calculate stats
+  let totalOcc=0,totalNights=0,totalArrivals=0,totalDepartures=0,totalMaint=0;
+  const agentCount={};
+  reports.forEach(r=>{
+    const units=r.unit_data||[];
+    const occ=units.filter(u=>u.ocup_name||u.hues_name).length;
+    totalOcc+=occ;
+    totalArrivals+=units.filter(u=>u.hues_name&&!u.ocup_name).length;
+    totalDepartures+=units.filter(u=>u.sale_name).length;
+    totalMaint+=units.filter(u=>u.maintenance).length;
+    if(r.agent_name)agentCount[r.agent_name]=(agentCount[r.agent_name]||0)+1;
+  });
+
+  const totalUnits=PROPS.reduce((s,p)=>s+p.units,0);
+  const avgOcc=reports.length?Math.round((totalOcc/reports.length/totalUnits)*100):0;
+
+  const html=`
+    <div class="card" style="margin-top:0;">
+      <div class="card-hdr" style="background:var(--gold);">
+        Reporte: ${from} → ${to} (${reports.length} dias)
+      </div>
+      <div class="card-body" style="padding:16px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;">
+          ${[
+            {n:reports.length,l:'Dias con reporte',c:'var(--teal)'},
+            {n:avgOcc+'%',l:'Ocupacion promedio',c:avgOcc>70?'var(--green)':avgOcc>40?'var(--amber)':'var(--maint)'},
+            {n:totalArrivals,l:'Total entradas',c:'var(--green)'},
+            {n:totalDepartures,l:'Total salidas',c:'var(--orange)'},
+            {n:totalMaint,l:'Dias con Mant/Bloq',c:'var(--maint)'},
+          ].map(k=>`<div style="background:#F7F8FA;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:${k.c};">${k.n}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">${k.l}</div>
+          </div>`).join('')}
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Actividad por agente:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          ${Object.entries(agentCount).map(([name,count])=>`
+            <div style="background:var(--tealP);border-radius:6px;padding:6px 12px;font-size:11px;">
+              <span style="font-weight:700;color:var(--teal);">${name}</span>
+              <span style="color:var(--txt2);"> — ${count} turno${count>1?'s':''}</span>
+            </div>`).join('')}
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Ocupacion por dia:</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:10px;">
+            <thead><tr style="background:#F0F2F4;">
+              <th style="padding:6px 10px;text-align:left;">Fecha</th>
+              <th style="padding:6px 10px;text-align:center;">Agente</th>
+              <th style="padding:6px 10px;text-align:center;">Ocupadas</th>
+              <th style="padding:6px 10px;text-align:center;">Entradas</th>
+              <th style="padding:6px 10px;text-align:center;">Salidas</th>
+              <th style="padding:6px 10px;text-align:left;">Handoff</th>
+            </tr></thead>
+            <tbody>
+              ${reports.map((r,i)=>{
+                const units=r.unit_data||[];
+                const occ=units.filter(u=>u.ocup_name||u.hues_name).length;
+                const arr=units.filter(u=>u.hues_name&&!u.ocup_name).length;
+                const dep=units.filter(u=>u.sale_name).length;
+                const pct=Math.round(occ/totalUnits*100);
+                return `<tr style="background:${i%2?'#F7F8FA':'#fff'};">
+                  <td style="padding:5px 10px;font-weight:600;">${r.report_date}</td>
+                  <td style="padding:5px 10px;text-align:center;color:var(--teal);">${r.agent_name||'—'}</td>
+                  <td style="padding:5px 10px;text-align:center;">
+                    <span style="background:${pct>70?'#D5F5E3':pct>40?'#FFF9C4':'#FFEBEE'};
+                      color:${pct>70?'var(--green)':pct>40?'var(--amber)':'var(--maint)'};
+                      padding:2px 8px;border-radius:4px;font-weight:700;">${occ}/${totalUnits} (${pct}%)</span>
+                  </td>
+                  <td style="padding:5px 10px;text-align:center;color:var(--green);font-weight:600;">+${arr}</td>
+                  <td style="padding:5px 10px;text-align:center;color:var(--orange);font-weight:600;">${dep}</td>
+                  <td style="padding:5px 10px;color:var(--txt2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    ${r.handoff_notes||'—'}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  const el=document.getElementById('owner-report');
+  el.innerHTML=html;el.style.display='block';
+}
+
+
 </script>
 </body>
 </html>
+<!-- placeholder - will be replaced -->
