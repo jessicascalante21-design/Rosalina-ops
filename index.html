@@ -405,6 +405,29 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
   .fi.full{grid-column:1;}
 }
 
+
+/* ── CHAT ── */
+.chat-ch-btn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border:none;
+  border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;
+  transition:all .15s;font-family:'DM Sans',sans-serif;}
+.chat-ch-btn.active,.chat-ch-btn:hover{background:var(--teal);color:#fff;}
+.chat-ch-btn[data-roles]{display:none;}
+
+/* Hub layout mobile */
+@media(max-width:768px){
+  #tab-hub > div{flex-direction:column !important;}
+  #tab-hub > div > div:first-child{width:100% !important;min-width:unset !important;
+    max-height:50vh;border-right:none !important;border-bottom:1px solid rgba(255,255,255,0.08);}
+  #hub-kpis{grid-template-columns:repeat(3,1fr) !important;}
+}
+
+
+@keyframes pulse-alarm{
+  0%{transform:scale(1);box-shadow:0 4px 16px rgba(204,17,17,0.4);}
+  50%{transform:scale(1.03);box-shadow:0 6px 24px rgba(204,17,17,0.8);}
+  100%{transform:scale(1);box-shadow:0 4px 16px rgba(204,17,17,0.4);}
+}
+
 </style>
 </head>
 <body>
@@ -514,8 +537,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
       <button class="ntab" onclick="goTab('maint',this)" data-roles="mant,gs,gerencia">Mantenimiento</button>
       <button class="ntab" onclick="goTab('gerencia',this)" data-roles="gerencia">Gerencia</button>
       <button class="ntab" onclick="goTab('inventory',this)" data-roles="gs,gerencia,hk,mant">Inventario</button>
-      <button class="ntab active" onclick="goTab('dashboard',this)" data-roles="gs,gerencia,hk,mant">Dashboard</button>
-      <button class="ntab" onclick="goTab('chat',this)" data-roles="gs,gerencia,hk,mant">Chat</button>
+      <button class="ntab active" onclick="goTab('hub',this)" data-roles="gs,gerencia,hk,mant">Hub</button>
       <button class="ntab" onclick="goTab('calendar',this)" data-roles="gs,gerencia,hk,mant">Calendario</button>
       <button class="ntab" onclick="goTab('cleaning',this)" data-roles="gs,gerencia,hk">Limpieza</button>
       <button class="ntab" onclick="goTab('owner',this)" data-roles="gerencia">Reportes</button>
@@ -1039,92 +1061,93 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
     </div>
 
 
-    <!-- TAB: DASHBOARD -->
-    <div class="page active" id="tab-dashboard">
-      <div class="inner" id="dashboard-inner" style="padding-bottom:80px;">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div><div class="pg-title">Dashboard del Turno</div><div class="pg-sub" id="dash-subtitle">—</div></div>
-          <button class="btn btn-teal" onclick="loadDashboard()" style="font-size:10px;">↻ Actualizar</button>
-        </div>
+    <!-- TAB: HUB (Dashboard + Chat) -->
+    <div class="page active" id="tab-hub">
+      <div style="display:flex;height:100%;overflow:hidden;">
 
-        <!-- Alert bar -->
-        <div id="dash-alerts" style="display:flex;flex-direction:column;gap:6px;"></div>
+        <!-- LEFT: Dashboard compacto -->
+        <div style="width:320px;min-width:300px;background:#0D1F2D;overflow-y:auto;
+          border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;">
 
-        <!-- KPI row -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;" id="dash-kpis"></div>
+          <!-- KPIs compactos -->
+          <div style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+              color:rgba(255,255,255,0.3);margin-bottom:8px;">HOY</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;" id="hub-kpis"></div>
+          </div>
 
-        <!-- Today at a glance -->
-        <div class="card">
-          <div class="card-hdr" style="background:var(--teal);">Hoy — Entradas y Salidas</div>
-          <div class="card-body" style="padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div>
-              <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--teal);margin-bottom:6px;">✈ Llegan hoy</div>
-              <div id="dash-arrivals" style="display:flex;flex-direction:column;gap:4px;"></div>
-            </div>
-            <div>
-              <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--orange);margin-bottom:6px;">🧳 Salen hoy</div>
-              <div id="dash-departures" style="display:flex;flex-direction:column;gap:4px;"></div>
-            </div>
+          <!-- 🚨 BOTÓN ALARMA -->
+          <div style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+            <button onclick="triggerDoorAlert()" id="door-alert-btn"
+              style="width:100%;padding:12px;background:var(--maint);color:#fff;border:none;
+              border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+              cursor:pointer;letter-spacing:0.3px;transition:all .2s;
+              box-shadow:0 4px 16px rgba(204,17,17,0.4);">
+              🚪 HUESPED EN PUERTA
+            </button>
+          </div>
+
+          <!-- Alertas -->
+          <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.07);" id="hub-alerts"></div>
+
+          <!-- Llegadas hoy -->
+          <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+              color:rgba(255,255,255,0.3);margin-bottom:6px;">✈ LLEGAN HOY</div>
+            <div id="hub-arrivals" style="display:flex;flex-direction:column;gap:4px;"></div>
+          </div>
+
+          <!-- Salidas hoy -->
+          <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+              color:rgba(255,255,255,0.3);margin-bottom:6px;">🧳 SALEN HOY</div>
+            <div id="hub-departures" style="display:flex;flex-direction:column;gap:4px;"></div>
+          </div>
+
+          <!-- Handoff anterior -->
+          <div style="padding:8px 12px;flex:1;">
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+              color:rgba(255,255,255,0.3);margin-bottom:6px;">TURNO ANTERIOR</div>
+            <div id="hub-handoff" style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5;"></div>
           </div>
         </div>
 
-        <!-- From yesterday -->
-        <div class="card">
-          <div class="card-hdr" style="background:var(--navy);">Del turno anterior — Pendiente revisar</div>
-          <div class="card-body" style="padding:10px;">
-            <div id="dash-yesterday" style="font-size:11px;color:var(--txt2);"></div>
+        <!-- RIGHT: Chat -->
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <!-- Channel selector -->
+          <div style="background:#162A3A;padding:8px 12px;display:flex;align-items:center;gap:6px;
+            border-bottom:1px solid rgba(255,255,255,0.07);flex-wrap:wrap;">
+            <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.5px;">Canal</span>
+            <button class="chat-ch-btn active" onclick="setChannel('general',this)">General</button>
+            <button class="chat-ch-btn" onclick="setChannel('gs',this)" data-roles="gs,gerencia">GS</button>
+            <button class="chat-ch-btn" onclick="setChannel('hk',this)" data-roles="hk,gerencia">HK</button>
+            <button class="chat-ch-btn" onclick="setChannel('mant',this)" data-roles="mant,gs,gerencia">Mant.</button>
+            <button class="chat-ch-btn" onclick="setChannel('gs-hk',this)" data-roles="gs,gerencia,hk">GS→HK</button>
+            <span id="chat-unread-badge" style="display:none;background:var(--maint);color:#fff;
+              font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;">0 nuevos</span>
+          </div>
+          <!-- Messages -->
+          <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px;
+            display:flex;flex-direction:column;gap:8px;background:#F7F8FA;"></div>
+          <!-- Input -->
+          <div style="padding:10px 12px;background:#fff;border-top:1px solid var(--bdr);
+            display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="chat-input" placeholder="Escribe un mensaje..." rows="1"
+              style="flex:1;border:1.5px solid var(--bdr);border-radius:8px;padding:8px 10px;
+              font-family:inherit;font-size:12px;outline:none;resize:none;max-height:80px;line-height:1.4;"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+            <button onclick="sendChat()"
+              style="background:var(--teal);color:#fff;border:none;border-radius:8px;
+              padding:9px 14px;cursor:pointer;font-size:18px;flex-shrink:0;transition:background .15s;"
+              onmouseover="this.style.background='var(--teal2)'" onmouseout="this.style.background='var(--teal)'">➤</button>
           </div>
         </div>
 
-        <!-- Open tasks + incidents -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div class="card">
-            <div class="card-hdr" style="background:var(--maint);">Incidentes abiertos</div>
-            <div class="card-body" style="padding:8px;" id="dash-incidents"></div>
-          </div>
-          <div class="card">
-            <div class="card-hdr" style="background:var(--gold);">Tareas urgentes</div>
-            <div class="card-body" style="padding:8px;" id="dash-tasks"></div>
-          </div>
-        </div>
-
-        <!-- Cleaning status -->
-        <div class="card">
-          <div class="card-hdr" style="background:var(--iv);">Estado de Limpieza</div>
-          <div class="card-body" style="padding:10px;">
-            <div id="dash-cleaning" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;"></div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- TAB: CHAT -->
-    <div class="page" id="tab-chat">
-      <div style="display:flex;flex-direction:column;height:100%;max-height:calc(100vh - 52px);">
-        <!-- Chat header with channel selector -->
-        <div style="background:var(--navy);padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.1);">
-          <div style="font-size:11px;font-weight:700;color:#fff;">Canal:</div>
-          <div style="display:flex;gap:4px;flex-wrap:wrap;">
-            <button class="chat-ch-btn active" onclick="setChannel('general',this)" style="background:var(--teal);color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">General</button>
-            <button class="chat-ch-btn" onclick="setChannel('gs',this)" data-roles="gs,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">GS</button>
-            <button class="chat-ch-btn" onclick="setChannel('hk',this)" data-roles="hk,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">HK</button>
-            <button class="chat-ch-btn" onclick="setChannel('mant',this)" data-roles="mant,gs,gerencia" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">Mant.</button>
-            <button class="chat-ch-btn" onclick="setChannel('gs-hk',this)" data-roles="gs,gerencia,hk" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:pointer;">GS→HK</button>
-          </div>
-        </div>
-        <!-- Messages -->
-        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F7F8FA;"></div>
-        <!-- Input -->
-        <div style="padding:10px 12px;background:#fff;border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-end;">
-          <textarea id="chat-input" placeholder="Escribe un mensaje... (@nombre para mencionar)" rows="1"
-            style="flex:1;border:1.5px solid var(--bdr);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12px;outline:none;resize:none;max-height:80px;"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
-            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-          <button onclick="sendChat()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:16px;flex-shrink:0;">➤</button>
-        </div>
-      </div>
-    </div>
-
+    <!-- TAB: CALENDARIO -->
     <!-- TAB: CALENDARIO -->
     <div class="page" id="tab-calendar">
       <div class="inner">
@@ -1213,7 +1236,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobile-nav">
-  <button class="mobile-nav-btn active" onclick="goTabMobile('dashboard',this)" data-roles="gs,gerencia,hk,mant"><span>⚡</span>Inicio</button>
+  <button class="mobile-nav-btn active" onclick="goTabMobile('hub',this)" data-roles="gs,gerencia,hk,mant"><span>⚡</span>Inicio</button>
   <button class="mobile-nav-btn" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant"><span>📋</span>Reporte</button>
   <button class="mobile-nav-btn" onclick="goTabMobile('chat',this)" data-roles="gs,gerencia,hk,mant"><span>💬</span>Chat</button>
   <button class="mobile-nav-btn" onclick="goTabMobile('cleaning',this)" data-roles="gs,gerencia,hk"><span>🧹</span>Limpieza</button>
@@ -1468,6 +1491,11 @@ function applyRoleRestrictions(role){
     const allowed=el.dataset.roles.split(',').map(r=>r.trim());
     el.classList.toggle('hidden',!allowed.includes(role));
   });
+  // Chat channel buttons - show based on role
+  document.querySelectorAll('.chat-ch-btn[data-roles]').forEach(el=>{
+    const allowed=el.dataset.roles.split(',').map(r=>r.trim());
+    el.style.display=allowed.includes(role)?'':'none';
+  });
   // Extra: gerencia tab is ONLY for Jose Rodriguez (gerencia role)
   // Even if someone has gerencia role but is not Jose, they can't see it
   // (Currently only Jose Rodriguez has gerencia role so this is redundant but safe)
@@ -1530,8 +1558,8 @@ function goTab(id,btn){
   if(id==='maint')    loadMaint();
   if(id==='gerencia') initGerencia();
   if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
-  if(id==='dashboard') loadDashboard();
-  if(id==='chat')      {loadChat();if(!chatInterval)chatInterval=setInterval(loadChat,15000);}
+
+  if(id==='hub')       loadHub();
   if(id==='calendar')  loadCalendar();
   if(id==='cleaning')  {loadCleaningStatus().then(()=>renderCleaningFull());}
   if(id==='owner')     {const t=new Date();document.getElementById('owner-from').value=new Date(t.getFullYear(),t.getMonth(),1).toISOString().split('T')[0];document.getElementById('owner-to').value=t.toISOString().split('T')[0];}
@@ -2678,8 +2706,8 @@ function goTabMobile(id, btn) {
   if(id==='tasks'){loadTasks();renderFilterBtns();}
   if(id==='gerencia') initGerencia();
   if(id==='inventory') {loadInventory();applyGSNightRestrictions();}
-  if(id==='dashboard') loadDashboard();
-  if(id==='chat')      {loadChat();if(!chatInterval)chatInterval=setInterval(loadChat,15000);}
+
+  if(id==='hub')       loadHub();
   if(id==='calendar')  loadCalendar();
   if(id==='cleaning')  {loadCleaningStatus().then(()=>renderCleaningFull());}
   if(id==='owner')     {const t=new Date();document.getElementById('owner-from').value=new Date(t.getFullYear(),t.getMonth(),1).toISOString().split('T')[0];document.getElementById('owner-to').value=t.toISOString().split('T')[0];}
@@ -3162,7 +3190,7 @@ async function init(){
   document.getElementById('meta-date').value=dStr;
   buildForm();updateReport();
   await loadTodayReport();
-  loadDashboard();
+  loadHub();
   await loadNotifications();
   setInterval(loadNotifications,30000);
 
@@ -3678,6 +3706,172 @@ async function generateOwnerReport(){
 
   const el=document.getElementById('owner-report');
   el.innerHTML=html;el.style.display='block';
+}
+
+
+
+// ════════════════════════════════════════════════════════
+// HUB (Dashboard compacto + Chat)
+// ════════════════════════════════════════════════════════
+async function loadHub(){
+  const today=new Date();
+  const todayStr=today.toISOString().split('T')[0];
+  const todayMMDD=`${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+
+  // Load today's report
+  const{data:rep}=await sb.from('daily_reports')
+    .select('*,unit_data(*)').eq('report_date',todayStr).single();
+
+  // Load yesterday handoff
+  const yd=new Date(today);yd.setDate(yd.getDate()-1);
+  const{data:ydRep}=await sb.from('daily_reports')
+    .select('handoff_notes,agent_name').eq('report_date',yd.toISOString().split('T')[0]).single();
+
+  // Load open incidents + urgent tasks
+  const[{data:openInc},{data:urgTasks}]=await Promise.all([
+    sb.from('incidents').select('id').eq('status','pend'),
+    sb.from('tasks').select('id').in('status',['p','g']).eq('priority','urgente'),
+  ]);
+
+  const units=rep?.unit_data||[];
+  const arrivals=units.filter(u=>u.hues_name);
+  const departures=units.filter(u=>u.sale_name||(u.co_date===todayMMDD&&u.ocup_name));
+  const ocup=units.filter(u=>u.ocup_name||u.hues_name).length;
+  const totalUnits=PROPS.reduce((s,p)=>s+p.units,0);
+  const uncont=arrivals.filter(u=>!u.pre_arrival_called||u.pre_arrival_called==='No');
+
+  // KPIs
+  const kpis=[
+    {n:arrivals.length,l:'Llegan',c:'var(--green)'},
+    {n:departures.length,l:'Salen',c:'var(--orange)'},
+    {n:ocup,l:'Ocupadas',c:'var(--teal)'},
+    {n:openInc?.length||0,l:'Incidentes',c:(openInc?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
+    {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
+    {n:uncont.length,l:'Sin llamar',c:uncont.length>0?'var(--amber)':'rgba(255,255,255,0.3)'},
+  ];
+  const kpisEl=document.getElementById('hub-kpis');
+  if(kpisEl) kpisEl.innerHTML=kpis.map(k=>`
+    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px 6px;text-align:center;">
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:${k.c};line-height:1;">${k.n}</div>
+      <div style="font-size:7.5px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:2px;">${k.l}</div>
+    </div>`).join('');
+
+  // Alerts
+  const alerts=[];
+  if(uncont.length>0) alerts.push({c:'var(--amber)',t:`⚠ ${uncont.length} llegada${uncont.length>1?'s':''} sin contactar`});
+  if((openInc?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
+  if((urgTasks?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
+  const alertsEl=document.getElementById('hub-alerts');
+  if(alertsEl) alertsEl.innerHTML=alerts.map(a=>`
+    <div style="font-size:10px;font-weight:700;color:${a.c};padding:4px 0;border-left:3px solid ${a.c};padding-left:8px;margin-bottom:3px;">${a.t}</div>`).join('') ||
+    '<div style="font-size:10px;color:rgba(255,255,255,0.25);">✓ Sin alertas</div>';
+
+  // Arrivals list
+  const arrEl=document.getElementById('hub-arrivals');
+  if(arrEl) arrEl.innerHTML=arrivals.length
+    ? arrivals.map(u=>`
+      <div style="padding:5px 8px;background:rgba(255,255,255,0.05);border-radius:6px;
+        border-left:3px solid ${u.pre_arrival_called==='Si'?'var(--green)':'var(--amber)'};">
+        <div style="font-size:11px;font-weight:600;color:#fff;">${u.hues_name}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.4);">${u.property?.toUpperCase()}-${u.unit_number}
+          ${u.arrival_time?' · '+u.arrival_time:''}
+          ${u.early_ci?' · Early':''}
+          <span style="color:${u.pre_arrival_called==='Si'?'var(--green)':'var(--amber)'};">
+            ${u.pre_arrival_called==='Si'?'✓ Contactado':'⚠ Sin llamar'}</span>
+        </div>
+      </div>`).join('')
+    : '<div style="font-size:10px;color:rgba(255,255,255,0.25);">Sin llegadas hoy</div>';
+
+  // Departures list
+  const depEl=document.getElementById('hub-departures');
+  if(depEl) depEl.innerHTML=departures.length
+    ? departures.map(u=>`
+      <div style="padding:5px 8px;background:rgba(255,255,255,0.05);border-radius:6px;
+        border-left:3px solid var(--orange);">
+        <div style="font-size:11px;font-weight:600;color:#fff;">${u.sale_name||u.ocup_name}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.4);">${u.property?.toUpperCase()}-${u.unit_number}
+          ${u.co_time&&u.co_time!=='— Estandar'?' · '+u.co_time:''}</div>
+      </div>`).join('')
+    : '<div style="font-size:10px;color:rgba(255,255,255,0.25);">Sin salidas hoy</div>';
+
+  // Handoff
+  const hfEl=document.getElementById('hub-handoff');
+  if(hfEl) hfEl.innerHTML=ydRep
+    ? `<span style="color:rgba(255,255,255,0.4);">${ydRep.agent_name||'—'}:</span> ${ydRep.handoff_notes||'Sin notas'}`
+    : 'Sin reporte anterior';
+
+  // Load chat
+  await loadChat();
+}
+
+// ── DOOR ALARM ────────────────────────────────────────────
+let alarmAudio=null;
+let alarmInterval=null;
+
+function triggerDoorAlert(){
+  const btn=document.getElementById('door-alert-btn');
+  if(alarmInterval){
+    // Stop alarm
+    stopAlarm();
+    return;
+  }
+
+  // Change button to STOP
+  btn.innerHTML='🔇 DETENER ALARMA';
+  btn.style.background='#7A0000';
+  btn.style.animation='pulse-alarm 0.5s ease-in-out infinite';
+
+  // Generate alarm sound with Web Audio API
+  playAlarmSound();
+  alarmInterval=setInterval(playAlarmSound,1800);
+
+  // Send notification to all
+  sb.from('notifications').insert({
+    from_user:currentUser?.id,
+    from_name:currentProfile?.full_name||'—',
+    to_role:['gs','hk','gerencia','mant'],
+    title:'🚪 HUESPED EN PUERTA',
+    body:`${currentProfile?.full_name||'Alguien'} reporta huesped esperando en puerta. Ir a recibir.`,
+    type:'alert'
+  });
+
+  // Auto-stop after 30 seconds
+  setTimeout(()=>{if(alarmInterval)stopAlarm();},30000);
+}
+
+function stopAlarm(){
+  clearInterval(alarmInterval);
+  alarmInterval=null;
+  if(alarmAudio){alarmAudio.close();alarmAudio=null;}
+  const btn=document.getElementById('door-alert-btn');
+  if(btn){
+    btn.innerHTML='🚪 HUESPED EN PUERTA';
+    btn.style.background='var(--maint)';
+    btn.style.animation='none';
+  }
+}
+
+function playAlarmSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Two-tone alarm: 880Hz then 660Hz
+    const seq=[
+      {f:880,t:0,d:0.2},{f:660,t:0.25,d:0.2},
+      {f:880,t:0.5,d:0.2},{f:660,t:0.75,d:0.2},
+    ];
+    seq.forEach(({f,t,d})=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=f;
+      gain.gain.setValueAtTime(0,ctx.currentTime+t);
+      gain.gain.linearRampToValueAtTime(0.4,ctx.currentTime+t+0.02);
+      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+t+d);
+      osc.start(ctx.currentTime+t);
+      osc.stop(ctx.currentTime+t+d+0.05);
+    });
+    alarmAudio=ctx;
+  }catch(e){console.log('Audio not available:',e);}
 }
 
 
