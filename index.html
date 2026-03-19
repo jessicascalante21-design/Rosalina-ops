@@ -1790,6 +1790,9 @@ async function saveReport(){
     const si=document.getElementById('save-ind');if(si){si.textContent='Guardado ✓';si.classList.add('show');setTimeout(()=>si.classList.remove('show'),2000);}
     // Auto-enrich from previous report silently
     await autoEnrichFromPrev(dateVal);
+    // Refresh hub if it's the active tab
+    const hubPage=document.getElementById('tab-hub');
+    if(hubPage&&hubPage.classList.contains('active')) loadHub();
   }catch(e){
     console.error('Save error:',e);
     setSyncStatus('error');
@@ -3889,13 +3892,27 @@ async function loadHub(){
   const todayStr=today.toISOString().split('T')[0];
   const todayMMDD=`${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
 
-  // Load TODAY's reports only (both AM and PM shifts)
-  const{data:reps}=await sb.from('daily_reports')
+  // Load TODAY's reports — try exact date first, then most recent
+  let reps=null;
+  const{data:todayReps}=await sb.from('daily_reports')
     .select('*,unit_data(*)').eq('report_date',todayStr)
     .order('shift',{ascending:false});
+  
+  if(todayReps&&todayReps.length>0){
+    reps=todayReps;
+  } else {
+    // Fallback: get the most recently UPDATED report (covers timezone edge cases)
+    const{data:recentReps}=await sb.from('daily_reports')
+      .select('*,unit_data(*)').order('updated_at',{ascending:false}).limit(2);
+    if(recentReps&&recentReps.length>0) reps=recentReps;
+  }
 
   const rep=reps?.[0]||null;
-  // Merge unit data from both shifts (PM overwrites AM)
+  // Show which date we found
+  const foundDate=rep?.report_date||'—';
+  const isToday=foundDate===todayStr;
+  
+  // Merge unit data from all found reports (PM overwrites AM)
   const unitMap={};
   (reps||[]).slice().reverse().forEach(r=>{
     (r.unit_data||[]).forEach(u=>{
@@ -3904,7 +3921,10 @@ async function loadHub(){
     });
   });
   const mergedUnits=Object.values(unitMap);
-  const reportMMDD=todayMMDD;
+  const reportMMDD=rep?.report_date
+    ? (()=>{const d=new Date(rep.report_date+'T12:00:00');
+        return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;})()
+    : todayMMDD;
 
   // Load yesterday for handoff
   const yd=new Date(today);yd.setDate(yd.getDate()-1);
@@ -3933,6 +3953,15 @@ async function loadHub(){
     {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
     {n:uncont.length,l:'Sin llamar',c:uncont.length>0?'var(--amber)':'rgba(255,255,255,0.3)'},
   ];
+  // Update date label
+  const dateLblEl=document.getElementById('hub-date-lbl');
+  if(dateLblEl){
+    const d=new Date(foundDate+'T12:00:00');
+    const label=isToday?'Reporte de hoy':'Último reporte: '+d.toLocaleDateString('es-PR',{month:'short',day:'numeric'});
+    dateLblEl.textContent=label;
+    dateLblEl.style.color=isToday?'rgba(39,174,96,0.7)':'rgba(224,123,0,0.7)';
+  }
+
   const kpisEl=document.getElementById('hub-kpis');
   if(kpisEl) kpisEl.innerHTML=kpis.map(k=>`
     <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px 6px;text-align:center;">
