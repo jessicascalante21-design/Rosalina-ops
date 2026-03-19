@@ -1431,6 +1431,7 @@ const SHIFT_OPTS = [
   'Otro'
 ];
 // Jessica fixed schedule (no cost)
+const JESSICA_SAT = '8AM-12PM';
 const JESSICA_SCHED = '8AM-5PM (B 1:30-2:30)';
 
 const SCHED_EMPLOYEES = [
@@ -2663,8 +2664,8 @@ function buildSchedGrid(){
       if(isJessica){
         daysHtml+=`<div class="sched-day">
           <div class="sched-day-lbl">${d}</div>
-          <div style="font-size:8px;color:var(--gold);font-weight:600;text-align:center;padding:4px 2px;">${d==='Dom'?'Libre':JESSICA_SCHED}</div>
-          <div class="sched-day-hrs">${d==='Dom'?'0h':'8h'}</div>
+          <div style="font-size:8px;color:var(--gold);font-weight:600;text-align:center;padding:4px 2px;">${d==='Dom'?'Libre':d==='Sab'?JESSICA_SAT:JESSICA_SCHED}</div>
+          <div class="sched-day-hrs">${d==='Dom'?'0h':d==='Sab'?'4h':'8h'}</div>
         </div>`;
       }else{
         daysHtml+=`<div class="sched-day">
@@ -2729,7 +2730,7 @@ async function saveSchedule(){
   const week=document.getElementById('sched-week')?.value;
   if(!start){alert('Selecciona la fecha de inicio');return;}
   const entries=SCHED_EMPLOYEES.map(emp=>{
-    const days=DAYS.map(d=>({day:d,shift:emp.fixed?(d==='Dom'?'Libre':JESSICA_SCHED):(document.getElementById(`sh-${emp.name}-${d}`)?.value||''),hours:emp.fixed?(d==='Dom'?0:8):(SHIFT_HRS[document.getElementById(`sh-${emp.name}-${d}`)?.value]||0)}));
+    const days=DAYS.map(d=>({day:d,shift:emp.fixed?(d==='Dom'?'Libre':d.day==='Sab'?JESSICA_SAT:JESSICA_SCHED):(document.getElementById(`sh-${emp.name}-${d}`)?.value||''),hours:emp.fixed?(d==='Dom'?0:d.day==='Sab'?4:8):(SHIFT_HRS[document.getElementById(`sh-${emp.name}-${d}`)?.value]||0)}));
     const hrs=days.reduce((s,d)=>s+d.hours,0);
     const rate=emp.fixed?0:(parseFloat(document.getElementById(`rate-${emp.name}`)?.value)||emp.rate);
     return{name:emp.name,role:emp.role,days,hours:hrs,rate,cost:emp.fixed?0:hrs*rate};
@@ -3887,25 +3888,28 @@ async function loadHub(){
   const todayStr=today.toISOString().split('T')[0];
   const todayMMDD=`${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
 
-  // Load TODAY's reports — try exact date first, then most recent
-  let reps=null;
-  const{data:todayReps}=await sb.from('daily_reports')
-    .select('*,unit_data(*)').eq('report_date',todayStr)
-    .order('shift',{ascending:false});
+  // Load most recent reports — last 2 days to handle timezone differences
+  // Puerto Rico is UTC-4, so "today" in PR might be "yesterday" in UTC
+  const yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
+  const yesterdayStr=yesterday.toISOString().split('T')[0];
   
-  if(todayReps&&todayReps.length>0){
-    reps=todayReps;
-  } else {
-    // Fallback: get the most recently UPDATED report (covers timezone edge cases)
-    const{data:recentReps}=await sb.from('daily_reports')
-      .select('*,unit_data(*)').order('updated_at',{ascending:false}).limit(2);
-    if(recentReps&&recentReps.length>0) reps=recentReps;
+  const{data:allReps}=await sb.from('daily_reports')
+    .select('*,unit_data(*)')
+    .in('report_date',[todayStr,yesterdayStr])
+    .order('updated_at',{ascending:false});
+  
+  // Pick the most recently updated report(s)
+  let reps=null;
+  if(allReps&&allReps.length>0){
+    // Group by date, prefer today, fallback yesterday
+    const todayReps=allReps.filter(r=>r.report_date===todayStr);
+    reps = todayReps.length>0 ? todayReps : allReps;
   }
 
   const rep=reps?.[0]||null;
   // Show which date we found
   const foundDate=rep?.report_date||'—';
-  const isToday=foundDate===todayStr;
+  const isToday=foundDate===todayStr||foundDate===yesterdayStr;
   
   // Merge unit data from all found reports (PM overwrites AM)
   const unitMap={};
