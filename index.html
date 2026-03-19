@@ -318,55 +318,186 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── MOBILE RESPONSIVE ── */
-@media (max-width: 768px) {
-  .nav-tabs { display:none; }
-  .topbar { padding:0 10px; gap:4px; }
-  .brand { font-size:13px; }
-  .main { flex-direction:column; height:auto; min-height:calc(100vh - 52px); }
-  .page.active { flex-direction:column; }
-  .sidebar { width:100%; min-width:unset; max-height:50vh; border-right:none; border-bottom:1px solid var(--bdr); }
-  .preview { min-height:50vh; padding:10px; }
-  #report { width:100% !important; min-width:unset !important; overflow-x:auto; }
-  .inner { padding:12px; }
-  .mobile-nav { display:flex !important; }
-}
-/* Mobile nav tabs */
-.mobile-nav {
-  display:none;
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:var(--navy);
-  border-top:1px solid rgba(255,255,255,0.1);
-  z-index:100;
-  padding:6px 0;
-  justify-content:space-around;
-}
-.mobile-nav-btn {
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  border:none;background:transparent;color:rgba(255,255,255,0.5);
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);
+  border-top:1px solid rgba(255,255,255,0.1);z-index:200;padding:4px 0;justify-content:space-around;}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;
+  border:none;background:transparent;color:rgba(255,255,255,0.45);
   font-size:8px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;
-  padding:4px 8px;cursor:pointer;min-width:50px;
+  padding:4px 6px;cursor:pointer;min-width:44px;}
+.mobile-nav-btn.active{color:var(--teal2);}
+.mobile-nav-btn span{font-size:18px;line-height:1;}
+
+/* ── USER PICKER ── */
+.user-pick-card{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;}
+.user-pick-card:hover{border-color:var(--teal2);background:#EAF8FB;}
+.user-pick-card.selected{border-color:var(--teal2);background:var(--tealP);}
+.upc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.upc-name{font-size:13px;font-weight:600;color:var(--txt);}
+.upc-role{font-size:10px;color:var(--txt2);}
+.upc-check{width:20px;height:20px;background:var(--teal);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;margin-left:auto;}
+
+/* ── MOBILE FULL RESPONSIVE ── */
+@media (max-width:768px){
+  /* Topbar */
+  .topbar{padding:0 8px;gap:4px;height:48px;}
+  .brand{font-size:12px;}
+  .nav-tabs{display:none;}
+  .user-role{display:none;}
+  .user-name{font-size:10px;}
+  .btn-gold,.btn-green{font-size:8px;padding:4px 8px;}
+  .notif-btn{padding:5px 6px;}
+
+  /* Main layout */
+  .main{flex-direction:column;height:auto;overflow-y:auto;min-height:calc(100vh - 48px - 60px);}
+  .page.active{flex-direction:column;width:100%;min-height:auto;}
+
+  /* Daily report: sidebar on top, preview below */
+  #tab-daily{flex-direction:column;}
+  .sidebar{width:100%;min-width:unset;max-height:none;border-right:none;border-bottom:1px solid var(--bdr);}
+  .preview{padding:8px;min-height:300px;overflow-x:auto;}
+  #report{width:1200px;min-width:unset;}
+
+  /* Inner pages */
+  .inner{padding:10px;padding-bottom:80px;}
+  .occ-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;}
+  .occ-unit-card{padding:8px 10px;}
+  .occ-nights{font-size:16px;top:6px;right:8px;}
+  .occ-sumbar{grid-template-columns:repeat(3,1fr);gap:6px;padding:10px;}
+  
+  /* Task cards */
+  .task-card{flex-direction:column;gap:8px;}
+  .tp{font-size:8px;}
+
+  /* Shift log tables - horizontal scroll */
+  .card-body{overflow-x:auto;}
+  .gtable{min-width:600px;}
+  .gtable th,.gtable td{padding:6px 8px;font-size:10px;}
+
+  /* HK section */
+  .hk-assign-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+
+  /* Schedule */
+  .sched-emp-row{padding:10px;}
+  .sched-days{grid-template-columns:repeat(7,1fr);gap:2px;}
+  .sched-day select{font-size:7px;padding:2px 1px;}
+
+  /* Inventory */
+  #inventory-grid{grid-template-columns:1fr;}
+
+  /* Login card */
+  .login-card{padding:24px 20px;margin:12px;}
+
+  /* Notification panel */
+  .notif-panel{width:100%;}
+
+  /* Bottom nav */
+  .mobile-nav{display:flex !important;padding:4px 0;}
+  body{padding-bottom:60px;}
 }
-.mobile-nav-btn.active { color:var(--teal2); }
-.mobile-nav-btn span { font-size:16px; line-height:1; }
+
+@media (max-width:480px){
+  .occ-grid{grid-template-columns:1fr 1fr;}
+  .occ-sumbar{grid-template-columns:repeat(2,1fr);}
+  .fg2{grid-template-columns:1fr;}
+  .fi.full{grid-column:1;}
+}
+
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div class="login-screen" id="login-screen">
-  <div class="login-card">
+  <div class="login-card" style="width:420px;max-width:96vw;">
     <div class="login-logo">
       <h1>Rosalina <em>Boutique Hotels</em></h1>
       <p>Operations Hub · Acceso Interno</p>
     </div>
-    <div class="lf"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com" autocomplete="email"></div>
-    <div class="lf"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
-    <div class="login-err" id="login-err">Email o contraseña incorrectos</div>
+
+    <!-- Step 1: Pick user -->
+    <div id="login-step1">
+      <div style="font-size:10px;font-weight:700;color:var(--txt2);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">Selecciona tu usuario</div>
+      <div id="user-picker" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+        
+        <div class="user-pick-card" onclick="selectUser('jessica@rosalina.local','Jessica',this)" data-email="jessica@rosalina.local">
+          <div class="upc-avatar" style="background:#0B7A8A;">J</div>
+          <div class="upc-info">
+            <div class="upc-name">Jessica</div>
+            <div class="upc-role">Guest Services</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('gabriel@rosalina.local','Gabriel',this)" data-email="gabriel@rosalina.local">
+          <div class="upc-avatar" style="background:#0B7A8A;">G</div>
+          <div class="upc-info">
+            <div class="upc-name">Gabriel</div>
+            <div class="upc-role">Guest Services</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('keishla@rosalina.local','Keishla',this)" data-email="keishla@rosalina.local">
+          <div class="upc-avatar" style="background:#0B7A8A;">K</div>
+          <div class="upc-info">
+            <div class="upc-name">Keishla</div>
+            <div class="upc-role">Guest Services</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('josev@rosalina.local','Jose V.',this)" data-email="josev@rosalina.local">
+          <div class="upc-avatar" style="background:#0B7A8A;">J</div>
+          <div class="upc-info">
+            <div class="upc-name">Jose V.</div>
+            <div class="upc-role">Guest Services</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('gerencia@rosalina.local','Jose Rodriguez',this)" data-email="gerencia@rosalina.local">
+          <div class="upc-avatar" style="background:#C49A28;">J</div>
+          <div class="upc-info">
+            <div class="upc-name">Jose Rodriguez</div>
+            <div class="upc-role">Gerencia</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('hk@rosalina.local','Housekeeping',this)" data-email="hk@rosalina.local">
+          <div class="upc-avatar" style="background:#27AE60;">H</div>
+          <div class="upc-info">
+            <div class="upc-name">Housekeeping</div>
+            <div class="upc-role">Housekeeping</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+        <div class="user-pick-card" onclick="selectUser('mant@rosalina.local','Mantenimiento',this)" data-email="mant@rosalina.local">
+          <div class="upc-avatar" style="background:#CC1111;">M</div>
+          <div class="upc-info">
+            <div class="upc-name">Mantenimiento</div>
+            <div class="upc-role">Mantenimiento</div>
+          </div>
+          <div class="upc-check" style="display:none;">✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Password (shown after picking user) -->
+    <div id="login-step2" style="display:none;">
+      <div id="selected-user-display" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F7F8FA;border-radius:10px;margin-bottom:14px;cursor:pointer;" onclick="backToUserPick()">
+        <div id="sel-avatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;"></div>
+        <div>
+          <div id="sel-name" style="font-size:13px;font-weight:600;color:var(--txt);"></div>
+          <div style="font-size:10px;color:var(--txt2);">Toca para cambiar usuario</div>
+        </div>
+      </div>
+      <div class="lf">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+      <div class="login-err" id="login-err">Contraseña incorrecta</div>
+    </div>
   </div>
 </div>
 
@@ -908,11 +1039,12 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobile-nav">
-  <button class="mobile-nav-btn active" onclick="goTabMobile('daily',this)"><span>📋</span>Report</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('occ',this)"><span>🏠</span>Ocup.</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('shiftlog',this)" id="mn-shiftlog"><span>📝</span>Shift</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('tasks',this)"><span>✓</span>Tareas</button>
-  <button class="mobile-nav-btn" onclick="goTabMobile('gerencia',this)" id="mn-gerencia"><span>👔</span>Gerencia</button>
+  <button class="mobile-nav-btn active" onclick="goTabMobile('daily',this)" data-roles="gs,gerencia,hk,mant"><span>📋</span>Report</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('occ',this)" data-roles="gs,gerencia,hk,mant"><span>🏠</span>Ocup.</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('shiftlog',this)" data-roles="gs,gerencia" id="mn-shiftlog"><span>📝</span>Shift</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('tasks',this)" data-roles="gs,gerencia,mant"><span>✓</span>Tareas</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('hk',this)" data-roles="hk,gerencia" id="mn-hk"><span>🧹</span>HK</button>
+  <button class="mobile-nav-btn" onclick="goTabMobile('gerencia',this)" data-roles="gerencia" id="mn-gerencia"><span>👔</span>Admin</button>
 </div>
 
 <!-- NOTIFICATIONS PANEL -->
@@ -1025,7 +1157,7 @@ let clStatus = Array(14).fill(false);
 let hkAssignments = {};
 let tFilter = 'all';
 
-function emptyUnit(){return{ci:'',co:'',ocup:'',hues:'',sale:'',arr:'',early:'',ct:'',cotime:'',mal:false,g:'',deco:'',maint:'',notes:''};}
+function emptyUnit(){return{ci:'',co:'',ocup:'',hues:'',sale:'',arr:'',early:'',ct:'',pa:'No',cotime:'',mal:false,g:'',deco:'',maint:'',notes:''};}
 
 // ── AUTH ──────────────────────────────────────────────────
 sb.auth.onAuthStateChange(async(event,session)=>{
@@ -1039,24 +1171,61 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   }
 });
 
+let selectedEmail = '';
+
+function selectUser(email, name, card){
+  selectedEmail = email;
+  // Update UI
+  document.querySelectorAll('.user-pick-card').forEach(c=>{
+    c.classList.remove('selected');
+    c.querySelector('.upc-check').style.display='none';
+  });
+  card.classList.add('selected');
+  card.querySelector('.upc-check').style.display='flex';
+  
+  // Show step 2
+  const av=document.getElementById('sel-avatar');
+  const avatarColor=card.querySelector('.upc-avatar').style.background;
+  av.textContent=name[0].toUpperCase();
+  av.style.background=avatarColor;
+  document.getElementById('sel-name').textContent=name;
+  document.getElementById('login-step1').style.display='none';
+  document.getElementById('login-step2').style.display='block';
+  setTimeout(()=>document.getElementById('login-pass')?.focus(),100);
+}
+
+function backToUserPick(){
+  document.getElementById('login-step1').style.display='block';
+  document.getElementById('login-step2').style.display='none';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-err').classList.remove('show');
+}
+
 async function doLogin(){
-  const email=document.getElementById('login-email').value.trim();
+  if(!selectedEmail){showErr('Selecciona un usuario');return;}
   const pass=document.getElementById('login-pass').value;
   const btn=document.getElementById('login-btn');
-  if(!email||!pass){showErr('Completa todos los campos');return;}
+  if(!pass){showErr('Escribe tu contraseña');return;}
   btn.innerHTML='<span class="spinner"></span>'; btn.disabled=true;
-  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  const{error}=await sb.auth.signInWithPassword({email:selectedEmail,password:pass});
   btn.innerHTML='Entrar'; btn.disabled=false;
-  if(error) showErr('Email o contraseña incorrectos');
+  if(error) showErr('Contraseña incorrecta');
 }
 
 async function doLogout(){
   await sb.auth.signOut();
   currentUser=null; currentProfile=null;
+  selectedEmail='';
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-email').value='';
   document.getElementById('login-pass').value='';
+  // Reset login to step 1
+  document.getElementById('login-step1').style.display='block';
+  document.getElementById('login-step2').style.display='none';
+  document.querySelectorAll('.user-pick-card').forEach(c=>{
+    c.classList.remove('selected');
+    c.querySelector('.upc-check').style.display='none';
+  });
 }
 
 function showErr(m){const e=document.getElementById('login-err');e.textContent=m;e.classList.add('show');}
@@ -1197,6 +1366,11 @@ function buildForm(){
         <div class="fi full"><label>Llega Hoy</label><input value="${d.hues}" placeholder="Nombre del huesped que llega" data-p="${prop.id}" data-u="${u}" data-f="hues" oninput="setF(this)"></div>
         <div class="fi"><label>Hora llegada</label><select data-p="${prop.id}" data-u="${u}" data-f="arr" onchange="setF(this)">${ARR_O.map(o=>`<option ${d.arr===o?'selected':''}>${o||'— Sin confirmar'}</option>`).join('')}</select></div>
         <div class="fi"><label>Early CI</label><select data-p="${prop.id}" data-u="${u}" data-f="early" onchange="setF(this)">${EARL_O.map(o=>`<option ${d.early===o?'selected':''}>${o||'— No'}</option>`).join('')}</select></div>
+        <div class="fi"><label>Pre-Arrival llamado</label><select data-p="${prop.id}" data-u="${u}" data-f="pa" onchange="setF(this)">
+          <option value="No" ${(d.pa||'No')==='No'?'selected':''}>— No</option>
+          <option value="Si" ${d.pa==='Si'?'selected':''}>Si ✓</option>
+          <option value="No contesta" ${d.pa==='No contesta'?'selected':''}>No contesta</option>
+        </select></div>
         <div class="fi"><label>Hora salida</label><select data-p="${prop.id}" data-u="${u}" data-f="cotime" onchange="setF(this)">${COT_O.map(o=>`<option ${d.cotime===o?'selected':''}>${o||'— Estandar'}</option>`).join('')}</select></div>
         <div class="fi"><label>Maletas</label><select data-p="${prop.id}" data-u="${u}" data-f="mal" onchange="setF(this)"><option value="" ${!d.mal?'selected':''}>— No</option><option value="1" ${d.mal?'selected':''}>Si</option></select></div>
         <div class="fi"><label>Guests #</label><input type="number" value="${d.g}" placeholder="0" data-p="${prop.id}" data-u="${u}" data-f="g" oninput="setF(this)"></div>
@@ -1211,6 +1385,9 @@ function buildForm(){
           <div class="ur-sum">${summary}</div>
           <div style="display:flex;gap:3px;">${tags}</div>
           <span class="ur-chev">▾</span>
+          <button onclick="resetUnit('${prop.id}',${u},event)" title="Limpiar unidad"
+            style="border:none;background:rgba(204,17,17,0.1);color:var(--maint);border-radius:4px;
+            padding:1px 6px;cursor:pointer;font-size:9px;font-weight:700;margin-left:4px;flex-shrink:0;z-index:1;">✕</button>
         </div>
         <div class="ur-fields">${fields}</div>`;
       card.appendChild(urow);
@@ -1268,7 +1445,7 @@ async function saveReport(){
         unitRows.push({report_id:rep.id,property:prop.id,unit_number:u+1,
           ci_date:d.ci||null,co_date:d.co||null,ocup_name:d.ocup||null,
           hues_name:d.hues||null,sale_name:d.sale||null,arrival_time:d.arr||null,early_ci:d.early||null,
-          contact:d.ct||null,co_time:d.cotime||null,luggage:d.mal,
+          contact:d.ct||null,pre_arrival_called:d.pa||null,co_time:d.cotime||null,luggage:d.mal,
           guests_count:d.g?parseInt(d.g):null,decoration:d.deco||null,
           maintenance:d.maint||null,notes:d.notes||null,updated_by:currentUser.id});
       });
@@ -1306,7 +1483,7 @@ async function loadTodayReport(){
         const idx=u.unit_number-1;if(idx<0||idx>=UNITS[u.property].length)return;
         UNITS[u.property][idx]={ci:u.ci_date||'',co:u.co_date||'',ocup:u.ocup_name||'',
           hues:u.hues_name||'',sale:u.sale_name||'',arr:u.arrival_time||'',early:u.early_ci||'',
-          ct:u.contact||'',cotime:u.co_time||'',mal:u.luggage||false,
+          ct:u.contact||'',pa:u.pre_arrival_called||'No',cotime:u.co_time||'',mal:u.luggage||false,
           g:u.guests_count||'',deco:u.decoration||'',maint:u.maintenance||'',notes:u.notes||''};
       });
       buildForm();
@@ -1386,10 +1563,10 @@ function updateReport(){
   PROPS.forEach(prop=>{
     UNITS[prop.id].forEach(d=>{
       const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
-      if(isMaint){mt++;return;}if(isVac){vc++;return;}
+      if(isMaint&&!d.ocup&&!d.hues){mt++;return;}if(isVac){vc++;return;}
       if(prop.id==='op')ocOP++;else ocIV++;
       if(d.hues)ci++;if(rd&&(d.sale||(d.co===rd.mmdd&&d.ocup)))co++;
-      if(d.early)ea++;if(d.deco)dc++;if(d.ct==='Si')cn++;
+      if(d.early)ea++;if(d.deco)dc++;if(d.pa==='Si'||d.ct==='Si')cn++;
     });
   });
   ['op','iv','tot','mt','ci','co','ea','dc','vc','cn'].forEach((k,i)=>{
@@ -1406,7 +1583,10 @@ function updateReport(){
       const sale=d.sale||'';
       const nts=nightsSoFar(d.ci,rd);
       const tr=document.createElement('tr');
-      if(isMaint)tr.className='tr-maint';else if(isVac)tr.className='tr-vac';else if(ri%2===1)tr.className='tr-alt';
+      // Only full-red if maint AND no guest; if guest present just show maint tag
+      if(isMaint&&!d.ocup&&!d.hues)tr.className='tr-maint';
+      else if(isVac)tr.className='tr-vac';
+      else if(ri%2===1)tr.className='tr-alt';
       tr.innerHTML=`
         <td class="td-prop" style="background:${prop.color}">${prop.short}</td>
         <td class="td-unit">${u+1}</td>
@@ -2427,6 +2607,14 @@ async function loadHKHistoric(){
 
 
 
+
+function resetUnit(propId, unitIdx, event){
+  event.stopPropagation();
+  if(!confirm(`Limpiar toda la informacion de ${propId.toUpperCase()}-${unitIdx+1}?`)) return;
+  UNITS[propId][unitIdx] = emptyUnit();
+  buildForm(); updateReport(); scheduleSave();
+}
+
 // ── AUTO-ENRICH FROM PREVIOUS REPORT ─────────────────────
 // Called after save — fills Sale Hoy (if CO=today) and
 // carries forward continuing guests — never overwrites manual entries
@@ -2485,7 +2673,7 @@ async function autoEnrichFromPrev(dateVal){
           unitRows.push({report_id:currentReportId,property:prop.id,unit_number:u+1,
             ci_date:d.ci||null,co_date:d.co||null,ocup_name:d.ocup||null,
             hues_name:d.hues||null,sale_name:d.sale||null,arrival_time:d.arr||null,
-            early_ci:d.early||null,contact:d.ct||null,co_time:d.cotime||null,
+            early_ci:d.early||null,contact:d.ct||null,pre_arrival_called:d.pa||null,co_time:d.cotime||null,
             luggage:d.mal,guests_count:d.g?parseInt(d.g):null,decoration:d.deco||null,
             maintenance:d.maint||null,notes:d.notes||null,updated_by:currentUser?.id});
         });
