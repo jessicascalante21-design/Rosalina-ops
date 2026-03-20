@@ -1883,9 +1883,18 @@ function getRD(){
 }
 function nightsSoFar(ci,rd){
   if(!ci||!rd)return'';
-  const[m,dd]=ci.split('/').map(Number);
-  const d=new Date(rd.full.getFullYear(),m-1,dd);
-  const n=Math.round((rd.full-d)/86400000);return n>=0?n:'';
+  // Parse CI — format MM/DD
+  const parts=ci.split('/');
+  if(parts.length<2)return'';
+  const[m,dd]=parts.map(Number);
+  // Handle year rollover (Jan CI with Dec report, etc.)
+  let year=rd.full.getFullYear();
+  const ciD=new Date(year,m-1,dd);
+  // If CI is after report date, it must be from previous year
+  if(ciD>rd.full) ciD.setFullYear(year-1);
+  const n=Math.round((rd.full-ciD)/86400000);
+  // Show at least 1 for guests currently in house
+  return n>=0?Math.max(1,n):'';
 }
 
 function updateReport(){
