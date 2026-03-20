@@ -1837,15 +1837,20 @@ async function loadTodayReport(){
         prevRep.unit_data.forEach(u=>{
           if(!UNITS[u.property])return;const idx=u.unit_number-1;if(idx<0)return;
           const cur=UNITS[u.property][idx];
-          // If CO date matches today → auto-fill Sale Hoy (only if empty)
-          if(u.co_date===todayMMDD&&(u.ocup_name||u.hues_name)){
-            if(!cur.sale){cur.sale=u.ocup_name||u.hues_name||'';autoSales++;}
+          const prevName=u.ocup_name||u.hues_name||'';
+          // Sale Hoy: only if CO=today AND unit has no conflicting new guest
+          if(u.co_date===todayMMDD&&prevName){
+            const curIsEmpty=!cur.sale&&!cur.ocup&&!cur.hues;
+            const curMatchesPrev=cur.ocup===prevName||cur.ocup===u.hues_name;
+            if(!cur.sale&&(curIsEmpty||curMatchesPrev)){cur.sale=prevName;autoSales++;}
           }
-          // Carry forward occupant if still staying
-          if(u.co_date!==todayMMDD){
-            if(!cur.ocup)cur.ocup=u.hues_name||u.ocup_name||'';
-            if(!cur.ci)cur.ci=u.ci_date||'';
-            if(!cur.co)cur.co=u.co_date||'';
+          // Carry forward: only if unit is completely blank
+          if(u.co_date!==todayMMDD&&prevName){
+            const unitIsBlank=!cur.ci&&!cur.co&&!cur.ocup&&!cur.hues;
+            if(unitIsBlank){
+              cur.ocup=u.hues_name||u.ocup_name||'';
+              cur.ci=u.ci_date||'';cur.co=u.co_date||'';
+            }
           }
         });
         buildForm();updateReport();
@@ -3000,16 +3005,27 @@ async function autoEnrichFromPrev(dateVal){
     if(idx < 0) return;
     const cur = UNITS[u.property][idx];
     
-    // Auto-fill Sale Hoy if CO date = today AND field is empty
+    // ── SALE HOY ──
+    // Only fill if: CO=today AND current unit has NO new guest arriving
+    // AND the prev guest name matches current ocup (same person)
+    // This prevents mixing two different guests
     if(u.co_date === todayMMDD && (u.ocup_name||u.hues_name)){
-      if(!cur.sale){
-        cur.sale = u.ocup_name || u.hues_name || '';
+      const prevName = u.ocup_name || u.hues_name || '';
+      const curIsEmpty = !cur.sale && !cur.ocup && !cur.hues;
+      const curMatchesPrev = cur.ocup === prevName || cur.ocup === u.hues_name;
+      if(!cur.sale && (curIsEmpty || curMatchesPrev)){
+        cur.sale = prevName;
         changed = true;
       }
     }
-    // Carry forward continuing guests (CO not today) — only if fields empty
+    
+    // ── CARRY FORWARD ──
+    // Only carry forward if unit is COMPLETELY empty (no CI, no CO, no ocup, no hues)
+    // This prevents overwriting any manually entered data
     if(u.co_date !== todayMMDD && (u.ocup_name||u.hues_name)){
-      if(!cur.ocup && !cur.hues){
+      const unitIsBlank = !cur.ci && !cur.co && !cur.ocup && !cur.hues;
+      if(unitIsBlank){
+        // Carry forward: the guest arriving in prev report becomes the guest in house
         cur.ocup = u.hues_name || u.ocup_name || '';
         cur.ci   = u.ci_date || '';
         cur.co   = u.co_date || '';
