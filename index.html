@@ -195,7 +195,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
 .td-arr{background:#F0E8FF!important;color:#5A00A0!important;font-weight:600;}
 .td-earl{background:#EDE7F6!important;color:#4A1A8A!important;font-weight:600;}
 .td-cy{background:#D5F5E3!important;color:#0A5A2A!important;font-weight:700;}
-.td-cn{background:#FADBD8!important;color:#8B1A1A!important;}
+
 .td-dec{background:#E6FAF0!important;color:#0A5030!important;font-weight:600;}
 .td-man{background:#FFCDD2!important;color:#8B1A1A!important;font-weight:700;}
 .td-nts{font-weight:700;color:var(--teal)!important;font-size:9px;}
@@ -654,7 +654,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
             <div class="oc oc7"><div class="oc-n" id="oc-ea">0</div><div class="oc-l">Early CI</div></div>
             <div class="oc oc8"><div class="oc-n" id="oc-dc">0</div><div class="oc-l">Deco</div></div>
             <div class="oc oc9"><div class="oc-n" id="oc-vc">0</div><div class="oc-l">Vacantes</div></div>
-            <div class="oc oc10"><div class="oc-n" id="oc-cn">0</div><div class="oc-l">Contactados</div></div>
+            
           </div>
           <table class="rt">
             <colgroup>
@@ -676,7 +676,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
               <th class="tmal">Mal</th>
               <th class="tdec">Decoracion</th>
               <th class="tman">Mnt</th>
-              <th style="background:#2C3E50;">Cont.</th>
+              
               <th class="tn">Notas</th>
             </tr></thead>
             <tbody id="rtbody"></tbody>
@@ -1848,8 +1848,12 @@ async function loadTodayReport(){
           if(u.co_date!==todayMMDD&&prevName){
             const unitIsBlank=!cur.ci&&!cur.co&&!cur.ocup&&!cur.hues;
             if(unitIsBlank){
-              cur.ocup=u.hues_name||u.ocup_name||'';
-              cur.ci=u.ci_date||'';cur.co=u.co_date||'';
+              cur.ocup  =u.hues_name||u.ocup_name||'';
+              cur.ci    =u.ci_date||'';
+              cur.co    =u.co_date||'';
+              // Clear arrival-day fields — guest is already in house
+              cur.arr='';cur.early='';cur.cotime='';
+              cur.mal=false;cur.g='';cur.deco='';cur.notes='';
             }
           }
         });
@@ -3026,9 +3030,12 @@ async function autoEnrichFromPrev(dateVal){
       const unitIsBlank = !cur.ci && !cur.co && !cur.ocup && !cur.hues;
       if(unitIsBlank){
         // Carry forward: the guest arriving in prev report becomes the guest in house
-        cur.ocup = u.hues_name || u.ocup_name || '';
-        cur.ci   = u.ci_date || '';
-        cur.co   = u.co_date || '';
+        cur.ocup  = u.hues_name || u.ocup_name || '';
+        cur.ci    = u.ci_date || '';
+        cur.co    = u.co_date || '';
+        // Clear arrival-day fields — guest already in house
+        cur.arr=''; cur.early=''; cur.cotime='';
+        cur.mal=false; cur.g=''; cur.deco=''; cur.notes='';
         changed = true;
       }
     }
