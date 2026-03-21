@@ -665,20 +665,24 @@ body{font-family:'DM Sans',sans-serif;background:#0D1F2D;min-height:100vh;color:
               <col style="width:48px"><col style="width:28px">
               <col style="width:80px"><col style="width:32px"><col style="width:40px"><col>
             </colgroup>
-            <thead><tr>
-              <th class="tn">Prop</th><th class="tn">#</th>
-              <th class="tci">CI</th><th class="tco">CO</th><th class="tn">Nts</th>
-              <th class="tocup">Huesped en Casa</th>
-              <th class="tsale">Sale Hoy</th>
-              <th class="thues">Llega Hoy</th>
-              <th class="tarr">Llegada</th><th class="team">Early CI</th>
-              <th class="tcot">Hora Sal</th>
-              <th class="tmal">Mal</th>
-              <th class="tdec">Decoracion</th>
-              <th class="tman">Mnt</th>
-              
-              <th class="tn">Notas</th>
-            </tr></thead>
+            <thead><tr id="rth">
+          <th class="tn">PROP</th>
+          <th class="tn">#</th>
+          <th class="tci">CI</th>
+          <th class="tco">CO</th>
+          <th class="tn" style="font-size:5px;min-width:40px;">N.HOY/TOT</th>
+          <th class="tocup">HUESPED EN CASA</th>
+          <th class="tsale">SALE HOY</th>
+          <th class="thues">LLEGA HOY</th>
+          <th class="tarr">LLEGADA</th>
+          <th class="team">EARLY CI</th>
+          <th class="tcot">HORA SAL</th>
+          <th class="tn" style="background:#1A3A6A;">MAL</th>
+          <th style="background:#5A1A7A;color:#fff;font-size:7px;">GTS</th>
+          <th class="tdec">DECORACION</th>
+          <th class="tman">MNT</th>
+          <th class="tn">NOTAS</th>
+        </tr></thead>
             <tbody id="rtbody"></tbody>
           </table>
           <div class="rn"><div class="rn-l">Handoff Notes</div><div class="rn-v" id="rn-v">—</div></div>
@@ -1958,14 +1962,14 @@ function updateReport(){
         <td style="font-size:7.5px">${d.ci||'—'}</td>
         <td style="font-size:7.5px">${d.co||'—'}</td>
         <td class="td-nts" style="min-width:32px">${ntsDisplay}</td>
-        <td style="text-align:left;font-size:7.5px;color:#2C3E50;font-weight:${d.ocup?500:400}">${d.ocup||''}</td>
+        <td style="text-align:left;font-size:7.5px;color:#2C3E50;font-weight:500">${isVac?'<span style="color:#7A4800;font-style:italic;font-size:7px">VACANTE</span>':(isMaint&&!d.ocup&&!d.hues?'':(d.ocup||''))}</td>
         <td class="${sale?'td-sale':''}" style="text-align:left;font-size:7.5px;font-weight:${sale?600:400}">${sale||''}</td>
-        <td class="${d.hues?'td-hues':''}" style="text-align:left;font-size:7.5px">${isVac?'VACANTE':(isMaint?d.maint:(d.hues||''))}</td>
+        <td class="${d.hues?'td-hues':''}" style="text-align:left;font-size:7.5px">${d.hues||''}</td>
         <td class="${d.arr?'td-arr':''}" style="font-size:7.5px">${d.arr||''}</td>
         <td class="${d.early?'td-earl':''}" style="font-size:7.5px">${d.early||''}</td>
         <td style="font-size:7.5px">${d.cotime||''}</td>
         <td class="${d.mal?'td-mal':''}">${d.mal?'Si':''}</td>
-        <td style="font-size:9px;text-align:center">${guestNum}</td>
+        <td style="font-size:9px;text-align:center;font-weight:700;color:var(--purple)">${d.g||''}</td>
         <td class="${d.deco?'td-dec':''}" style="font-size:7.5px">${d.deco||''}</td>
         <td class="${isMaint?'td-man':''}">${d.maint||''}</td>
         <td class="nt">${d.notes||''}</td>`;
