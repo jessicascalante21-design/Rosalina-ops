@@ -2017,7 +2017,9 @@ function renderOccupancy(){
       const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
       const saleToday=!!d.sale||(rd&&d.co===rd.mmdd&&!!d.ocup);
       const ciToday=rd&&d.ci===rd.mmdd&&!!d.hues;
-      const nts=nightsSoFar(d.ci,rd);
+      const ntsObj2=nightsSoFar(d.ci,rd);
+      const nts=typeof ntsObj2==='object'?ntsObj2.done:ntsObj2;
+      const ntsTotal2=totalNights(d.ci,d.co);
       if(isMaint)mt++;else if(isVac)vac++;else{occ++;if(saleToday)co++;if(ciToday||d.hues)ci++;}
       const ctype=isMaint?'maint':isVac?'vacant':saleToday?'checkout':(ciToday||!!d.hues)?'checkin':'occupied';
       const gname=isMaint?d.maint:isVac?'Vacante':d.ocup||d.hues||'—';
@@ -2028,7 +2030,7 @@ function renderOccupancy(){
         <div style="font-size:13px;font-weight:600;color:var(--txt)">${gname}</div>
         <div style="font-size:9px;color:var(--txt2)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
         ${saleName?`<div style="font-size:9px;font-weight:600;color:var(--orange);">→ Sale: ${saleName}</div>`:''}
-        ${nts!==''?`<div class="occ-nights">${nts}</div><div class="occ-nts-lbl">noches</div>`:''}
+        ${nts!==''?`<div class="occ-nights">${nts}${ntsTotal2?'<span style="font-size:11px;color:#999">/${ntsTotal2}</span>':''}</div><div class="occ-nts-lbl">noches</div>`:''}
         <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
           ${(saleToday||d.sale)?'<span class="ur-tag ut-co">Sale Hoy</span>':''}
           ${(ciToday||d.hues)&&!isVac?'<span class="ur-tag ut-ci">Llega Hoy</span>':''}
