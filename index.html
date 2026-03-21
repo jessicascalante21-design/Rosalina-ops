@@ -1413,10 +1413,10 @@ const PROPS = [
   {id:'op',name:'OCEAN PARK',short:'OP',units:19,color:'#1A3A6A',cls:'op'},
   {id:'iv',name:'ISLA VERDE', short:'IV',units:6, color:'#1A5C32',cls:'iv'},
 ];
-const ARR_O  = ['','10:00 AM','11:00 AM','12:00 PM','01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM','06:00 PM','07:00 PM','08:00 PM'];
+const ARR_O  = ['','06:00 AM','07:00 AM','08:00 AM','09:00 AM','10:00 AM','11:00 AM','12:00 PM','01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM','06:00 PM','07:00 PM','08:00 PM','09:00 PM','10:00 PM','11:00 PM'];
 const EARL_O = ['','11:00 AM','12:00 PM','01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM'];
 const CT_O   = ['','Si','No','—'];
-const COT_O  = ['','10:00 AM','11:00 AM','12:00 PM','01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM'];
+const COT_O  = ['','08:00 AM','09:00 AM','10:00 AM','11:00 AM','12:00 PM','01:00 PM','02:00 PM','03:00 PM','04:00 PM','05:00 PM','06:00 PM','07:00 PM','08:00 PM','09:00 PM','10:00 PM','11:00 PM','12:00 AM'];
 const DECO_O = ['','Cumpleanos','Aniversario','Luna de Miel','Celebracion','Decoracion Especial'];
 const MAINT_O= ['','MANT','BLOQ'];
 
@@ -1882,19 +1882,27 @@ function getRD(){
   return{full:d,mmdd:`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`};
 }
 function nightsSoFar(ci,rd){
-  if(!ci||!rd)return'';
-  // Parse CI — format MM/DD
+  if(!ci||!rd)return{done:'',total:''};
   const parts=ci.split('/');
-  if(parts.length<2)return'';
+  if(parts.length<2)return{done:'',total:''};
   const[m,dd]=parts.map(Number);
-  // Handle year rollover (Jan CI with Dec report, etc.)
   let year=rd.full.getFullYear();
   const ciD=new Date(year,m-1,dd);
-  // If CI is after report date, it must be from previous year
-  if(ciD>rd.full) ciD.setFullYear(year-1);
-  const n=Math.round((rd.full-ciD)/86400000);
-  // Show at least 1 for guests currently in house
-  return n>=0?Math.max(1,n):'';
+  if(ciD>rd.full)ciD.setFullYear(year-1);
+  const done=Math.max(1,Math.round((rd.full-ciD)/86400000));
+  return{done,total:''};
+}
+
+function totalNights(ci,co){
+  if(!ci||!co)return'';
+  const[cm,cd]=ci.split('/').map(Number);
+  const[om,od]=co.split('/').map(Number);
+  const y=new Date().getFullYear();
+  let ciD=new Date(y,cm-1,cd);
+  let coD=new Date(y,om-1,od);
+  if(coD<ciD)coD.setFullYear(y+1);
+  const n=Math.round((coD-ciD)/86400000);
+  return n>0?n:'';
 }
 
 function updateReport(){
@@ -1928,36 +1936,42 @@ function updateReport(){
   tbody.innerHTML='';let ri=0;
   PROPS.forEach((prop,pi)=>{
     const ph=document.createElement('tr');ph.className='prop-hdr-r';
-    ph.innerHTML=`<td colspan="15" style="background:${prop.color}">${prop.name}</td>`;tbody.appendChild(ph);
+    ph.innerHTML=`<td colspan="16" style="background:${prop.color}">${prop.name}</td>`;tbody.appendChild(ph);
     UNITS[prop.id].forEach((d,u)=>{
       const isMaint=!!d.maint,isVac=!d.ocup&&!d.hues&&!isMaint;
       const sale=d.sale||'';
-      const nts=nightsSoFar(d.ci,rd);
       const tr=document.createElement('tr');
       // Only full-red if maint AND no guest; if guest present just show maint tag
       if(isMaint&&!d.ocup&&!d.hues)tr.className='tr-maint';
       else if(isVac)tr.className='tr-vac';
       else if(ri%2===1)tr.className='tr-alt';
+      const ntsObj=nightsSoFar(d.ci,rd);
+      const ntsDone=ntsObj.done;
+      const ntsTotal=totalNights(d.ci,d.co);
+      const ntsDisplay=(!isMaint&&!isVac&&ntsDone!=='')?
+        (ntsTotal?`<span style="font-weight:800;color:var(--teal)">${ntsDone}</span><span style="color:#999;font-size:7px">/${ntsTotal}</span>`:
+        `<span style="font-weight:800;color:var(--teal)">${ntsDone}</span>`):'—';
+      const guestNum=d.g?`<span style="font-size:9px;font-weight:700;color:var(--purple)">${d.g}</span>`:'';
       tr.innerHTML=`
         <td class="td-prop" style="background:${prop.color}">${prop.short}</td>
         <td class="td-unit">${u+1}</td>
         <td style="font-size:7.5px">${d.ci||'—'}</td>
         <td style="font-size:7.5px">${d.co||'—'}</td>
-        <td class="td-nts">${nts!==''?nts:'—'}</td>
+        <td class="td-nts" style="min-width:32px">${ntsDisplay}</td>
         <td style="text-align:left;font-size:7.5px;color:#2C3E50;font-weight:${d.ocup?500:400}">${d.ocup||''}</td>
         <td class="${sale?'td-sale':''}" style="text-align:left;font-size:7.5px;font-weight:${sale?600:400}">${sale||''}</td>
         <td class="${d.hues?'td-hues':''}" style="text-align:left;font-size:7.5px">${isVac?'VACANTE':(isMaint?d.maint:(d.hues||''))}</td>
+        <td style="font-size:7.5px;text-align:center">${guestNum}</td>
         <td class="${d.arr?'td-arr':''}" style="font-size:7.5px">${d.arr||''}</td>
         <td class="${d.early?'td-earl':''}" style="font-size:7.5px">${d.early||''}</td>
         <td style="font-size:7.5px">${d.cotime||''}</td>
         <td class="${d.mal?'td-mal':''}">${d.mal?'Si':''}</td>
         <td class="${d.deco?'td-dec':''}" style="font-size:7.5px">${d.deco||''}</td>
         <td class="${isMaint?'td-man':''}">${d.maint||''}</td>
-        <td style="font-size:8px;font-weight:700;color:var(--teal);text-align:center;">${nts!==''&&!isMaint&&!isVac?(nts+' N'):'—'}</td>
         <td class="nt">${d.notes||''}</td>`;
       tbody.appendChild(tr);ri++;
     });
-    if(pi<PROPS.length-1){const s=document.createElement('tr');s.className='prop-sep';s.innerHTML='<td colspan="15"></td>';tbody.appendChild(s);}
+    if(pi<PROPS.length-1){const s=document.createElement('tr');s.className='prop-sep';s.innerHTML='<td colspan="16"></td>';tbody.appendChild(s);}
   });
 }
 
