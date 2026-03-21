@@ -1961,11 +1961,11 @@ function updateReport(){
         <td style="text-align:left;font-size:7.5px;color:#2C3E50;font-weight:${d.ocup?500:400}">${d.ocup||''}</td>
         <td class="${sale?'td-sale':''}" style="text-align:left;font-size:7.5px;font-weight:${sale?600:400}">${sale||''}</td>
         <td class="${d.hues?'td-hues':''}" style="text-align:left;font-size:7.5px">${isVac?'VACANTE':(isMaint?d.maint:(d.hues||''))}</td>
-        <td style="font-size:7.5px;text-align:center">${guestNum}</td>
         <td class="${d.arr?'td-arr':''}" style="font-size:7.5px">${d.arr||''}</td>
         <td class="${d.early?'td-earl':''}" style="font-size:7.5px">${d.early||''}</td>
         <td style="font-size:7.5px">${d.cotime||''}</td>
         <td class="${d.mal?'td-mal':''}">${d.mal?'Si':''}</td>
+        <td style="font-size:9px;text-align:center">${guestNum}</td>
         <td class="${d.deco?'td-dec':''}" style="font-size:7.5px">${d.deco||''}</td>
         <td class="${isMaint?'td-man':''}">${d.maint||''}</td>
         <td class="nt">${d.notes||''}</td>`;
