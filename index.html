@@ -2076,7 +2076,6 @@ async function loadAndRenderShiftLog(){
       // Create a minimal report record so activities can be saved
       const{data:newRep}=await sb.from('daily_reports').insert({
         report_date:dateVal,shift,
-        agent_id:currentUser?.id,
         agent_name:currentProfile?.full_name||'—'
       }).select().single();
       if(newRep) currentReportId=newRep.id;
