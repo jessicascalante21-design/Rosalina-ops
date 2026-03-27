@@ -114,13 +114,16 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
   display:none;align-items:center;justify-content:center;
   color:var(--ink);font-size:11px;font-weight:700;margin-left:auto;flex-shrink:0;
 }
+.upc-info{flex:1;}
+.user-pick-card:hover .upc-name{color:var(--gold2);}
 #sel-user-display{
   display:flex;align-items:center;gap:12px;
   padding:11px 14px;background:rgba(253,252,248,0.06);
   border-radius:12px;margin-bottom:16px;cursor:pointer;
-  border:1px solid rgba(253,252,248,0.1);transition:border-color .15s;
+  border:1px solid rgba(253,252,248,0.12);transition:border-color .15s;
 }
 #sel-user-display:hover{border-color:rgba(196,151,58,0.4);}
+#sel-user-display .upc-role{color:rgba(253,252,248,0.35);}
 
 /* ══ APP ══ */
 .app{display:none;flex-direction:column;height:100vh;overflow:hidden;}
@@ -207,7 +210,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 .main{flex:1;overflow:hidden;display:flex;min-height:0;}
 .page{display:none;width:100%;flex:1;min-height:0;overflow:hidden;}
 .page.active{display:flex;flex-direction:column;}
-.inner{flex:1;overflow-y:auto;padding:20px 24px;-webkit-overflow-scrolling:touch;}
+.inner{flex:1;overflow-y:auto;padding:20px 24px;-webkit-overflow-scrolling:touch;color:var(--ink);}
 .pg-title{font-family:var(--ff-d);font-size:22px;color:var(--ink);font-weight:400;margin-bottom:4px;}
 .pg-sub{font-size:11px;color:var(--ink3);}
 
@@ -293,9 +296,9 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 .oc:last-child{border-right:none;}
 .oc-n{font-family:var(--ff-d);font-size:22px;line-height:1;color:#fff;}
 .oc-l{font-size:5.5px;font-weight:600;color:rgba(255,255,255,.65);margin-top:1px;text-transform:uppercase;}
-.oc1{background:#1A3A6A}.oc2{background:#1A5C32}.oc3{background:#2C3E50}
+.oc1{background:var(--op)}.oc2{background:var(--iv)}.oc3{background:#2C3E50}
 .oc4{background:#7A1C1C}.oc5{background:#2C6B6B}.oc6{background:#7A3A00}
-.oc7{background:#5A3A9A}.oc8{background:#0D8A4E}.oc9{background:#1A5C32}
+.oc7{background:#5A3A9A}.oc8{background:#0D8A4E}.oc9{background:var(--iv)}
 .rt{width:100%;border-collapse:collapse;font-size:7.5px;}
 .rt th{font-size:6px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;padding:4px 3px;text-align:center;border-right:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1);color:#fff;white-space:nowrap;}
 .rt td{padding:3px 3px;border-right:1px solid #E8E0D4;border-bottom:1px solid #E8E0D4;text-align:center;color:var(--ink);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0;}
@@ -329,7 +332,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 .card{
   background:var(--white);border-radius:var(--radius);
   overflow:visible;box-shadow:var(--shadow);margin-bottom:12px;
-  border:1px solid var(--bdr);
+  border:1px solid var(--bdr);color:var(--ink);
 }
 .card-hdr{
   padding:9px 16px;font-size:9px;font-weight:600;letter-spacing:0.5px;
@@ -365,7 +368,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
   padding:14px 18px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;
   box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--bdr);
 }
-.osb-n{font-family:var(--ff-d);font-size:30px;line-height:1;}
+.osb-n{font-family:var(--ff-d);font-size:30px;line-height:1;color:var(--ink);}
 .osb-l{font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-top:4px;}
 .ur-tag{font-size:7px;}
 
@@ -639,7 +642,104 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 }
 @media(max-width:480px){
   .occ-grid{grid-template-columns:1fr;}
-  .occ-sumbar{grid-template-columns:repeat(2,1fr);}
+  .occ-sumbar{grid-template-columns:repeat(2,1fr
+/* ── ADDITIONAL FIXES ── */
+/* Login step labels inside step2 */
+#login-step2 .lf label{color:rgba(253,252,248,0.45);}
+
+/* User picker info */
+.upc-info{flex:1;min-width:0;}
+
+/* Occ sumbar colors */
+.osb-co{color:var(--coral)!important;}
+.osb-ci{color:var(--sage)!important;}
+.osb-occ-op{color:var(--teal)!important;}
+
+/* Hub kpi colors */
+.hub-kpi-n.green{color:#6BC88A;}
+.hub-kpi-n.amber{color:var(--gold2);}
+.hub-kpi-n.coral{color:#E08070;}
+.hub-kpi-n.gray{color:rgba(255,255,255,0.3);}
+
+/* Schedule rows visible */
+.sched-emp-row *{color:var(--ink);}
+.sched-emp-row.jessica *{color:var(--ink);}
+.sched-jessica .sched-day-hrs{color:var(--gold)!important;}
+
+/* Add form visible */
+.add-form *{color:var(--ink);}
+.add-form .add-form-title{color:var(--ink2);}
+
+/* Gtable visible */
+.gtable *{color:var(--ink2);}
+.gtable th{color:var(--ink3)!important;}
+
+/* Task card text */
+.task-card *{color:var(--ink2);}
+.task-card .tp{color:inherit;}
+
+/* Activity entry text */
+.act-in{color:var(--ink)!important;}
+
+/* Cleaning grid text */
+.cl-unit *{color:var(--ink2);}
+
+/* Inventory grid text */
+#inventory-grid .card *{color:var(--ink);}
+
+/* Inner page headings */
+.inner .pg-title{color:var(--ink);}
+.inner h2,.inner h3{color:var(--ink);}
+
+/* Make sure fi labels show */  
+.fi label{color:var(--ink3)!important;}
+
+/* Fix hub section text */
+.hub-section p,.hub-section div{color:rgba(255,255,255,0.7);}
+.hub-label{color:rgba(255,255,255,0.3)!important;}
+.hub-arrival .name{color:#fff!important;}
+.hub-arrival .meta{color:rgba(255,255,255,0.4)!important;}
+.hub-alert{color:rgba(196,90,58,0.9)!important;}
+.hub-kpi-l{color:rgba(255,255,255,0.3)!important;}
+.hub-kpi-n{color:#fff!important;}
+
+/* Hub handoff */
+#hub-handoff{color:rgba(255,255,255,0.4)!important;}
+#hub-date-lbl{color:rgba(255,255,255,0.25)!important;}
+
+/* Report header text */
+.rt-title{color:#fff!important;}
+.rmi .v{color:#fff!important;}
+.ss-name{color:#fff!important;}
+
+/* Notification panel */
+.notif-hdr h3{color:#fff!important;}
+.notif-title{color:var(--ink)!important;}
+.notif-body{color:var(--ink3)!important;}
+
+/* HK modal */
+.hk-modal-title{color:var(--ink)!important;}
+.hk-modal-sub{color:var(--ink3)!important;}
+.hk-name-btn{color:var(--ink)!important;}
+
+/* Chat bubbles */
+.chat-bubble{color:var(--ink)!important;}
+.chat-msg-wrap.me .chat-bubble{color:#fff!important;}
+.chat-msg-sender{color:var(--teal)!important;}
+.chat-time{color:var(--ink3)!important;}
+.chat-msg-wrap.me .chat-time{color:var(--ink3)!important;}
+
+/* Occ unit card text */
+.occ-unit-card{color:var(--ink);}
+.occ-unit-card *{color:inherit;}
+
+/* Ur-tag colors already set but ensure visibility */
+.ut-vac{color:#8B6A20!important;}
+.ut-ci{color:var(--teal)!important;}
+.ut-co{color:#7A4800!important;}
+.ut-mnt{color:var(--coral)!important;}
+.ut-deco{color:var(--sage)!important;}
+);}
 }
 </style>
 </head>
@@ -652,7 +752,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
     box-shadow:0 24px 64px rgba(0,0,0,0.4);">
     <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:6px;">
       Housekeeping</div>
-    <div style="font-size:11px;color:var(--txt2);margin-bottom:16px;">¿Quien eres tu hoy?</div>
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:16px;">¿Quien eres tu hoy?</div>
     <div style="display:flex;flex-direction:column;gap:8px;" id="hk-name-options">
       <button onclick="setHKName('Jailyn')"   class="hk-name-btn">Jailyn</button>
       <button onclick="setHKName('Johanna')"  class="hk-name-btn">Johanna</button>
@@ -660,7 +760,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
       <button onclick="setHKName('Alondra')"  class="hk-name-btn">Alondra</button>
     </div>
     <div style="margin-top:12px;text-align:center;">
-      <div style="font-size:10px;color:var(--txt2);margin-bottom:6px;">O escribe tu nombre:</div>
+      <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;">O escribe tu nombre:</div>
       <input id="hk-name-custom" placeholder="Nombre..." 
         style="width:100%;padding:8px 12px;border:1.5px solid var(--bdr);border-radius:8px;
         font-family:inherit;font-size:13px;outline:none;text-align:center;"
@@ -672,7 +772,7 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 <style>
 .hk-name-btn{width:100%;padding:11px;background:#F7F8FA;border:1.5px solid var(--bdr);
   border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-  color:var(--txt);cursor:pointer;transition:all .15s;text-align:left;padding-left:16px;}
+  color:var(--ink);cursor:pointer;transition:all .15s;text-align:left;padding-left:16px;}
 .hk-name-btn:hover{background:var(--tealP);border-color:var(--teal2);color:var(--teal);}
 </style>
 
@@ -685,9 +785,9 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
   </div>
   <div id="notif-list" style="flex:1;overflow-y:auto;"></div>
   <div style="padding:12px;">
-    <div class="fi full" style="margin-bottom:6px;"><label style="color:var(--txt2)">Titulo</label><input id="new-notif-title" placeholder="Titulo..."></div>
+    <div class="fi full" style="margin-bottom:6px;"><label style="color:var(--ink3)">Titulo</label><input id="new-notif-title" placeholder="Titulo..."></div>
     <div class="fi full" style="margin-bottom:8px;"><textarea id="new-notif-body" placeholder="Mensaje..." style="min-height:60px;width:100%;padding:6px 8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;outline:none;resize:none;"></textarea></div>
-    <div class="fi full" style="margin-bottom:8px;"><label style="color:var(--txt2)">Enviar a</label>
+    <div class="fi full" style="margin-bottom:8px;"><label style="color:var(--ink3)">Enviar a</label>
       <select id="new-notif-to" style="padding:6px 8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;width:100%;">
         <option value="gerencia">Solo Gerencia</option>
         <option value="gs">Todo GS</option>
@@ -709,13 +809,13 @@ body{font-family:var(--ff-b);background:var(--sand);color:var(--ink);min-height:
 .meta-collapsed { display:none; }
 .sched-emp-row { background:#fff; border-radius:8px; padding:12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
 .sched-emp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.sched-emp-name { font-size:13px; font-weight:600; color:var(--txt); }
-.sched-emp-role { font-size:9px; color:var(--txt2); margin-top:1px; }
+.sched-emp-name { font-size:13px; font-weight:600; color:var(--ink); }
+.sched-emp-role { font-size:9px; color:var(--ink3); margin-top:1px; }
 .sched-emp-rate { display:flex; align-items:center; gap:6px; font-size:11px; }
 .sched-emp-rate input { width:70px; border:1.5px solid var(--bdr); border-radius:5px; padding:4px 6px; font-size:11px; font-family:inherit; text-align:center; }
 .sched-days { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
 .sched-day { display:flex; flex-direction:column; gap:2px; }
-.sched-day-lbl { font-size:8px; font-weight:700; text-transform:uppercase; color:var(--txt2); text-align:center; letter-spacing:0.3px; }
+.sched-day-lbl { font-size:8px; font-weight:700; text-transform:uppercase; color:var(--ink3); text-align:center; letter-spacing:0.3px; }
 .sched-day select { font-size:8px; border:1px solid var(--bdr); border-radius:4px; padding:3px 2px; font-family:inherit; background:#F7F8FA; width:100%; }
 .sched-day select:focus { border-color:var(--teal2); background:var(--tealP); }
 .sched-day-hrs { font-size:9px; text-align:center; color:var(--teal); font-weight:600; }
@@ -732,7 +832,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── CONSTANTS ─────────────────────────────────────────────
-const ROLE_COLORS = {gs:'#0B7A8A',hk:'#27AE60',gerencia:'#C49A28',mant:'#CC1111'};
+const ROLE_COLORS = {gs:'#0B7A8A',hk:'#27AE60',gerencia:'#C49A28',mant:'var(--coral)'};
 const ROLE_LABELS = {gs:'Guest Services',hk:'Housekeeping',gerencia:'Gerencia',mant:'Mantenimiento'};
 const PROPS = [
   {id:'op',name:'OCEAN PARK',short:'OP',units:19,color:'#1A3A6A',cls:'op'},
@@ -828,7 +928,7 @@ function selectUser(email, name, card){
   const av=document.getElementById('sel-avatar');
   const avatarColor=card.querySelector('.upc-avatar').style.background;
   av.textContent=name[0].toUpperCase();
-  av.style.background=avatarColor;
+  av.style.background=card.querySelector('.upc-avatar').style.background;
   document.getElementById('sel-name').textContent=name;
   document.getElementById('login-step1').style.display='none';
   document.getElementById('login-step2').style.display='block';
@@ -1051,7 +1151,7 @@ function buildForm(){
           <div style="display:flex;gap:3px;">${tags}</div>
           <span class="ur-chev">▾</span>
           <button onclick="resetUnit('${prop.id}',${u},event)" title="Limpiar unidad"
-            style="border:none;background:rgba(204,17,17,0.1);color:var(--maint);border-radius:4px;
+            style="border:none;background:rgba(204,17,17,0.1);color:var(--coral);border-radius:4px;
             padding:1px 6px;cursor:pointer;font-size:9px;font-weight:700;margin-left:4px;flex-shrink:0;z-index:1;">✕</button>
         </div>
         <div class="ur-fields">${fields}</div>`;
@@ -1357,9 +1457,9 @@ function renderOccupancy(){
       const saleName=d.sale||'';
       const c=document.createElement('div');c.className=`occ-unit-card ${ctype}`;
       c.innerHTML=`
-        <div style="font-size:9px;font-weight:700;color:var(--txt2);margin-bottom:3px">${prop.short} · Unidad ${u+1}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--txt)">${gname}</div>
-        <div style="font-size:9px;color:var(--txt2)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
+        <div style="font-size:9px;font-weight:700;color:var(--ink3);margin-bottom:3px">${prop.short} · Unidad ${u+1}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink)">${gname}</div>
+        <div style="font-size:9px;color:var(--ink3)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
         ${saleName?`<div style="font-size:9px;font-weight:600;color:var(--orange);">→ Sale: ${saleName}</div>`:''}
         ${nts!==''?`<div class="occ-nights">${nts}${ntsTotal2?'<span style="font-size:11px;color:#999">/${ntsTotal2}</span>':''}</div><div class="occ-nts-lbl">noches</div>`:''}
         <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
@@ -1461,7 +1561,7 @@ function renderActivities(){
     const div=document.createElement('div');div.className='act-entry';
     if(isRO){
       div.style.cssText='background:#F8F9FA;border-radius:6px;border:1px solid var(--bdr);padding:8px 12px;margin-bottom:4px;display:grid;grid-template-columns:68px 55px 120px auto 80px 88px;gap:5px;align-items:center;';
-      div.innerHTML=`<span style="font-size:10px;color:var(--txt2)">${a.log_time||''}</span>
+      div.innerHTML=`<span style="font-size:10px;color:var(--ink3)">${a.log_time||''}</span>
         <span style="font-size:10px;font-weight:600">${a.unit_ref||''}</span>
         <span style="font-size:10px">${a.guest_name||''}</span>
         <span style="font-size:10px">${a.description||''}</span>
@@ -1644,8 +1744,8 @@ function renderHKStaff(){
     const assigned=Object.values(hkAssignments).filter(a=>a===name).length;
     const d=document.createElement('div');
     d.style.cssText='background:#F7F8FA;border:1.5px solid var(--bdr);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;';
-    d.innerHTML=`<div><div style="font-size:13px;font-weight:600;color:var(--txt)">${name}</div>
-      <div style="font-size:10px;color:var(--txt2);margin-top:2px">${assigned} habitacion${assigned!==1?'es':''} asignada${assigned!==1?'s':''}</div></div>
+    d.innerHTML=`<div><div style="font-size:13px;font-weight:600;color:var(--ink)">${name}</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:2px">${assigned} habitacion${assigned!==1?'es':''} asignada${assigned!==1?'s':''}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--teal)">${assigned}</div>`;
     container.appendChild(d);
   });
@@ -1757,16 +1857,16 @@ function renderTasks(){
     c.innerHTML=`
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:62px">
         <span class="tp tp-${t.priority}">${PRIOLBL[t.priority]}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">Vence: ${t.due_date||'—'}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">${t.unit_ref||''}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">Vence: ${t.due_date||'—'}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">${t.unit_ref||''}</span>
       </div>
       <div style="flex:1">
-        <div style="font-size:11.5px;font-weight:600;color:var(--txt);margin-bottom:2px">${t.task_type||'Tarea'}</div>
-        <div style="font-size:9.5px;color:var(--txt2);line-height:1.45">${t.description}</div>
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:2px">${t.task_type||'Tarea'}</div>
+        <div style="font-size:9.5px;color:var(--ink3);line-height:1.45">${t.description}</div>
         <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center">
           <span style="font-size:9px;font-weight:600;color:var(--teal)">${t.assigned_to||''}</span>
           <button class="tstatus ${STCLS[t.status]||'ts-p'}" onclick="cycleTask('${t.id}')">${STLBL[t.status]||'Pendiente'}</button>
-          ${t.result?`<span style="font-size:7.5px;color:var(--txt2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.result.replace(/"/g,'&quot;')}">${t.result.split('\n').pop()}</span>`:''}
+          ${t.result?`<span style="font-size:7.5px;color:var(--ink3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.result.replace(/"/g,'&quot;')}">${t.result.split('\n').pop()}</span>`:''}
           <button onclick="deleteTask('${t.id}')" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:11px">×</button>
         </div>
       </div>`;
@@ -1860,14 +1960,14 @@ function renderMaint(){
     c.innerHTML=`
       <div style="display:flex;flex-direction:column;gap:4px;min-width:70px">
         <span class="tp tp-${m.priority}">${PRIOLBL[m.priority]}</span>
-        <span style="font-size:8px;color:var(--txt2)">${m.unit_ref||''}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">${new Date(m.created_at).toLocaleDateString('es-PR')}</span>
+        <span style="font-size:8px;color:var(--ink3)">${m.unit_ref||''}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">${new Date(m.created_at).toLocaleDateString('es-PR')}</span>
       </div>
       <div style="flex:1">
-        <div style="font-size:11px;font-weight:600;color:var(--txt)">${m.issue_type} — ${m.unit_ref||''}</div>
-        <div style="font-size:9.5px;color:var(--txt2);margin-top:2px">${m.description}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--ink)">${m.issue_type} — ${m.unit_ref||''}</div>
+        <div style="font-size:9.5px;color:var(--ink3);margin-top:2px">${m.description}</div>
         <div style="display:flex;gap:6px;margin-top:5px;align-items:center;flex-wrap:wrap">
-          <span style="font-size:9px;color:var(--txt2)">Por: ${m.reported_by||'—'}</span>
+          <span style="font-size:9px;color:var(--ink3)">Por: ${m.reported_by||'—'}</span>
           ${m.assigned_to?`<span style="font-size:9px;font-weight:600;color:var(--teal)">→ ${m.assigned_to}</span>`:''}
           <span class="tp ${STCLS2[m.status]||'tp-media'}">${STLBL2[m.status]||m.status}</span>
           ${m.status!=='done'?`<button onclick="closeMaint('${m.id}')" style="border:none;background:#D5F5E3;color:#0A5A2A;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;cursor:pointer">Marcar Resuelto</button>`:''}
@@ -1892,7 +1992,7 @@ async function loadNotifications(){
 }
 function renderNotifications(){
   const list=document.getElementById('notif-list');if(!list)return;list.innerHTML='';
-  if(!notifications.length){list.innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--txt2)">Sin notificaciones</div>';return;}
+  if(!notifications.length){list.innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--ink3)">Sin notificaciones</div>';return;}
   const TCLS={info:'nt-info',alert:'nt-alert',request:'nt-req',approval:'nt-app'};
   notifications.forEach(n=>{
     const unread=!n.read_by?.includes(currentUser?.id);
@@ -1994,7 +2094,7 @@ async function loadTORs(){
     tr.innerHTML=`
       <td style="font-weight:600">${tor.requester_name||'—'}</td>
       <td>${tor.request_date}</td>
-      <td style="font-size:10px;color:var(--txt2)">${tor.reason||'—'}</td>
+      <td style="font-size:10px;color:var(--ink3)">${tor.reason||'—'}</td>
       <td style="font-family:monospace;font-size:10px;color:var(--teal)">${code}</td>
       <td><span style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;background:${stBg};color:${stCol}">${tor.status==='approved'?'Aprobado':tor.status==='denied'?'Denegado':'Pendiente'}</span></td>
       <td style="display:flex;gap:4px;">
@@ -2061,7 +2161,7 @@ function buildSchedGrid(){
     const rateHtml=isJessica
       ?`<div style="font-size:9px;color:var(--gold);font-weight:600;">Contrato directo · Sin costo</div>`
       :`<div class="sched-emp-rate">
-          <span style="font-size:9px;color:var(--txt2);">$/hr:</span>
+          <span style="font-size:9px;color:var(--ink3);">$/hr:</span>
           <input type="number" id="rate-${emp.name}" value="${emp.rate}" step="0.5" min="0" oninput="calcSchedCosts()">
         </div>`;
 
@@ -2075,7 +2175,7 @@ function buildSchedGrid(){
         </div>
       </div>
       <div style="display:flex;gap:2px;overflow-x:auto;padding-bottom:4px;">${daysHtml}</div>
-      <div style="font-size:8px;color:var(--txt2);margin-top:4px;">
+      <div style="font-size:8px;color:var(--ink3);margin-top:4px;">
         <span style="color:#888">▲ Entrada &nbsp; ▼ Salida &nbsp; ⏸ Descanso</span>
       </div>`;
     rows.appendChild(row);
@@ -2106,7 +2206,7 @@ function calcSchedCosts(){
         if(!si&&!se){hEl.textContent='Libre';hEl.style.color='var(--txt2)';}
         else if(si&&se){
           hEl.textContent=hrs+'h';
-          hEl.style.color=hrs>=8?'var(--teal)':hrs>=4?'var(--amber)':'var(--maint)';
+          hEl.style.color=hrs>=8?'var(--teal)':hrs>=4?'var(--amber)':'var(--coral)';
         }else{hEl.textContent='—';hEl.style.color='var(--txt2)';}
       }
     });
@@ -2265,7 +2365,7 @@ function renderHKTasks(){
   const list=document.getElementById('hk-tasks-list');if(!list)return;
   list.innerHTML='';
   if(!hkTasks.length){
-    list.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;text-align:center;">Sin pendientes</div>';
+    list.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:8px;text-align:center;">Sin pendientes</div>';
     return;
   }
   hkTasks.forEach((t,i)=>{
@@ -2278,8 +2378,8 @@ function renderHKTasks(){
         background:${done?'var(--green)':'transparent'};color:#fff;font-size:11px;"
         onclick="toggleHKTask('${t.id}',${done})">${done?'✓':''}</div>
       <div style="flex:1;">
-        <div style="font-size:10px;color:var(--txt);${done?'text-decoration:line-through;color:var(--txt2);':''}">${t.description}</div>
-        <div style="font-size:8px;color:var(--txt2);margin-top:2px;">${t.assigned_to||''} ${t.due_date?'· Vence: '+t.due_date:''}</div>
+        <div style="font-size:10px;color:var(--ink);${done?'text-decoration:line-through;color:var(--ink3);':''}">${t.description}</div>
+        <div style="font-size:8px;color:var(--ink3);margin-top:2px;">${t.assigned_to||''} ${t.due_date?'· Vence: '+t.due_date:''}</div>
       </div>
       <button onclick="deleteHKTask('${t.id}')" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:14px;padding:0;">×</button>`;
     list.appendChild(div);
@@ -2374,17 +2474,17 @@ async function loadHKHistoric(){
   if(!date){alert('Selecciona una fecha');return;}
   const{data}=await sb.from('daily_reports').select('*,unit_data(*)').eq('report_date',date).single();
   const el=document.getElementById('hk-hist-result');if(!el)return;
-  if(!data){el.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;">No hay reporte para esa fecha.</div>';el.style.display='block';return;}
+  if(!data){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:8px;">No hay reporte para esa fecha.</div>';el.style.display='block';return;}
   
-  let html=`<div style="font-size:10px;font-weight:600;color:var(--txt);margin-bottom:8px;">Ocupacion del ${date}</div>`;
+  let html=`<div style="font-size:10px;font-weight:600;color:var(--ink);margin-bottom:8px;">Ocupacion del ${date}</div>`;
   html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;">`;
   (data.unit_data||[]).forEach(u=>{
     const hasGuest=u.ocup_name||u.hues_name;
     const bg=hasGuest?'#EAF8FB':'#FFF8E8';
     const border=hasGuest?'var(--teal)':'var(--amber)';
     html+=`<div style="background:${bg};border-left:3px solid ${border};border-radius:6px;padding:8px 10px;">
-      <div style="font-size:9px;font-weight:700;color:var(--txt2);">${u.property.toUpperCase()} · ${u.unit_number}</div>
-      <div style="font-size:11px;font-weight:600;color:var(--txt);">${u.ocup_name||u.hues_name||'Vacante'}</div>
+      <div style="font-size:9px;font-weight:700;color:var(--ink3);">${u.property.toUpperCase()} · ${u.unit_number}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink);">${u.ocup_name||u.hues_name||'Vacante'}</div>
       ${u.co_date?`<div style="font-size:8px;color:var(--orange);">CO: ${u.co_date}</div>`:''}
       ${u.hues_name&&u.hues_name!==u.ocup_name?`<div style="font-size:8px;color:var(--teal);">Llega: ${u.hues_name}</div>`:''}
     </div>`;
@@ -2663,7 +2763,7 @@ function renderInventory(){
     if(status==='ok')ok++;else issues++;
     if(item.report_date>lastDate)lastDate=item.report_date;
     
-    const statusColor=status==='ok'?'var(--green)':status==='urgent'?'var(--maint)':'var(--amber)';
+    const statusColor=status==='ok'?'var(--green)':status==='urgent'?'var(--coral)':'var(--amber)';
     const statusLabel=status==='ok'?'Completo ✓':status==='urgent'?'Urgente 🔴':'Pendientes ⚠';
     const propColor=data.prop==='op'?'var(--op)':'var(--iv)';
     
@@ -2677,16 +2777,16 @@ function renderInventory(){
       <div style="padding:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <span style="font-size:11px;font-weight:700;color:${statusColor}">${statusLabel}</span>
-          <span style="font-size:9px;color:var(--txt2);">Rev: ${item.report_date||'—'} · ${data.reviewer||'—'}</span>
+          <span style="font-size:9px;color:var(--ink3);">Rev: ${item.report_date||'—'} · ${data.reviewer||'—'}</span>
         </div>
-        ${data.beds?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Camas:</span> ${data.beds}</div>`:''}
-        ${data.kitchen?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Cocina:</span> ${data.kitchen}</div>`:''}
-        ${data.amenities?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Amenidades:</span> ${data.amenities}</div>`:''}
-        ${data.missing?`<div style="font-size:10px;margin-bottom:5px;padding:6px 8px;background:#FFEBEE;border-radius:4px;"><span style="font-weight:700;color:var(--maint);">⚠ Faltantes:</span> ${data.missing}</div>`:''}
-        ${data.notes?`<div style="font-size:9px;color:var(--txt2);margin-top:4px;font-style:italic;">${data.notes}</div>`:''}
+        ${data.beds?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Camas:</span> ${data.beds}</div>`:''}
+        ${data.kitchen?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Cocina:</span> ${data.kitchen}</div>`:''}
+        ${data.amenities?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Amenidades:</span> ${data.amenities}</div>`:''}
+        ${data.missing?`<div style="font-size:10px;margin-bottom:5px;padding:6px 8px;background:#FFEBEE;border-radius:4px;"><span style="font-weight:700;color:var(--coral);">⚠ Faltantes:</span> ${data.missing}</div>`:''}
+        ${data.notes?`<div style="font-size:9px;color:var(--ink3);margin-top:4px;font-style:italic;">${data.notes}</div>`:''}
         <div style="display:flex;gap:6px;margin-top:10px;">
           <button onclick="editInventoryUnit(${i})" style="flex:1;font-size:9px;padding:5px;background:var(--tealP);color:var(--teal);border:1px solid var(--teal2);border-radius:5px;cursor:pointer;font-weight:600;">✏ Editar</button>
-          <button onclick="deleteInventoryUnit('${item.id}')" style="font-size:9px;padding:5px 10px;background:#FFEBEE;color:var(--maint);border:1px solid #FFCDD2;border-radius:5px;cursor:pointer;font-weight:600;">×</button>
+          <button onclick="deleteInventoryUnit('${item.id}')" style="font-size:9px;padding:5px 10px;background:#FFEBEE;color:var(--coral);border:1px solid #FFCDD2;border-radius:5px;cursor:pointer;font-weight:600;">×</button>
         </div>
       </div>`;
     grid.appendChild(card);
@@ -2869,8 +2969,8 @@ async function loadDashboard(){
   alertsEl.innerHTML=alerts.map(a=>`
     <div style="padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;
       background:${a.type==='err'?'#FFEBEE':a.type==='warn'?'#FFF9C4':'#EAF8FB'};
-      color:${a.type==='err'?'var(--maint)':a.type==='warn'?'#7A5000':'var(--teal)'};
-      border-left:4px solid ${a.type==='err'?'var(--maint)':a.type==='warn'?'var(--amber)':'var(--teal2)'};">
+      color:${a.type==='err'?'var(--coral)':a.type==='warn'?'#7A5000':'var(--teal)'};
+      border-left:4px solid ${a.type==='err'?'var(--coral)':a.type==='warn'?'var(--amber)':'var(--teal2)'};">
       ${a.type==='err'?'🔴':a.type==='warn'?'⚠️':'ℹ️'} ${a.msg}
     </div>`).join('');
 
@@ -2883,13 +2983,13 @@ async function loadDashboard(){
     {n:departures.length,l:'Salidas',c:'var(--orange)'},
     {n:ocup,l:'Ocupadas',c:'var(--teal)'},
     {n:vac,l:'Vacantes',c:'var(--amber)'},
-    {n:mnt,l:'Mant/Bloq',c:'var(--maint)'},
-    {n:uncont.length,l:'Sin contactar',c:uncont.length>0?'var(--maint)':'var(--green)'},
+    {n:mnt,l:'Mant/Bloq',c:'var(--coral)'},
+    {n:uncont.length,l:'Sin contactar',c:uncont.length>0?'var(--coral)':'var(--green)'},
   ];
   document.getElementById('dash-kpis').innerHTML=kpis.map(k=>`
     <div style="background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
       <div style="font-family:'DM Serif Display',serif;font-size:32px;color:${k.c};line-height:1;">${k.n}</div>
-      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);margin-top:3px;">${k.l}</div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);margin-top:3px;">${k.l}</div>
     </div>`).join('');
 
   // ── ARRIVALS / DEPARTURES ─────────────────────────────
@@ -2897,32 +2997,32 @@ async function loadDashboard(){
     ? arrivals.map(u=>`
       <div style="padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:11px;">
         <span style="font-weight:600">${u.hues_name}</span>
-        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        <span style="font-size:9px;color:var(--ink3);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
         ${u.arrival_time?`<span style="font-size:9px;color:var(--teal);"> ${u.arrival_time}</span>`:''}
         ${u.early_ci?`<span style="font-size:9px;color:var(--purple);"> Early</span>`:''}
 
       </div>`).join('')
-    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin llegadas hoy</div>';
+    : '<div style="font-size:11px;color:var(--ink3);padding:8px;">Sin llegadas hoy</div>';
 
   document.getElementById('dash-departures').innerHTML=departures.length
     ? departures.map(u=>`
       <div style="padding:6px 10px;background:#FFF0E0;border-radius:6px;font-size:11px;">
         <span style="font-weight:600">${u.sale_name||u.ocup_name}</span>
-        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        <span style="font-size:9px;color:var(--ink3);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
         ${u.co_time&&u.co_time!=='— Estandar'?`<span style="font-size:9px;color:var(--orange);"> ${u.co_time}</span>`:''}
       </div>`).join('')
-    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin salidas hoy</div>';
+    : '<div style="font-size:11px;color:var(--ink3);padding:8px;">Sin salidas hoy</div>';
 
   // ── YESTERDAY HANDOFF ─────────────────────────────────
   const ydEl=document.getElementById('dash-yesterday');
   if(ydRep){
     const ydInc=(ydRep.incidents||[]).filter(i=>i.status==='pend');
     ydEl.innerHTML=`
-      <div style="margin-bottom:6px;"><span style="font-weight:600;color:var(--txt);">Agente:</span> ${ydRep.agent_name||'—'}</div>
+      <div style="margin-bottom:6px;"><span style="font-weight:600;color:var(--ink);">Agente:</span> ${ydRep.agent_name||'—'}</div>
       ${ydRep.handoff_notes?`<div style="margin-bottom:6px;padding:8px;background:#F0F8FB;border-radius:6px;font-size:11px;">${ydRep.handoff_notes}</div>`:''}
-      ${ydInc.length?`<div style="color:var(--maint);font-weight:600;font-size:11px;">⚠ ${ydInc.length} incidente${ydInc.length>1?'s':''} pendiente${ydInc.length>1?'s':''} del turno anterior</div>`:'<div style="color:var(--green);font-size:11px;">✓ Sin incidentes pendientes del turno anterior</div>'}`;
+      ${ydInc.length?`<div style="color:var(--coral);font-weight:600;font-size:11px;">⚠ ${ydInc.length} incidente${ydInc.length>1?'s':''} pendiente${ydInc.length>1?'s':''} del turno anterior</div>`:'<div style="color:var(--green);font-size:11px;">✓ Sin incidentes pendientes del turno anterior</div>'}`;
   }else{
-    ydEl.innerHTML='<div style="color:var(--txt2);font-size:11px;">Sin reporte del dia anterior</div>';
+    ydEl.innerHTML='<div style="color:var(--ink3);font-size:11px;">Sin reporte del dia anterior</div>';
   }
 
   // ── OPEN INCIDENTS ────────────────────────────────────
@@ -2930,8 +3030,8 @@ async function loadDashboard(){
   incEl.innerHTML=(openInc||[]).length
     ? (openInc||[]).map(i=>`
       <div style="padding:6px 10px;background:#FFF8F8;border-radius:6px;margin-bottom:4px;font-size:10px;">
-        <div style="font-weight:600;color:var(--maint);">${i.unit_ref||'General'}</div>
-        <div style="color:var(--txt2);">${(i.description||'').slice(0,60)}...</div>
+        <div style="font-weight:600;color:var(--coral);">${i.unit_ref||'General'}</div>
+        <div style="color:var(--ink3);">${(i.description||'').slice(0,60)}...</div>
       </div>`).join('')
     : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin incidentes abiertos</div>';
 
@@ -2940,8 +3040,8 @@ async function loadDashboard(){
   tEl.innerHTML=(urgTasks||[]).length
     ? (urgTasks||[]).map(t=>`
       <div style="padding:6px 10px;background:#FFF8E8;border-radius:6px;margin-bottom:4px;font-size:10px;">
-        <div style="font-weight:600;color:var(--maint);">${t.unit_ref||'General'} — ${t.assigned_to||'Sin asignar'}</div>
-        <div style="color:var(--txt2);">${(t.description||'').slice(0,60)}</div>
+        <div style="font-weight:600;color:var(--coral);">${t.unit_ref||'General'} — ${t.assigned_to||'Sin asignar'}</div>
+        <div style="color:var(--ink3);">${(t.description||'').slice(0,60)}</div>
       </div>`).join('')
     : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin tareas urgentes</div>';
 
@@ -3092,7 +3192,7 @@ let cleaningStatus={};// {prop-unit: 'pend'|'prog'|'done'|'reviewed'}
 const CL_STATUS=['pend','prog','done','reviewed'];
 const CL_LABELS={pend:'Pendiente',prog:'Limpiando',done:'Lista ✓',reviewed:'Revisada ★'};
 const CL_COLORS={pend:'#FFEBEE',prog:'#FFF9C4',done:'#F0FAF5',reviewed:'#EAF8FB'};
-const CL_BORDER={pend:'var(--maint)',prog:'var(--amber)',done:'var(--green)',reviewed:'var(--teal)'};
+const CL_BORDER={pend:'var(--coral)',prog:'var(--amber)',done:'var(--green)',reviewed:'var(--teal)'};
 const CL_ROLE={pend:'all',prog:'hk',done:'hk',reviewed:'gs'}; // who can set each status
 
 async function loadCleaningStatus(){
@@ -3117,7 +3217,7 @@ function renderCleaningMini(containerId){
       div.style.cssText=`padding:5px 8px;border-radius:6px;border-left:3px solid ${CL_BORDER[cs.status]||CL_BORDER.pend};
         background:${CL_COLORS[cs.status]||CL_COLORS.pend};font-size:10px;`;
       div.innerHTML=`<div style="font-weight:700;">${prop.short}-${u+1}</div>
-        <div style="font-size:9px;color:var(--txt2);">${CL_LABELS[cs.status]||'Pendiente'}</div>`;
+        <div style="font-size:9px;color:var(--ink3);">${CL_LABELS[cs.status]||'Pendiente'}</div>`;
       el.appendChild(div);
     });
   });
@@ -3151,8 +3251,8 @@ async function renderCleaningFull(){
       card.innerHTML=`
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div>
-            <div style="font-weight:700;font-size:12px;color:var(--txt);">${prop.short} · Unidad ${u+1}</div>
-            <div style="font-size:10px;color:var(--txt2);">${guestName}</div>
+            <div style="font-weight:700;font-size:12px;color:var(--ink);">${prop.short} · Unidad ${u+1}</div>
+            <div style="font-size:10px;color:var(--ink3);">${guestName}</div>
           </div>
           ${isSaleToday?'<span style="font-size:8px;font-weight:700;background:#FFE0B2;color:#7A3A00;padding:2px 6px;border-radius:4px;">SALE HOY</span>':''}
         </div>
@@ -3166,7 +3266,7 @@ async function renderCleaningFull(){
               ${CL_LABELS[s]}
             </button>`).join('')}
         </div>
-        ${cs.reviewer?`<div style="font-size:8.5px;color:var(--txt2);margin-top:5px;">Actualizado: ${cs.reviewer}</div>`:''}`;
+        ${cs.reviewer?`<div style="font-size:8.5px;color:var(--ink3);margin-top:5px;">Actualizado: ${cs.reviewer}</div>`:''}`;
       grid.appendChild(card);
     });
   });
@@ -3234,7 +3334,7 @@ async function generateOwnerReport(){
 
   if(!reports?.length){
     document.getElementById('owner-report').innerHTML=
-      '<div style="background:#fff;border-radius:10px;padding:20px;text-align:center;color:var(--txt2);">No hay reportes en ese periodo.</div>';
+      '<div style="background:#fff;border-radius:10px;padding:20px;text-align:center;color:var(--ink3);">No hay reportes en ese periodo.</div>';
     document.getElementById('owner-report').style.display='block';
     return;
   }
@@ -3264,26 +3364,26 @@ async function generateOwnerReport(){
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;">
           ${[
             {n:reports.length,l:'Dias con reporte',c:'var(--teal)'},
-            {n:avgOcc+'%',l:'Ocupacion promedio',c:avgOcc>70?'var(--green)':avgOcc>40?'var(--amber)':'var(--maint)'},
+            {n:avgOcc+'%',l:'Ocupacion promedio',c:avgOcc>70?'var(--green)':avgOcc>40?'var(--amber)':'var(--coral)'},
             {n:totalArrivals,l:'Total entradas',c:'var(--green)'},
             {n:totalDepartures,l:'Total salidas',c:'var(--orange)'},
-            {n:totalMaint,l:'Dias con Mant/Bloq',c:'var(--maint)'},
+            {n:totalMaint,l:'Dias con Mant/Bloq',c:'var(--coral)'},
           ].map(k=>`<div style="background:#F7F8FA;border-radius:8px;padding:12px;text-align:center;">
             <div style="font-family:'DM Serif Display',serif;font-size:28px;color:${k.c};">${k.n}</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">${k.l}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">${k.l}</div>
           </div>`).join('')}
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Actividad por agente:</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px;">Actividad por agente:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
           ${Object.entries(agentCount).map(([name,count])=>`
             <div style="background:var(--tealP);border-radius:6px;padding:6px 12px;font-size:11px;">
               <span style="font-weight:700;color:var(--teal);">${name}</span>
-              <span style="color:var(--txt2);"> — ${count} turno${count>1?'s':''}</span>
+              <span style="color:var(--ink3);"> — ${count} turno${count>1?'s':''}</span>
             </div>`).join('')}
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Ocupacion por dia:</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px;">Ocupacion por dia:</div>
         <div style="overflow-x:auto;">
           <table style="width:100%;border-collapse:collapse;font-size:10px;">
             <thead><tr style="background:#F0F2F4;">
@@ -3306,12 +3406,12 @@ async function generateOwnerReport(){
                   <td style="padding:5px 10px;text-align:center;color:var(--teal);">${r.agent_name||'—'}</td>
                   <td style="padding:5px 10px;text-align:center;">
                     <span style="background:${pct>70?'#D5F5E3':pct>40?'#FFF9C4':'#FFEBEE'};
-                      color:${pct>70?'var(--green)':pct>40?'var(--amber)':'var(--maint)'};
+                      color:${pct>70?'var(--green)':pct>40?'var(--amber)':'var(--coral)'};
                       padding:2px 8px;border-radius:4px;font-weight:700;">${occ}/${totalUnits} (${pct}%)</span>
                   </td>
                   <td style="padding:5px 10px;text-align:center;color:var(--green);font-weight:600;">+${arr}</td>
                   <td style="padding:5px 10px;text-align:center;color:var(--orange);font-weight:600;">${dep}</td>
-                  <td style="padding:5px 10px;color:var(--txt2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <td style="padding:5px 10px;color:var(--ink3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                     ${r.handoff_notes||'—'}</td>
                 </tr>`;
               }).join('')}
@@ -3395,8 +3495,8 @@ async function loadHub(){
     {n:arrivals.length,l:'Llegan',c:'var(--green)'},
     {n:departures.length,l:'Salen',c:'var(--orange)'},
     {n:ocup,l:'Ocupadas',c:'var(--teal)'},
-    {n:openInc?.length||0,l:'Incidentes',c:(openInc?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
-    {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
+    {n:openInc?.length||0,l:'Incidentes',c:(openInc?.length||0)>0?'var(--coral)':'rgba(255,255,255,0.3)'},
+    {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--coral)':'rgba(255,255,255,0.3)'},
     {n:uncont.length,l:'Sin llamar',c:uncont.length>0?'var(--amber)':'rgba(255,255,255,0.3)'},
   ];
   // Update date label
@@ -3418,8 +3518,8 @@ async function loadHub(){
   // Alerts
   const alerts=[];
   if(uncont.length>0) alerts.push({c:'var(--amber)',t:`⚠ ${uncont.length} llegada${uncont.length>1?'s':''} sin contactar`});
-  if((openInc?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
-  if((urgTasks?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
+  if((openInc?.length||0)>0) alerts.push({c:'var(--coral)',t:`🔴 ${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
+  if((urgTasks?.length||0)>0) alerts.push({c:'var(--coral)',t:`🔴 ${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
   const alertsEl=document.getElementById('hub-alerts');
   if(alertsEl) alertsEl.innerHTML=alerts.map(a=>`
     <div style="font-size:10px;font-weight:700;color:${a.c};padding:4px 0;border-left:3px solid ${a.c};padding-left:8px;margin-bottom:3px;">${a.t}</div>`).join('') ||
@@ -3526,43 +3626,42 @@ document.addEventListener('click',function(e){
 
     <!-- Step 1: Pick user -->
     <div id="login-step1">
-      <div style="font-size:10px;font-weight:700;color:var(--txt2);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">Selecciona tu usuario</div>
-      <div id="user-picker" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
-        
+      <div style="font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;">Selecciona tu usuario</div>
+      <div id="user-picker" style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px;">
         <div class="user-pick-card" onclick="selectUser('jessica@rosalina.local','Jessica',this)" data-email="jessica@rosalina.local">
-          <div class="upc-avatar" style="background:#0B7A8A;">J</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#2C6B6B,#3D8F8F);">J</div>
           <div class="upc-info">
             <div class="upc-name">Jessica</div>
-            <div class="upc-role">Guest Services</div>
+            <div class="upc-role">GS</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('gabriel@rosalina.local','Gabriel',this)" data-email="gabriel@rosalina.local">
-          <div class="upc-avatar" style="background:#0B7A8A;">G</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#2C6B6B,#5A9A8A);">G</div>
           <div class="upc-info">
             <div class="upc-name">Gabriel</div>
-            <div class="upc-role">Guest Services</div>
+            <div class="upc-role">GS</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('keishla@rosalina.local','Keishla',this)" data-email="keishla@rosalina.local">
-          <div class="upc-avatar" style="background:#0B7A8A;">K</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#2C6B6B,#4A8F80);">K</div>
           <div class="upc-info">
             <div class="upc-name">Keishla</div>
-            <div class="upc-role">Guest Services</div>
+            <div class="upc-role">GS</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('josev@rosalina.local','Jose V.',this)" data-email="josev@rosalina.local">
-          <div class="upc-avatar" style="background:#0B7A8A;">J</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#2C6B6B,#3A7A6A);">J</div>
           <div class="upc-info">
             <div class="upc-name">Jose V.</div>
-            <div class="upc-role">Guest Services</div>
+            <div class="upc-role">GS</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('gerencia@rosalina.local','Jose Rodriguez',this)" data-email="gerencia@rosalina.local">
-          <div class="upc-avatar" style="background:#C49A28;">J</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#C4973A,#E8B84B);">J</div>
           <div class="upc-info">
             <div class="upc-name">Jose Rodriguez</div>
             <div class="upc-role">Gerencia</div>
@@ -3570,18 +3669,18 @@ document.addEventListener('click',function(e){
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('hk@rosalina.local','Housekeeping',this)" data-email="hk@rosalina.local">
-          <div class="upc-avatar" style="background:#27AE60;">H</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#4A6741,#6B9A5A);">H</div>
           <div class="upc-info">
             <div class="upc-name">Housekeeping</div>
-            <div class="upc-role">Housekeeping</div>
+            <div class="upc-role">HK</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
         <div class="user-pick-card" onclick="selectUser('mant@rosalina.local','Mantenimiento',this)" data-email="mant@rosalina.local">
-          <div class="upc-avatar" style="background:#CC1111;">M</div>
+          <div class="upc-avatar" style="background:linear-gradient(135deg,#C45A3A,#D47A4A);">M</div>
           <div class="upc-info">
             <div class="upc-name">Mantenimiento</div>
-            <div class="upc-role">Mantenimiento</div>
+            <div class="upc-role">Mant</div>
           </div>
           <div class="upc-check" style="display:none;">✓</div>
         </div>
@@ -3591,10 +3690,10 @@ document.addEventListener('click',function(e){
     <!-- Step 2: Password (shown after picking user) -->
     <div id="login-step2" style="display:none;">
       <div id="selected-user-display" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F7F8FA;border-radius:10px;margin-bottom:14px;cursor:pointer;" onclick="backToUserPick()">
-        <div id="sel-avatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;"></div>
+        <div id="sel-avatar" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#fff;flex-shrink:0;box-shadow:0 3px 12px rgba(0,0,0,0.3);"></div>
         <div>
-          <div id="sel-name" style="font-size:13px;font-weight:600;color:var(--txt);"></div>
-          <div style="font-size:10px;color:var(--txt2);">Toca para cambiar usuario</div>
+          <div id="sel-name" style="font-size:13px;font-weight:600;color:var(--ink);"></div>
+          <div style="font-size:10px;color:var(--ink3);">Toca para cambiar usuario</div>
         </div>
       </div>
       <div class="lf">
@@ -3694,7 +3793,7 @@ document.addEventListener('click',function(e){
             <button class="chat-ch-btn" onclick="setChannel('hk',this)" data-roles="hk,gerencia">HK</button>
             <button class="chat-ch-btn" onclick="setChannel('mant',this)" data-roles="mant,gs,gerencia">Mant.</button>
             <button class="chat-ch-btn" onclick="setChannel('gs-hk',this)" data-roles="gs,gerencia,hk">GS→HK</button>
-            <span id="chat-unread-badge" style="display:none;background:var(--maint);color:#fff;
+            <span id="chat-unread-badge" style="display:none;background:var(--coral);color:#fff;
               font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;">0 nuevos</span>
           </div>
           <!-- Messages -->
@@ -3748,7 +3847,7 @@ document.addEventListener('click',function(e){
             <button class="btn btn-green" onclick="sendAndNotify()" style="flex:1;font-size:10px;min-width:80px;" id="send-all-btn" data-roles="gs,gerencia">✉ Enviar</button>
           </div>
           <div class="save-indicator" id="save-ind">Guardado ✓</div>
-          <div id="save-error" style="display:none;font-size:9px;color:var(--maint);padding:4px 8px;background:#FFEBEE;border-radius:4px;margin-top:4px;"></div>
+          <div id="save-error" style="display:none;font-size:9px;color:var(--coral);padding:4px 8px;background:#FFEBEE;border-radius:4px;margin-top:4px;"></div>
         </div>
         <div class="fsec" id="units-form"></div>
       </div>
@@ -3805,7 +3904,7 @@ document.addEventListener('click',function(e){
           <th class="tarr">LLEGADA</th>
           <th class="team">EARLY CI</th>
           <th class="tcot">HORA SAL</th>
-          <th class="tn" style="background:#1A3A6A;">MAL</th>
+          <th class="tn" style="background:var(--op);">MAL</th>
           <th style="background:#5A1A7A;color:#fff;font-size:7px;">GTS</th>
           <th class="tdec">DECORACION</th>
           <th class="tman">MNT</th>
@@ -3831,10 +3930,10 @@ document.addEventListener('click',function(e){
         </div>
         <div class="occ-sumbar">
           <div><div class="osb-n" id="osb-occ" style="color:var(--teal)">0</div><div class="osb-l">Ocupadas</div></div>
-          <div><div class="osb-n" id="osb-co" style="color:var(--orange)">0</div><div class="osb-l">Salen Hoy</div></div>
+          <div><div class="osb-n" id="osb-co" style="color:var(--amber)">0</div><div class="osb-l">Salen Hoy</div></div>
           <div><div class="osb-n" id="osb-ci" style="color:var(--green)">0</div><div class="osb-l">Llegan Hoy</div></div>
           <div><div class="osb-n" id="osb-vac" style="color:var(--red)">0</div><div class="osb-l">Vacantes</div></div>
-          <div><div class="osb-n" id="osb-mnt" style="color:var(--maint)">0</div><div class="osb-l">Mant/Bloq</div></div>
+          <div><div class="osb-n" id="osb-mnt" style="color:var(--coral)">0</div><div class="osb-l">Mant/Bloq</div></div>
         </div>
         <div class="occ-grid" id="occ-grid"></div>
       </div>
@@ -3848,7 +3947,7 @@ document.addEventListener('click',function(e){
           <div><div class="pg-title">Shift Log</div><div class="pg-sub">Checklist · Activity Log · Incidentes · Pre-Arrival</div></div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;" id="shiftlog-actions">
             <button class="btn btn-teal" onclick="addActivity()" id="sl-add-act">+ Actividad</button>
-            <button class="btn btn-red" onclick="addIncident()" id="sl-add-inc" style="background:var(--maint);">+ Incidente</button>
+            <button class="btn btn-red" onclick="addIncident()" id="sl-add-inc" style="background:var(--coral);">+ Incidente</button>
             <button class="btn btn-ghost" onclick="addPreArrival()" id="sl-add-pa">+ Pre-Arrival</button>
             <button class="btn btn-green" onclick="sendShiftLogToGerencia()" style="font-size:10px;">✉ Enviar a Gerencia</button>
           </div>
@@ -3866,7 +3965,7 @@ document.addEventListener('click',function(e){
 
         <!-- Incidents -->
         <div class="card">
-          <div class="card-hdr" style="background:var(--maint)">
+          <div class="card-hdr" style="background:var(--coral)">
             Incidentes / Novedades
             <button class="card-add-btn" onclick="addIncident()" id="inc-add-btn"
               style="font-size:14px;padding:4px 14px;background:rgba(255,255,255,0.25);">＋ Nuevo</button>
@@ -3929,18 +4028,18 @@ document.addEventListener('click',function(e){
             </div>
           </div>
           <div class="card-body" style="padding:12px;min-height:60px;">
-            <div id="hk-tasks-list"><div style="color:var(--txt2);font-size:11px;text-align:center;padding:12px;">Sin pendientes</div></div>
+            <div id="hk-tasks-list"><div style="color:var(--ink3);font-size:11px;text-align:center;padding:12px;">Sin pendientes</div></div>
           </div>
         </div>
 
         <!-- GS Nocturno → HK Preparacion -->
         <div class="card" style="margin-bottom:12px;" id="gs-hk-card">
-          <div class="card-hdr" style="background:#1A3A6A;">
+          <div class="card-hdr" style="background:var(--op);">
             Preparacion Nocturna → HK
             <span style="font-size:8px;opacity:0.7;">Solo GS Noche (Gabriel / Jose V.)</span>
           </div>
           <div class="card-body" style="padding:14px;">
-            <div style="font-size:10px;color:var(--txt2);margin-bottom:10px;">Envia un reporte a HK con lo preparado esta noche</div>
+            <div style="font-size:10px;color:var(--ink3);margin-bottom:10px;">Envia un reporte a HK con lo preparado esta noche</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <div class="fi full"><label>Fecha de salidas preparadas</label>
                 <input type="date" id="gs-hk-date"></div>
@@ -3957,7 +4056,7 @@ document.addEventListener('click',function(e){
 
         <!-- Lost & Found -->
         <div class="card" style="margin-bottom:12px;">
-          <div class="card-hdr" style="background:#1A3A6A;">
+          <div class="card-hdr" style="background:var(--op);">
             Lost & Found — Objetos Olvidados
             <button class="card-add-btn" onclick="addLostFound()" style="font-size:16px;padding:2px 10px;">＋</button>
           </div>
@@ -4114,7 +4213,7 @@ document.addEventListener('click',function(e){
             </div>
             <div id="sched-rows"></div>
             <div style="margin-top:10px;padding:10px;background:#F0F8FB;border-radius:6px;display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:var(--txt)">Costo Total Estimado:</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink)">Costo Total Estimado:</span>
               <span style="font-size:18px;font-weight:700;color:var(--teal)" id="sched-total-cost">$0.00</span>
             </div>
           </div>
@@ -4129,7 +4228,7 @@ document.addEventListener('click',function(e){
               <div class="fi"><label>Turno</label><select id="hist-shift"><option>AM</option><option>PM</option></select></div>
               <button class="btn btn-teal" onclick="loadHistoricReport()" style="align-self:flex-end;font-size:10px">Cargar</button>
             </div>
-            <div id="hist-result" style="font-size:11px;color:var(--txt2);padding:8px;background:#F7F8FA;border-radius:6px;display:none;"></div>
+            <div id="hist-result" style="font-size:11px;color:var(--ink3);padding:8px;background:#F7F8FA;border-radius:6px;display:none;"></div>
           </div>
         </div>
       </div>
@@ -4154,19 +4253,19 @@ document.addEventListener('click',function(e){
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
           <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
             <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal)" id="inv-total">0</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Unidades</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Unidades</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--maint)" id="inv-issues">0</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Con pendientes</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--coral)" id="inv-issues">0</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Con pendientes</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
             <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--green)" id="inv-ok">0</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Completas</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Completas</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-            <div style="font-size:11px;font-weight:600;color:var(--txt)" id="inv-last-date">—</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Ultima revision</div>
+            <div style="font-size:11px;font-weight:600;color:var(--ink)" id="inv-last-date">—</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Ultima revision</div>
           </div>
         </div>
 
@@ -4249,7 +4348,7 @@ document.addEventListener('click',function(e){
           <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--teal);"></div>Ocupado</div>
           <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--green);"></div>CI</div>
           <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--orange);"></div>CO</div>
-          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--maint);"></div>Mant/Bloq</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.6);"><div style="width:10px;height:10px;border-radius:2px;background:var(--coral);"></div>Mant/Bloq</div>
         </div>
         <div id="cal-container" style="overflow-x:auto;"></div>
       </div>
@@ -4268,20 +4367,20 @@ document.addEventListener('click',function(e){
         <!-- Summary -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
           <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--maint)" id="cl-pend">0</div>
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Pendiente</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--coral)" id="cl-pend">0</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Pendiente</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
             <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--amber)" id="cl-prog">0</div>
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">En proceso</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--ink3);">En proceso</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
             <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--green)" id="cl-done">0</div>
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Lista</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Lista</div>
           </div>
           <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
             <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--teal)" id="cl-rev">0</div>
-            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--txt2);">Revisada</div>
+            <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--ink3);">Revisada</div>
           </div>
         </div>
         <div id="cleaning-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
@@ -4391,7 +4490,7 @@ document.addEventListener('click',function(e){
     box-shadow:0 24px 64px rgba(0,0,0,0.4);">
     <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:6px;">
       Housekeeping</div>
-    <div style="font-size:11px;color:var(--txt2);margin-bottom:16px;">¿Quien eres tu hoy?</div>
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:16px;">¿Quien eres tu hoy?</div>
     <div style="display:flex;flex-direction:column;gap:8px;" id="hk-name-options">
       <button onclick="setHKName('Jailyn')"   class="hk-name-btn">Jailyn</button>
       <button onclick="setHKName('Johanna')"  class="hk-name-btn">Johanna</button>
@@ -4399,7 +4498,7 @@ document.addEventListener('click',function(e){
       <button onclick="setHKName('Alondra')"  class="hk-name-btn">Alondra</button>
     </div>
     <div style="margin-top:12px;text-align:center;">
-      <div style="font-size:10px;color:var(--txt2);margin-bottom:6px;">O escribe tu nombre:</div>
+      <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;">O escribe tu nombre:</div>
       <input id="hk-name-custom" placeholder="Nombre..." 
         style="width:100%;padding:8px 12px;border:1.5px solid var(--bdr);border-radius:8px;
         font-family:inherit;font-size:13px;outline:none;text-align:center;"
@@ -4411,7 +4510,7 @@ document.addEventListener('click',function(e){
 <style>
 .hk-name-btn{width:100%;padding:11px;background:#F7F8FA;border:1.5px solid var(--bdr);
   border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-  color:var(--txt);cursor:pointer;transition:all .15s;text-align:left;padding-left:16px;}
+  color:var(--ink);cursor:pointer;transition:all .15s;text-align:left;padding-left:16px;}
 .hk-name-btn:hover{background:var(--tealP);border-color:var(--teal2);color:var(--teal);}
 </style>
 
@@ -4423,9 +4522,9 @@ document.addEventListener('click',function(e){
   </div>
   <div id="notif-list" style="flex:1;overflow-y:auto;"></div>
   <div style="padding:12px;">
-    <div class="fi full" style="margin-bottom:6px;"><label style="color:var(--txt2)">Titulo</label><input id="new-notif-title" placeholder="Titulo..."></div>
+    <div class="fi full" style="margin-bottom:6px;"><label style="color:var(--ink3)">Titulo</label><input id="new-notif-title" placeholder="Titulo..."></div>
     <div class="fi full" style="margin-bottom:8px;"><textarea id="new-notif-body" placeholder="Mensaje..." style="min-height:60px;width:100%;padding:6px 8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;outline:none;resize:none;"></textarea></div>
-    <div class="fi full" style="margin-bottom:8px;"><label style="color:var(--txt2)">Enviar a</label>
+    <div class="fi full" style="margin-bottom:8px;"><label style="color:var(--ink3)">Enviar a</label>
       <select id="new-notif-to" style="padding:6px 8px;border:1.5px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:11px;width:100%;">
         <option value="gerencia">Solo Gerencia</option>
         <option value="gs">Todo GS</option>
@@ -4447,13 +4546,13 @@ document.addEventListener('click',function(e){
 .meta-collapsed { display:none; }
 .sched-emp-row { background:#fff; border-radius:8px; padding:12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
 .sched-emp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.sched-emp-name { font-size:13px; font-weight:600; color:var(--txt); }
-.sched-emp-role { font-size:9px; color:var(--txt2); margin-top:1px; }
+.sched-emp-name { font-size:13px; font-weight:600; color:var(--ink); }
+.sched-emp-role { font-size:9px; color:var(--ink3); margin-top:1px; }
 .sched-emp-rate { display:flex; align-items:center; gap:6px; font-size:11px; }
 .sched-emp-rate input { width:70px; border:1.5px solid var(--bdr); border-radius:5px; padding:4px 6px; font-size:11px; font-family:inherit; text-align:center; }
 .sched-days { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
 .sched-day { display:flex; flex-direction:column; gap:2px; }
-.sched-day-lbl { font-size:8px; font-weight:700; text-transform:uppercase; color:var(--txt2); text-align:center; letter-spacing:0.3px; }
+.sched-day-lbl { font-size:8px; font-weight:700; text-transform:uppercase; color:var(--ink3); text-align:center; letter-spacing:0.3px; }
 .sched-day select { font-size:8px; border:1px solid var(--bdr); border-radius:4px; padding:3px 2px; font-family:inherit; background:#F7F8FA; width:100%; }
 .sched-day select:focus { border-color:var(--teal2); background:var(--tealP); }
 .sched-day-hrs { font-size:9px; text-align:center; color:var(--teal); font-weight:600; }
@@ -4472,7 +4571,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── CONSTANTS ─────────────────────────────────────────────
-const ROLE_COLORS = {gs:'#0B7A8A',hk:'#27AE60',gerencia:'#C49A28',mant:'#CC1111'};
+const ROLE_COLORS = {gs:'#0B7A8A',hk:'#27AE60',gerencia:'#C49A28',mant:'var(--coral)'};
 const ROLE_LABELS = {gs:'Guest Services',hk:'Housekeeping',gerencia:'Gerencia',mant:'Mantenimiento'};
 const PROPS = [
   {id:'op',name:'OCEAN PARK',short:'OP',units:19,color:'#1A3A6A',cls:'op'},
@@ -4568,7 +4667,7 @@ function selectUser(email, name, card){
   const av=document.getElementById('sel-avatar');
   const avatarColor=card.querySelector('.upc-avatar').style.background;
   av.textContent=name[0].toUpperCase();
-  av.style.background=avatarColor;
+  av.style.background=card.querySelector('.upc-avatar').style.background;
   document.getElementById('sel-name').textContent=name;
   document.getElementById('login-step1').style.display='none';
   document.getElementById('login-step2').style.display='block';
@@ -4791,7 +4890,7 @@ function buildForm(){
           <div style="display:flex;gap:3px;">${tags}</div>
           <span class="ur-chev">▾</span>
           <button onclick="resetUnit('${prop.id}',${u},event)" title="Limpiar unidad"
-            style="border:none;background:rgba(204,17,17,0.1);color:var(--maint);border-radius:4px;
+            style="border:none;background:rgba(204,17,17,0.1);color:var(--coral);border-radius:4px;
             padding:1px 6px;cursor:pointer;font-size:9px;font-weight:700;margin-left:4px;flex-shrink:0;z-index:1;">✕</button>
         </div>
         <div class="ur-fields">${fields}</div>`;
@@ -5097,9 +5196,9 @@ function renderOccupancy(){
       const saleName=d.sale||'';
       const c=document.createElement('div');c.className=`occ-unit-card ${ctype}`;
       c.innerHTML=`
-        <div style="font-size:9px;font-weight:700;color:var(--txt2);margin-bottom:3px">${prop.short} · Unidad ${u+1}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--txt)">${gname}</div>
-        <div style="font-size:9px;color:var(--txt2)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
+        <div style="font-size:9px;font-weight:700;color:var(--ink3);margin-bottom:3px">${prop.short} · Unidad ${u+1}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink)">${gname}</div>
+        <div style="font-size:9px;color:var(--ink3)">${d.ci?'CI: '+d.ci:''} ${d.co?'· CO: '+d.co:''}</div>
         ${saleName?`<div style="font-size:9px;font-weight:600;color:var(--orange);">→ Sale: ${saleName}</div>`:''}
         ${nts!==''?`<div class="occ-nights">${nts}${ntsTotal2?'<span style="font-size:11px;color:#999">/${ntsTotal2}</span>':''}</div><div class="occ-nts-lbl">noches</div>`:''}
         <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
@@ -5201,7 +5300,7 @@ function renderActivities(){
     const div=document.createElement('div');div.className='act-entry';
     if(isRO){
       div.style.cssText='background:#F8F9FA;border-radius:6px;border:1px solid var(--bdr);padding:8px 12px;margin-bottom:4px;display:grid;grid-template-columns:68px 55px 120px auto 80px 88px;gap:5px;align-items:center;';
-      div.innerHTML=`<span style="font-size:10px;color:var(--txt2)">${a.log_time||''}</span>
+      div.innerHTML=`<span style="font-size:10px;color:var(--ink3)">${a.log_time||''}</span>
         <span style="font-size:10px;font-weight:600">${a.unit_ref||''}</span>
         <span style="font-size:10px">${a.guest_name||''}</span>
         <span style="font-size:10px">${a.description||''}</span>
@@ -5384,8 +5483,8 @@ function renderHKStaff(){
     const assigned=Object.values(hkAssignments).filter(a=>a===name).length;
     const d=document.createElement('div');
     d.style.cssText='background:#F7F8FA;border:1.5px solid var(--bdr);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;';
-    d.innerHTML=`<div><div style="font-size:13px;font-weight:600;color:var(--txt)">${name}</div>
-      <div style="font-size:10px;color:var(--txt2);margin-top:2px">${assigned} habitacion${assigned!==1?'es':''} asignada${assigned!==1?'s':''}</div></div>
+    d.innerHTML=`<div><div style="font-size:13px;font-weight:600;color:var(--ink)">${name}</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:2px">${assigned} habitacion${assigned!==1?'es':''} asignada${assigned!==1?'s':''}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--teal)">${assigned}</div>`;
     container.appendChild(d);
   });
@@ -5497,16 +5596,16 @@ function renderTasks(){
     c.innerHTML=`
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:62px">
         <span class="tp tp-${t.priority}">${PRIOLBL[t.priority]}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">Vence: ${t.due_date||'—'}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">${t.unit_ref||''}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">Vence: ${t.due_date||'—'}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">${t.unit_ref||''}</span>
       </div>
       <div style="flex:1">
-        <div style="font-size:11.5px;font-weight:600;color:var(--txt);margin-bottom:2px">${t.task_type||'Tarea'}</div>
-        <div style="font-size:9.5px;color:var(--txt2);line-height:1.45">${t.description}</div>
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:2px">${t.task_type||'Tarea'}</div>
+        <div style="font-size:9.5px;color:var(--ink3);line-height:1.45">${t.description}</div>
         <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center">
           <span style="font-size:9px;font-weight:600;color:var(--teal)">${t.assigned_to||''}</span>
           <button class="tstatus ${STCLS[t.status]||'ts-p'}" onclick="cycleTask('${t.id}')">${STLBL[t.status]||'Pendiente'}</button>
-          ${t.result?`<span style="font-size:7.5px;color:var(--txt2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.result.replace(/"/g,'&quot;')}">${t.result.split('\n').pop()}</span>`:''}
+          ${t.result?`<span style="font-size:7.5px;color:var(--ink3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.result.replace(/"/g,'&quot;')}">${t.result.split('\n').pop()}</span>`:''}
           <button onclick="deleteTask('${t.id}')" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:11px">×</button>
         </div>
       </div>`;
@@ -5600,14 +5699,14 @@ function renderMaint(){
     c.innerHTML=`
       <div style="display:flex;flex-direction:column;gap:4px;min-width:70px">
         <span class="tp tp-${m.priority}">${PRIOLBL[m.priority]}</span>
-        <span style="font-size:8px;color:var(--txt2)">${m.unit_ref||''}</span>
-        <span style="font-size:7.5px;color:var(--txt2)">${new Date(m.created_at).toLocaleDateString('es-PR')}</span>
+        <span style="font-size:8px;color:var(--ink3)">${m.unit_ref||''}</span>
+        <span style="font-size:7.5px;color:var(--ink3)">${new Date(m.created_at).toLocaleDateString('es-PR')}</span>
       </div>
       <div style="flex:1">
-        <div style="font-size:11px;font-weight:600;color:var(--txt)">${m.issue_type} — ${m.unit_ref||''}</div>
-        <div style="font-size:9.5px;color:var(--txt2);margin-top:2px">${m.description}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--ink)">${m.issue_type} — ${m.unit_ref||''}</div>
+        <div style="font-size:9.5px;color:var(--ink3);margin-top:2px">${m.description}</div>
         <div style="display:flex;gap:6px;margin-top:5px;align-items:center;flex-wrap:wrap">
-          <span style="font-size:9px;color:var(--txt2)">Por: ${m.reported_by||'—'}</span>
+          <span style="font-size:9px;color:var(--ink3)">Por: ${m.reported_by||'—'}</span>
           ${m.assigned_to?`<span style="font-size:9px;font-weight:600;color:var(--teal)">→ ${m.assigned_to}</span>`:''}
           <span class="tp ${STCLS2[m.status]||'tp-media'}">${STLBL2[m.status]||m.status}</span>
           ${m.status!=='done'?`<button onclick="closeMaint('${m.id}')" style="border:none;background:#D5F5E3;color:#0A5A2A;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;cursor:pointer">Marcar Resuelto</button>`:''}
@@ -5632,7 +5731,7 @@ async function loadNotifications(){
 }
 function renderNotifications(){
   const list=document.getElementById('notif-list');if(!list)return;list.innerHTML='';
-  if(!notifications.length){list.innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--txt2)">Sin notificaciones</div>';return;}
+  if(!notifications.length){list.innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--ink3)">Sin notificaciones</div>';return;}
   const TCLS={info:'nt-info',alert:'nt-alert',request:'nt-req',approval:'nt-app'};
   notifications.forEach(n=>{
     const unread=!n.read_by?.includes(currentUser?.id);
@@ -5734,7 +5833,7 @@ async function loadTORs(){
     tr.innerHTML=`
       <td style="font-weight:600">${tor.requester_name||'—'}</td>
       <td>${tor.request_date}</td>
-      <td style="font-size:10px;color:var(--txt2)">${tor.reason||'—'}</td>
+      <td style="font-size:10px;color:var(--ink3)">${tor.reason||'—'}</td>
       <td style="font-family:monospace;font-size:10px;color:var(--teal)">${code}</td>
       <td><span style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;background:${stBg};color:${stCol}">${tor.status==='approved'?'Aprobado':tor.status==='denied'?'Denegado':'Pendiente'}</span></td>
       <td style="display:flex;gap:4px;">
@@ -5801,7 +5900,7 @@ function buildSchedGrid(){
     const rateHtml=isJessica
       ?`<div style="font-size:9px;color:var(--gold);font-weight:600;">Contrato directo · Sin costo</div>`
       :`<div class="sched-emp-rate">
-          <span style="font-size:9px;color:var(--txt2);">$/hr:</span>
+          <span style="font-size:9px;color:var(--ink3);">$/hr:</span>
           <input type="number" id="rate-${emp.name}" value="${emp.rate}" step="0.5" min="0" oninput="calcSchedCosts()">
         </div>`;
 
@@ -5815,7 +5914,7 @@ function buildSchedGrid(){
         </div>
       </div>
       <div style="display:flex;gap:2px;overflow-x:auto;padding-bottom:4px;">${daysHtml}</div>
-      <div style="font-size:8px;color:var(--txt2);margin-top:4px;">
+      <div style="font-size:8px;color:var(--ink3);margin-top:4px;">
         <span style="color:#888">▲ Entrada &nbsp; ▼ Salida &nbsp; ⏸ Descanso</span>
       </div>`;
     rows.appendChild(row);
@@ -5846,7 +5945,7 @@ function calcSchedCosts(){
         if(!si&&!se){hEl.textContent='Libre';hEl.style.color='var(--txt2)';}
         else if(si&&se){
           hEl.textContent=hrs+'h';
-          hEl.style.color=hrs>=8?'var(--teal)':hrs>=4?'var(--amber)':'var(--maint)';
+          hEl.style.color=hrs>=8?'var(--teal)':hrs>=4?'var(--amber)':'var(--coral)';
         }else{hEl.textContent='—';hEl.style.color='var(--txt2)';}
       }
     });
@@ -6005,7 +6104,7 @@ function renderHKTasks(){
   const list=document.getElementById('hk-tasks-list');if(!list)return;
   list.innerHTML='';
   if(!hkTasks.length){
-    list.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;text-align:center;">Sin pendientes</div>';
+    list.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:8px;text-align:center;">Sin pendientes</div>';
     return;
   }
   hkTasks.forEach((t,i)=>{
@@ -6018,8 +6117,8 @@ function renderHKTasks(){
         background:${done?'var(--green)':'transparent'};color:#fff;font-size:11px;"
         onclick="toggleHKTask('${t.id}',${done})">${done?'✓':''}</div>
       <div style="flex:1;">
-        <div style="font-size:10px;color:var(--txt);${done?'text-decoration:line-through;color:var(--txt2);':''}">${t.description}</div>
-        <div style="font-size:8px;color:var(--txt2);margin-top:2px;">${t.assigned_to||''} ${t.due_date?'· Vence: '+t.due_date:''}</div>
+        <div style="font-size:10px;color:var(--ink);${done?'text-decoration:line-through;color:var(--ink3);':''}">${t.description}</div>
+        <div style="font-size:8px;color:var(--ink3);margin-top:2px;">${t.assigned_to||''} ${t.due_date?'· Vence: '+t.due_date:''}</div>
       </div>
       <button onclick="deleteHKTask('${t.id}')" style="border:none;background:none;color:#CCC;cursor:pointer;font-size:14px;padding:0;">×</button>`;
     list.appendChild(div);
@@ -6114,17 +6213,17 @@ async function loadHKHistoric(){
   if(!date){alert('Selecciona una fecha');return;}
   const{data}=await sb.from('daily_reports').select('*,unit_data(*)').eq('report_date',date).single();
   const el=document.getElementById('hk-hist-result');if(!el)return;
-  if(!data){el.innerHTML='<div style="color:var(--txt2);font-size:11px;padding:8px;">No hay reporte para esa fecha.</div>';el.style.display='block';return;}
+  if(!data){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:8px;">No hay reporte para esa fecha.</div>';el.style.display='block';return;}
   
-  let html=`<div style="font-size:10px;font-weight:600;color:var(--txt);margin-bottom:8px;">Ocupacion del ${date}</div>`;
+  let html=`<div style="font-size:10px;font-weight:600;color:var(--ink);margin-bottom:8px;">Ocupacion del ${date}</div>`;
   html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;">`;
   (data.unit_data||[]).forEach(u=>{
     const hasGuest=u.ocup_name||u.hues_name;
     const bg=hasGuest?'#EAF8FB':'#FFF8E8';
     const border=hasGuest?'var(--teal)':'var(--amber)';
     html+=`<div style="background:${bg};border-left:3px solid ${border};border-radius:6px;padding:8px 10px;">
-      <div style="font-size:9px;font-weight:700;color:var(--txt2);">${u.property.toUpperCase()} · ${u.unit_number}</div>
-      <div style="font-size:11px;font-weight:600;color:var(--txt);">${u.ocup_name||u.hues_name||'Vacante'}</div>
+      <div style="font-size:9px;font-weight:700;color:var(--ink3);">${u.property.toUpperCase()} · ${u.unit_number}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink);">${u.ocup_name||u.hues_name||'Vacante'}</div>
       ${u.co_date?`<div style="font-size:8px;color:var(--orange);">CO: ${u.co_date}</div>`:''}
       ${u.hues_name&&u.hues_name!==u.ocup_name?`<div style="font-size:8px;color:var(--teal);">Llega: ${u.hues_name}</div>`:''}
     </div>`;
@@ -6403,7 +6502,7 @@ function renderInventory(){
     if(status==='ok')ok++;else issues++;
     if(item.report_date>lastDate)lastDate=item.report_date;
     
-    const statusColor=status==='ok'?'var(--green)':status==='urgent'?'var(--maint)':'var(--amber)';
+    const statusColor=status==='ok'?'var(--green)':status==='urgent'?'var(--coral)':'var(--amber)';
     const statusLabel=status==='ok'?'Completo ✓':status==='urgent'?'Urgente 🔴':'Pendientes ⚠';
     const propColor=data.prop==='op'?'var(--op)':'var(--iv)';
     
@@ -6417,16 +6516,16 @@ function renderInventory(){
       <div style="padding:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <span style="font-size:11px;font-weight:700;color:${statusColor}">${statusLabel}</span>
-          <span style="font-size:9px;color:var(--txt2);">Rev: ${item.report_date||'—'} · ${data.reviewer||'—'}</span>
+          <span style="font-size:9px;color:var(--ink3);">Rev: ${item.report_date||'—'} · ${data.reviewer||'—'}</span>
         </div>
-        ${data.beds?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Camas:</span> ${data.beds}</div>`:''}
-        ${data.kitchen?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Cocina:</span> ${data.kitchen}</div>`:''}
-        ${data.amenities?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--txt2);">Amenidades:</span> ${data.amenities}</div>`:''}
-        ${data.missing?`<div style="font-size:10px;margin-bottom:5px;padding:6px 8px;background:#FFEBEE;border-radius:4px;"><span style="font-weight:700;color:var(--maint);">⚠ Faltantes:</span> ${data.missing}</div>`:''}
-        ${data.notes?`<div style="font-size:9px;color:var(--txt2);margin-top:4px;font-style:italic;">${data.notes}</div>`:''}
+        ${data.beds?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Camas:</span> ${data.beds}</div>`:''}
+        ${data.kitchen?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Cocina:</span> ${data.kitchen}</div>`:''}
+        ${data.amenities?`<div style="font-size:10px;margin-bottom:5px;"><span style="font-weight:600;color:var(--ink3);">Amenidades:</span> ${data.amenities}</div>`:''}
+        ${data.missing?`<div style="font-size:10px;margin-bottom:5px;padding:6px 8px;background:#FFEBEE;border-radius:4px;"><span style="font-weight:700;color:var(--coral);">⚠ Faltantes:</span> ${data.missing}</div>`:''}
+        ${data.notes?`<div style="font-size:9px;color:var(--ink3);margin-top:4px;font-style:italic;">${data.notes}</div>`:''}
         <div style="display:flex;gap:6px;margin-top:10px;">
           <button onclick="editInventoryUnit(${i})" style="flex:1;font-size:9px;padding:5px;background:var(--tealP);color:var(--teal);border:1px solid var(--teal2);border-radius:5px;cursor:pointer;font-weight:600;">✏ Editar</button>
-          <button onclick="deleteInventoryUnit('${item.id}')" style="font-size:9px;padding:5px 10px;background:#FFEBEE;color:var(--maint);border:1px solid #FFCDD2;border-radius:5px;cursor:pointer;font-weight:600;">×</button>
+          <button onclick="deleteInventoryUnit('${item.id}')" style="font-size:9px;padding:5px 10px;background:#FFEBEE;color:var(--coral);border:1px solid #FFCDD2;border-radius:5px;cursor:pointer;font-weight:600;">×</button>
         </div>
       </div>`;
     grid.appendChild(card);
@@ -6609,8 +6708,8 @@ async function loadDashboard(){
   alertsEl.innerHTML=alerts.map(a=>`
     <div style="padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;
       background:${a.type==='err'?'#FFEBEE':a.type==='warn'?'#FFF9C4':'#EAF8FB'};
-      color:${a.type==='err'?'var(--maint)':a.type==='warn'?'#7A5000':'var(--teal)'};
-      border-left:4px solid ${a.type==='err'?'var(--maint)':a.type==='warn'?'var(--amber)':'var(--teal2)'};">
+      color:${a.type==='err'?'var(--coral)':a.type==='warn'?'#7A5000':'var(--teal)'};
+      border-left:4px solid ${a.type==='err'?'var(--coral)':a.type==='warn'?'var(--amber)':'var(--teal2)'};">
       ${a.type==='err'?'🔴':a.type==='warn'?'⚠️':'ℹ️'} ${a.msg}
     </div>`).join('');
 
@@ -6623,13 +6722,13 @@ async function loadDashboard(){
     {n:departures.length,l:'Salidas',c:'var(--orange)'},
     {n:ocup,l:'Ocupadas',c:'var(--teal)'},
     {n:vac,l:'Vacantes',c:'var(--amber)'},
-    {n:mnt,l:'Mant/Bloq',c:'var(--maint)'},
-    {n:uncont.length,l:'Sin contactar',c:uncont.length>0?'var(--maint)':'var(--green)'},
+    {n:mnt,l:'Mant/Bloq',c:'var(--coral)'},
+    {n:uncont.length,l:'Sin contactar',c:uncont.length>0?'var(--coral)':'var(--green)'},
   ];
   document.getElementById('dash-kpis').innerHTML=kpis.map(k=>`
     <div style="background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
       <div style="font-family:'DM Serif Display',serif;font-size:32px;color:${k.c};line-height:1;">${k.n}</div>
-      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);margin-top:3px;">${k.l}</div>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);margin-top:3px;">${k.l}</div>
     </div>`).join('');
 
   // ── ARRIVALS / DEPARTURES ─────────────────────────────
@@ -6637,32 +6736,32 @@ async function loadDashboard(){
     ? arrivals.map(u=>`
       <div style="padding:6px 10px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:11px;">
         <span style="font-weight:600">${u.hues_name}</span>
-        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        <span style="font-size:9px;color:var(--ink3);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
         ${u.arrival_time?`<span style="font-size:9px;color:var(--teal);"> ${u.arrival_time}</span>`:''}
         ${u.early_ci?`<span style="font-size:9px;color:var(--purple);"> Early</span>`:''}
 
       </div>`).join('')
-    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin llegadas hoy</div>';
+    : '<div style="font-size:11px;color:var(--ink3);padding:8px;">Sin llegadas hoy</div>';
 
   document.getElementById('dash-departures').innerHTML=departures.length
     ? departures.map(u=>`
       <div style="padding:6px 10px;background:#FFF0E0;border-radius:6px;font-size:11px;">
         <span style="font-weight:600">${u.sale_name||u.ocup_name}</span>
-        <span style="font-size:9px;color:var(--txt2);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
+        <span style="font-size:9px;color:var(--ink3);"> · ${u.property?.toUpperCase()}-${u.unit_number}</span>
         ${u.co_time&&u.co_time!=='— Estandar'?`<span style="font-size:9px;color:var(--orange);"> ${u.co_time}</span>`:''}
       </div>`).join('')
-    : '<div style="font-size:11px;color:var(--txt2);padding:8px;">Sin salidas hoy</div>';
+    : '<div style="font-size:11px;color:var(--ink3);padding:8px;">Sin salidas hoy</div>';
 
   // ── YESTERDAY HANDOFF ─────────────────────────────────
   const ydEl=document.getElementById('dash-yesterday');
   if(ydRep){
     const ydInc=(ydRep.incidents||[]).filter(i=>i.status==='pend');
     ydEl.innerHTML=`
-      <div style="margin-bottom:6px;"><span style="font-weight:600;color:var(--txt);">Agente:</span> ${ydRep.agent_name||'—'}</div>
+      <div style="margin-bottom:6px;"><span style="font-weight:600;color:var(--ink);">Agente:</span> ${ydRep.agent_name||'—'}</div>
       ${ydRep.handoff_notes?`<div style="margin-bottom:6px;padding:8px;background:#F0F8FB;border-radius:6px;font-size:11px;">${ydRep.handoff_notes}</div>`:''}
-      ${ydInc.length?`<div style="color:var(--maint);font-weight:600;font-size:11px;">⚠ ${ydInc.length} incidente${ydInc.length>1?'s':''} pendiente${ydInc.length>1?'s':''} del turno anterior</div>`:'<div style="color:var(--green);font-size:11px;">✓ Sin incidentes pendientes del turno anterior</div>'}`;
+      ${ydInc.length?`<div style="color:var(--coral);font-weight:600;font-size:11px;">⚠ ${ydInc.length} incidente${ydInc.length>1?'s':''} pendiente${ydInc.length>1?'s':''} del turno anterior</div>`:'<div style="color:var(--green);font-size:11px;">✓ Sin incidentes pendientes del turno anterior</div>'}`;
   }else{
-    ydEl.innerHTML='<div style="color:var(--txt2);font-size:11px;">Sin reporte del dia anterior</div>';
+    ydEl.innerHTML='<div style="color:var(--ink3);font-size:11px;">Sin reporte del dia anterior</div>';
   }
 
   // ── OPEN INCIDENTS ────────────────────────────────────
@@ -6670,8 +6769,8 @@ async function loadDashboard(){
   incEl.innerHTML=(openInc||[]).length
     ? (openInc||[]).map(i=>`
       <div style="padding:6px 10px;background:#FFF8F8;border-radius:6px;margin-bottom:4px;font-size:10px;">
-        <div style="font-weight:600;color:var(--maint);">${i.unit_ref||'General'}</div>
-        <div style="color:var(--txt2);">${(i.description||'').slice(0,60)}...</div>
+        <div style="font-weight:600;color:var(--coral);">${i.unit_ref||'General'}</div>
+        <div style="color:var(--ink3);">${(i.description||'').slice(0,60)}...</div>
       </div>`).join('')
     : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin incidentes abiertos</div>';
 
@@ -6680,8 +6779,8 @@ async function loadDashboard(){
   tEl.innerHTML=(urgTasks||[]).length
     ? (urgTasks||[]).map(t=>`
       <div style="padding:6px 10px;background:#FFF8E8;border-radius:6px;margin-bottom:4px;font-size:10px;">
-        <div style="font-weight:600;color:var(--maint);">${t.unit_ref||'General'} — ${t.assigned_to||'Sin asignar'}</div>
-        <div style="color:var(--txt2);">${(t.description||'').slice(0,60)}</div>
+        <div style="font-weight:600;color:var(--coral);">${t.unit_ref||'General'} — ${t.assigned_to||'Sin asignar'}</div>
+        <div style="color:var(--ink3);">${(t.description||'').slice(0,60)}</div>
       </div>`).join('')
     : '<div style="color:var(--green);font-size:11px;padding:4px;">✓ Sin tareas urgentes</div>';
 
@@ -6832,7 +6931,7 @@ let cleaningStatus={};// {prop-unit: 'pend'|'prog'|'done'|'reviewed'}
 const CL_STATUS=['pend','prog','done','reviewed'];
 const CL_LABELS={pend:'Pendiente',prog:'Limpiando',done:'Lista ✓',reviewed:'Revisada ★'};
 const CL_COLORS={pend:'#FFEBEE',prog:'#FFF9C4',done:'#F0FAF5',reviewed:'#EAF8FB'};
-const CL_BORDER={pend:'var(--maint)',prog:'var(--amber)',done:'var(--green)',reviewed:'var(--teal)'};
+const CL_BORDER={pend:'var(--coral)',prog:'var(--amber)',done:'var(--green)',reviewed:'var(--teal)'};
 const CL_ROLE={pend:'all',prog:'hk',done:'hk',reviewed:'gs'}; // who can set each status
 
 async function loadCleaningStatus(){
@@ -6857,7 +6956,7 @@ function renderCleaningMini(containerId){
       div.style.cssText=`padding:5px 8px;border-radius:6px;border-left:3px solid ${CL_BORDER[cs.status]||CL_BORDER.pend};
         background:${CL_COLORS[cs.status]||CL_COLORS.pend};font-size:10px;`;
       div.innerHTML=`<div style="font-weight:700;">${prop.short}-${u+1}</div>
-        <div style="font-size:9px;color:var(--txt2);">${CL_LABELS[cs.status]||'Pendiente'}</div>`;
+        <div style="font-size:9px;color:var(--ink3);">${CL_LABELS[cs.status]||'Pendiente'}</div>`;
       el.appendChild(div);
     });
   });
@@ -6891,8 +6990,8 @@ async function renderCleaningFull(){
       card.innerHTML=`
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div>
-            <div style="font-weight:700;font-size:12px;color:var(--txt);">${prop.short} · Unidad ${u+1}</div>
-            <div style="font-size:10px;color:var(--txt2);">${guestName}</div>
+            <div style="font-weight:700;font-size:12px;color:var(--ink);">${prop.short} · Unidad ${u+1}</div>
+            <div style="font-size:10px;color:var(--ink3);">${guestName}</div>
           </div>
           ${isSaleToday?'<span style="font-size:8px;font-weight:700;background:#FFE0B2;color:#7A3A00;padding:2px 6px;border-radius:4px;">SALE HOY</span>':''}
         </div>
@@ -6906,7 +7005,7 @@ async function renderCleaningFull(){
               ${CL_LABELS[s]}
             </button>`).join('')}
         </div>
-        ${cs.reviewer?`<div style="font-size:8.5px;color:var(--txt2);margin-top:5px;">Actualizado: ${cs.reviewer}</div>`:''}`;
+        ${cs.reviewer?`<div style="font-size:8.5px;color:var(--ink3);margin-top:5px;">Actualizado: ${cs.reviewer}</div>`:''}`;
       grid.appendChild(card);
     });
   });
@@ -6974,7 +7073,7 @@ async function generateOwnerReport(){
 
   if(!reports?.length){
     document.getElementById('owner-report').innerHTML=
-      '<div style="background:#fff;border-radius:10px;padding:20px;text-align:center;color:var(--txt2);">No hay reportes en ese periodo.</div>';
+      '<div style="background:#fff;border-radius:10px;padding:20px;text-align:center;color:var(--ink3);">No hay reportes en ese periodo.</div>';
     document.getElementById('owner-report').style.display='block';
     return;
   }
@@ -7004,26 +7103,26 @@ async function generateOwnerReport(){
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;">
           ${[
             {n:reports.length,l:'Dias con reporte',c:'var(--teal)'},
-            {n:avgOcc+'%',l:'Ocupacion promedio',c:avgOcc>70?'var(--green)':avgOcc>40?'var(--amber)':'var(--maint)'},
+            {n:avgOcc+'%',l:'Ocupacion promedio',c:avgOcc>70?'var(--green)':avgOcc>40?'var(--amber)':'var(--coral)'},
             {n:totalArrivals,l:'Total entradas',c:'var(--green)'},
             {n:totalDepartures,l:'Total salidas',c:'var(--orange)'},
-            {n:totalMaint,l:'Dias con Mant/Bloq',c:'var(--maint)'},
+            {n:totalMaint,l:'Dias con Mant/Bloq',c:'var(--coral)'},
           ].map(k=>`<div style="background:#F7F8FA;border-radius:8px;padding:12px;text-align:center;">
             <div style="font-family:'DM Serif Display',serif;font-size:28px;color:${k.c};">${k.n}</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt2);">${k.l}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink3);">${k.l}</div>
           </div>`).join('')}
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Actividad por agente:</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px;">Actividad por agente:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
           ${Object.entries(agentCount).map(([name,count])=>`
             <div style="background:var(--tealP);border-radius:6px;padding:6px 12px;font-size:11px;">
               <span style="font-weight:700;color:var(--teal);">${name}</span>
-              <span style="color:var(--txt2);"> — ${count} turno${count>1?'s':''}</span>
+              <span style="color:var(--ink3);"> — ${count} turno${count>1?'s':''}</span>
             </div>`).join('')}
         </div>
 
-        <div style="font-size:11px;font-weight:700;color:var(--txt);margin-bottom:8px;">Ocupacion por dia:</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px;">Ocupacion por dia:</div>
         <div style="overflow-x:auto;">
           <table style="width:100%;border-collapse:collapse;font-size:10px;">
             <thead><tr style="background:#F0F2F4;">
@@ -7046,12 +7145,12 @@ async function generateOwnerReport(){
                   <td style="padding:5px 10px;text-align:center;color:var(--teal);">${r.agent_name||'—'}</td>
                   <td style="padding:5px 10px;text-align:center;">
                     <span style="background:${pct>70?'#D5F5E3':pct>40?'#FFF9C4':'#FFEBEE'};
-                      color:${pct>70?'var(--green)':pct>40?'var(--amber)':'var(--maint)'};
+                      color:${pct>70?'var(--green)':pct>40?'var(--amber)':'var(--coral)'};
                       padding:2px 8px;border-radius:4px;font-weight:700;">${occ}/${totalUnits} (${pct}%)</span>
                   </td>
                   <td style="padding:5px 10px;text-align:center;color:var(--green);font-weight:600;">+${arr}</td>
                   <td style="padding:5px 10px;text-align:center;color:var(--orange);font-weight:600;">${dep}</td>
-                  <td style="padding:5px 10px;color:var(--txt2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  <td style="padding:5px 10px;color:var(--ink3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                     ${r.handoff_notes||'—'}</td>
                 </tr>`;
               }).join('')}
@@ -7135,8 +7234,8 @@ async function loadHub(){
     {n:arrivals.length,l:'Llegan',c:'var(--green)'},
     {n:departures.length,l:'Salen',c:'var(--orange)'},
     {n:ocup,l:'Ocupadas',c:'var(--teal)'},
-    {n:openInc?.length||0,l:'Incidentes',c:(openInc?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
-    {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--maint)':'rgba(255,255,255,0.3)'},
+    {n:openInc?.length||0,l:'Incidentes',c:(openInc?.length||0)>0?'var(--coral)':'rgba(255,255,255,0.3)'},
+    {n:urgTasks?.length||0,l:'Urgentes',c:(urgTasks?.length||0)>0?'var(--coral)':'rgba(255,255,255,0.3)'},
     {n:uncont.length,l:'Sin llamar',c:uncont.length>0?'var(--amber)':'rgba(255,255,255,0.3)'},
   ];
   // Update date label
@@ -7158,8 +7257,8 @@ async function loadHub(){
   // Alerts
   const alerts=[];
   if(uncont.length>0) alerts.push({c:'var(--amber)',t:`⚠ ${uncont.length} llegada${uncont.length>1?'s':''} sin contactar`});
-  if((openInc?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
-  if((urgTasks?.length||0)>0) alerts.push({c:'var(--maint)',t:`🔴 ${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
+  if((openInc?.length||0)>0) alerts.push({c:'var(--coral)',t:`🔴 ${openInc.length} incidente${openInc.length>1?'s':''} abierto${openInc.length>1?'s':''}`});
+  if((urgTasks?.length||0)>0) alerts.push({c:'var(--coral)',t:`🔴 ${urgTasks.length} tarea${urgTasks.length>1?'s':''} urgente${urgTasks.length>1?'s':''}`});
   const alertsEl=document.getElementById('hub-alerts');
   if(alertsEl) alertsEl.innerHTML=alerts.map(a=>`
     <div style="font-size:10px;font-weight:700;color:${a.c};padding:4px 0;border-left:3px solid ${a.c};padding-left:8px;margin-bottom:3px;">${a.t}</div>`).join('') ||
