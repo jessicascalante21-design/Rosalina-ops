@@ -4,7 +4,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/lib/language-context";
 import { isAuthenticated } from "@/lib/staff-auth";
-import Home from "@/pages/Home";
+import { AnimatePresence } from "framer-motion";
+
+import GuestLayout from "@/components/layout/GuestLayout";
+import HubPage from "@/pages/HubPage";
+import PreArrivalPage from "@/pages/PreArrivalPage";
+import ConciergePage from "@/pages/ConciergePage";
+import RequestPage from "@/pages/RequestPage";
+import FeedbackPage from "@/pages/FeedbackPage";
+import EmergencyPage from "@/pages/EmergencyPage";
 import DailyReport from "@/pages/DailyReport";
 import StaffLogin from "@/pages/StaffLogin";
 import NotFound from "@/pages/not-found";
@@ -12,20 +20,29 @@ import NotFound from "@/pages/not-found";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  if (!isAuthenticated()) {
-    return <Redirect to="/staff/login" />;
-  }
+  if (!isAuthenticated()) return <Redirect to="/staff/login" />;
   return <Component />;
+}
+
+function GuestRoute({ component: Page }: { component: React.ComponentType }) {
+  return (
+    <GuestLayout>
+      <Page />
+    </GuestLayout>
+  );
 }
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/">{() => <GuestRoute component={HubPage} />}</Route>
+      <Route path="/pre-arrival">{() => <GuestRoute component={PreArrivalPage} />}</Route>
+      <Route path="/concierge">{() => <GuestRoute component={ConciergePage} />}</Route>
+      <Route path="/request">{() => <GuestRoute component={RequestPage} />}</Route>
+      <Route path="/feedback">{() => <GuestRoute component={FeedbackPage} />}</Route>
+      <Route path="/emergency">{() => <GuestRoute component={EmergencyPage} />}</Route>
       <Route path="/staff/login" component={StaffLogin} />
-      <Route path="/staff/report">
-        {() => <ProtectedRoute component={DailyReport} />}
-      </Route>
+      <Route path="/staff/report">{() => <ProtectedRoute component={DailyReport} />}</Route>
       <Route component={NotFound} />
     </Switch>
   );

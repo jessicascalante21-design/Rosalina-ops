@@ -35,11 +35,11 @@ export default function LiveConcierge() {
       <div className="flex flex-col items-center mb-8">
         {/* Logo avatar instead of photo */}
         <div className="relative mb-4">
-          <div className="w-20 h-20 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-white/90 border border-white/20 flex items-center justify-center overflow-hidden">
             <img
               src={logoUrl}
               alt="Rosalina Concierge Team"
-              className="w-12 h-12 object-contain brightness-0 invert opacity-85"
+              className="w-14 h-14 object-contain"
             />
           </div>
           <div className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-[#1A1A1A] ${isAfterHours ? "bg-secondary" : "bg-green-500"}`} />
