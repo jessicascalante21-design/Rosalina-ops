@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rosalina · Live Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   STAYCONCIERGE ENGINE v1.0 — Rosalina Edition
+   © 2025 StayConcierge. All rights reserved.
+═══════════════════════════════════════════════════ */
+:root {
+  --cream:   #F8F5F0;
+  --sand:    #EDE4D6;
+  --sand2:   #D9CCBA;
+  --olive:   #5C6E5E;
+  --terra:   #C8785A;
+  --terra2:  #A55E42;
+  --dark:    #1A1A1A;
+  --mid:     #4A4540;
+  --muted:   #8C877F;
+  --white:   #FFFFFF;
+  --green:   #2E7D52;
+  --green2:  #4CAF78;
+  --amber:   #B07D20;
+  --red:     #B83A2E;
+  --r:       14px;
+  --r2:      9px;
+  --sh:      0 1px 20px rgba(26,26,26,0.07);
+  --sh2:     0 6px 40px rgba(26,26,26,0.12);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;min-height:100vh;}
+
+/* ── VIEWS ── */
+.view{display:none;min-height:100vh;}
+.view.active{display:block;}
+
+/* ══════════════════════════════════
+   SPLASH / LOADING
+══════════════════════════════════ */
+#view-splash{
+  background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:20px;min-height:100vh;
+}
+.splash-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:42px;font-weight:300;color:var(--white);
+  letter-spacing:2px;
+}
+.splash-logo span{color:var(--terra);}
+.splash-sub{font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:3px;text-transform:uppercase;}
+.splash-bar{
+  width:160px;height:2px;background:rgba(255,255,255,0.1);
+  border-radius:2px;overflow:hidden;margin-top:8px;
+}
+.splash-fill{
+  height:100%;background:var(--terra);width:0%;
+  transition:width 2.2s cubic-bezier(.4,0,.2,1);
+}
+.splash-powered{
+  position:absolute;bottom:28px;
+  font-size:10px;color:rgba(255,255,255,0.2);
+  letter-spacing:2px;text-transform:uppercase;
+}
+
+/* ══════════════════════════════════
+   PRE-ARRIVAL FORM
+══════════════════════════════════ */
+#view-prearr{background:var(--cream);}
+.prearr-hero{
+  background:var(--dark);
+  padding:52px 24px 44px;position:relative;overflow:hidden;
+}
+.prearr-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 120% 80% at 80% 120%,rgba(200,120,90,0.3),transparent);
+}
+.prearr-hero::after{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.prearr-tag{
+  display:inline-block;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;
+  letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;
+  border-radius:40px;margin-bottom:16px;position:relative;
+}
+.prearr-hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,8vw,48px);font-weight:300;
+  color:var(--white);line-height:1.1;margin-bottom:12px;position:relative;
+}
+.prearr-hero h1 em{font-style:italic;color:rgba(255,255,255,0.6);}
+.prearr-hero p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.65;position:relative;max-width:340px;}
+
+/* Progress */
+.prearr-progress{padding:20px 24px 0;background:var(--cream);}
+.progress-steps{display:flex;gap:6px;margin-bottom:8px;}
+.ps{flex:1;height:3px;border-radius:3px;background:var(--sand);transition:background 0.4s;}
+.ps.done{background:var(--terra);}
+.ps.active{background:var(--terra);opacity:0.5;}
+.progress-label{font-size:11px;color:var(--muted);font-weight:500;}
+
+/* Form */
+.prearr-body{padding:24px;}
+.form-step{display:none;animation:fadeUp 0.35s ease both;}
+.form-step.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.step-head{margin-bottom:22px;}
+.step-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--terra);color:white;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;margin-bottom:10px;
+}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;margin-bottom:4px;}
+.step-sub{font-size:13px;color:var(--muted);line-height:1.55;}
+
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px;letter-spacing:0.2px;}
+.field label .opt{font-weight:400;color:var(--muted);}
+.inp{
+  width:100%;padding:13px 15px;
+  background:var(--white);border:1.5px solid var(--sand);
+  border-radius:var(--r2);font-family:'Outfit',sans-serif;
+  font-size:14px;color:var(--dark);outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+  -webkit-appearance:none;
+}
+.inp:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(200,120,90,0.1);}
+.inp::placeholder{color:var(--muted);}
+select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C877F' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;}
+textarea.inp{resize:none;min-height:80px;line-height:1.6;}
+
+.chips-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip-in{display:none;}
+.chip-lbl{
+  padding:8px 15px;border-radius:40px;
+  border:1.5px solid var(--sand);
+  font-size:13px;font-weight:500;color:var(--mid);
+  cursor:pointer;background:var(--white);
+  transition:all 0.18s;user-select:none;
+}
+.chip-in:checked+.chip-lbl{background:var(--terra);border-color:var(--terra);color:white;}
+
+.btn-next{
+  width:100%;padding:15px;border-radius:var(--r);
+  background:var(--terra);color:white;border:none;
+  font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;margin-top:24px;
+  box-shadow:0 4px 18px rgba(200,120,90,0.3);
+  transition:all 0.22s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-next:hover{background:var(--terra2);transform:translateY(-1px);}
+.btn-back{
+  width:100%;padding:13px;border-radius:var(--r);
+  background:transparent;color:var(--muted);border:1.5px solid var(--sand);
+  font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;margin-top:8px;transition:all 0.18s;
+}
+.btn-back:hover{background:var(--sand);color:var(--mid);}
+
+/* Confirmation */
+.confirm-card{
+  background:var(--white);border:1.5px solid var(--sand);
+  border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh);
+}
+.confirm-row{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--sand);}
+.confirm-row:last-child{border-bottom:none;}
+.cr-key{font-size:12px;color:var(--muted);min-width:120px;flex-shrink:0;padding-top:1px;}
+.cr-val{font-size:13px;font-weight:500;color:var(--dark);}
+
+/* ══════════════════════════════════
+   MAIN HUB (guest facing)
+══════════════════════════════════ */
+#view-hub{background:var(--cream);}
+
+/* Status ribbon */
+.status-ribbon{
+  padding:10px 20px;text-align:center;
+  font-size:13px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.5s;
+}
+.sr-open{background:#E8F5EB;color:#1E6634;}
+.sr-busy{background:#FEF8E8;color:#8A6200;}
+.sr-closed{background:#F5F5F3;color:var(--muted);}
+.sr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sr-open .sr-dot{background:var(--green2);animation:pulse 2s infinite;}
+.sr-busy .sr-dot{background:#E8B800;}
+.sr-closed .sr-dot{background:var(--muted);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+
+/* Hub nav */
+.hub-nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(248,245,240,0.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--sand);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:56px;
+}
+.hub-brand{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:600;color:var(--dark);
+}
+.hub-brand span{color:var(--terra);}
+.hub-room-pill{
+  font-size:12px;font-weight:600;color:var(--terra);
+  background:rgba(200,120,90,0.1);border:1px solid rgba(200,120,90,0.2);
+  padding:5px 12px;border-radius:20px;cursor:pointer;
+}
+
+/* Hero */
+.hub-hero{
+  background:var(--dark);padding:48px 24px 44px;
+  position:relative;overflow:hidden;
+}
+.hub-hero-bg{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(160deg,#2a3a2e 0%,#1a1a1a 50%,#3a2520 100%);
+}
+.hub-hero-texture{
+  position:absolute;inset:0;opacity:0.03;
+  background-image:radial-gradient(circle at 2px 2px,white 1px,transparent 0);
+  background-size:24px 24px;
+}
+.hub-hero-glow{
+  position:absolute;bottom:-80px;right:-80px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,120,90,0.2),transparent 70%);
+}
+.hub-hero-content{position:relative;}
+.hub-tag{
+  display:inline-block;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.6);font-size:10px;font-weight:600;
+  letter-spacing:2.5px;text-transform:uppercase;
+  padding:5px 14px;border-radius:40px;margin-bottom:14px;
+}
+.hub-hero h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(34px,9vw,52px);font-weight:300;
+  color:white;line-height:1.1;margin-bottom:12px;
+}
+.hub-hero h2 em{font-style:italic;color:rgba(255,255,255,0.55);}
+.hub-hero-sub{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:28px;}
+.hub-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.ha-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--terra);color:white;padding:13px 22px;
+  border-radius:var(--r);font-size:14px;font-weight:600;
+  border:none;cursor:pointer;font-family:'Outfit',sans-serif;
+  box-shadow:0 4px 18px rgba(200,120,90,0.35);
+  transition:all 0.22s;
+}
+.ha-primary:hover{background:var(--terra2);transform:translateY(-1px);}
+.ha-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);
+  color:white;padding:13px 20px;border-radius:var(--r);
+  font-size:14px;font-weight:500;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.18);
+  font-family:'Outfit',sans-serif;transition:all 0.22s;
+}
+.ha-ghost:hover{background:rgba(255,255,255,0.15);}
+
+/* Quick grid */
+.quick-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:20px;
+}
+.qc{
+  background:var(--white);border:1.5px solid var(--sand);
+  border-radius:var(--r);padding:18px 14px;
+  cursor:pointer;transition:all 0.22s;box-shadow:var(--sh);
+  display:flex;flex-direction:column;
+}
+.qc:hover{transform:translateY(-2px);box-shadow:var(--sh2);border-color:var(--sand2);}
+.qc.active-card{background:var(--terra);border-color:var(--terra);}
+.qc-icon{font-size:22px;margin-bottom:10px;}
+.qc-title{font-size:13px;font-weight:600;color:var(--dark);}
+.qc-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.qc.active-card .qc-title,.qc.active-card .qc-desc{color:rgba(255,255,255,0.9);}
+
+/* Sections */
+.hub-section{padding:24px;}
+.sec-eyebrow{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--terra);margin-bottom:6px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:4px;}
+.sec-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+
+/* Live concierge panel */
+.live-panel{
+  background:var(--dark);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--sh2);
+}
+.live-panel-top{
+  padding:28px 24px;text-align:center;
+  background:linear-gradient(145deg,#1a2e1e,#1a1a1a);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.live-ava{
+  width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--olive),var(--terra));
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 14px;
+  box-shadow:0 0 0 3px rgba(200,120,90,0.25),0 0 0 6px rgba(200,120,90,0.08);
+}
+.live-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:white;margin-bottom:3px;}
+.live-role{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.live-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:40px;
+  font-size:12px;font-weight:500;margin-bottom:16px;
+}
+.lp-on  {background:rgba(46,125,82,0.15);color:#6FCF88;border:1px solid rgba(46,125,82,0.2);}
+.lp-busy{background:rgba(176,125,32,0.15);color:#F0C840;border:1px solid rgba(176,125,32,0.2);}
+.lp-off {background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.08);}
+.live-msg{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:20px;}
+
+.pre-video-form{display:none;padding:0 24px 24px;background:rgba(0,0,0,0.15);}
+.pre-video-form.show{display:block;}
+.pv-inp{
+  width:100%;padding:12px 14px;margin-bottom:8px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r2);color:white;font-family:'Outfit',sans-serif;
+  font-size:13px;outline:none;transition:border-color 0.2s;
+}
+.pv-inp:focus{border-color:rgba(200,120,90,0.5);}
+.pv-inp::placeholder{color:rgba(255,255,255,0.25);}
+select.pv-inp{cursor:pointer;}
+
+.btn-video{
+  width:100%;padding:15px;border-radius:var(--r);
+  background:var(--terra);color:white;border:none;
+  font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 18px rgba(200,120,90,0.3);transition:all 0.22s;
+}
+.btn-video:hover{background:var(--terra2);}
+.btn-video:disabled{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.25);cursor:default;box-shadow:none;}
+.live-start-btn{padding:0 24px 24px;}
+
+/* After hours */
+.after-hours{
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:var(--r2);padding:16px;margin:0 24px 24px;
+}
+.ah-title{font-size:13px;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:8px;}
+.ah-body{font-size:12px;color:rgba(255,255,255,0.35);line-height:1.65;margin-bottom:12px;}
+.ah-emerg{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(184,58,46,0.1);border:1px solid rgba(184,58,46,0.2);
+  border-radius:var(--r2);padding:12px;cursor:pointer;text-decoration:none;
+}
+.ah-emerg:hover{background:rgba(184,58,46,0.18);}
+.ah-emerg-icon{font-size:18px;}
+.ah-emerg-text .t{font-size:13px;font-weight:600;color:#F47B6E;}
+.ah-emerg-text .s{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+
+/* Accordion info */
+.acc-list{display:flex;flex-direction:column;gap:8px;}
+.acc-item{background:var(--white);border:1.5px solid var(--sand);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.acc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 16px;cursor:pointer;transition:background 0.18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.acc-head:hover{background:var(--cream);}
+.acc-left{display:flex;align-items:center;gap:10px;}
+.acc-em{font-size:18px;}
+.acc-label{font-size:14px;font-weight:500;color:var(--dark);}
+.acc-preview{font-size:11px;color:var(--muted);margin-top:2px;}
+.acc-chev{font-size:11px;color:var(--muted);transition:transform 0.25s;}
+.acc-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;padding:0 16px;font-size:13px;color:var(--mid);line-height:1.7;}
+.acc-body.open{max-height:500px;padding:0 16px 16px;}
+.acc-val{font-size:18px;font-weight:700;color:var(--terra);margin-bottom:4px;}
+.cp-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--sand);padding:5px 11px;border-radius:20px;
+  font-size:11px;font-weight:500;cursor:pointer;margin-top:8px;
+  border:none;font-family:'Outfit',sans-serif;transition:background 0.18s;
+}
+.cp-btn:hover{background:var(--sand2);}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:7px;}
+.fq{background:var(--white);border:1.5px solid var(--sand);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.fq-q{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:14px 16px;cursor:pointer;font-size:13px;font-weight:500;
+  color:var(--dark);transition:background 0.18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.fq-q:hover{background:var(--cream);}
+.fq-q span{line-height:1.4;}
+.fq-chev{font-size:11px;color:var(--muted);flex-shrink:0;transition:transform 0.25s;}
+.fq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;padding:0 16px;font-size:13px;color:var(--mid);line-height:1.7;}
+.fq-a.open{max-height:300px;padding:0 16px 14px;}
+
+/* Request form */
+.req-form{background:var(--white);border:1.5px solid var(--sand);border-radius:var(--r);padding:22px;box-shadow:var(--sh);}
+.req-label{display:block;font-size:11px;font-weight:700;color:var(--mid);margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase;}
+.req-inp{
+  width:100%;padding:12px 14px;background:var(--cream);
+  border:1.5px solid var(--sand);border-radius:var(--r2);
+  font-family:'Outfit',sans-serif;font-size:14px;color:var(--dark);
+  outline:none;transition:all 0.2s;-webkit-appearance:none;margin-bottom:14px;
+}
+.req-inp:focus{border-color:var(--terra);background:white;box-shadow:0 0 0 3px rgba(200,120,90,0.08);}
+select.req-inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C877F' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+textarea.req-inp{resize:none;min-height:72px;line-height:1.6;}
+
+.urgency-row{display:flex;gap:8px;margin-bottom:16px;}
+.urg-in{display:none;}
+.urg-lbl{
+  flex:1;text-align:center;padding:10px 6px;border-radius:var(--r2);
+  border:1.5px solid var(--sand);font-size:12px;font-weight:600;
+  cursor:pointer;background:var(--cream);transition:all 0.18s;user-select:none;
+}
+#u1:checked+.urg-lbl{background:#E8F5EB;border-color:var(--green2);color:var(--green);}
+#u2:checked+.urg-lbl{background:#FEF8E8;border-color:#E8B800;color:var(--amber);}
+#u3:checked+.urg-lbl{background:#FEF0EC;border-color:var(--terra);color:var(--terra2);}
+
+.submit-btn{
+  width:100%;padding:15px;background:var(--terra);color:white;
+  border:none;border-radius:var(--r);font-size:15px;font-weight:600;
+  font-family:'Outfit',sans-serif;cursor:pointer;
+  box-shadow:0 4px 16px rgba(200,120,90,0.3);transition:all 0.22s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.submit-btn:hover{background:var(--terra2);transform:translateY(-1px);}
+
+/* Emergency contacts */
+.emerg-list{display:flex;flex-direction:column;gap:8px;}
+.ec{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--r);padding:15px;text-decoration:none;
+  transition:background 0.18s;cursor:pointer;
+}
+.ec:hover{background:rgba(255,255,255,0.09);}
+.ec-icon{font-size:22px;flex-shrink:0;}
+.ec-name{font-size:14px;font-weight:600;color:white;}
+.ec-num{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+/* Footer */
+.hub-footer{
+  padding:36px 24px 48px;text-align:center;
+  border-top:1px solid var(--sand);
+}
+.hf-brand{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:4px;}
+.hf-brand span{color:var(--terra);}
+.hf-sub{font-size:11px;color:var(--muted);line-height:1.7;}
+.hf-pow{
+  margin-top:20px;font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;
+}
+
+/* ══════════════════════════════════
+   SHIFT SUMMARY (AI auto-close)
+══════════════════════════════════ */
+#view-shift{
+  background:var(--dark);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.shift-box{
+  background:#1E1E1E;border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px;padding:28px;max-width:480px;width:100%;
+}
+.shift-header{
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+  padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.shift-icon{font-size:32px;}
+.shift-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:white;}
+.shift-sub{font-size:12px;color:rgba(255,255,255,0.35);margin-top:2px;}
+.shift-stat{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:var(--r2);padding:14px;margin-bottom:8px;
+}
+.ss-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:6px;}
+.ss-val{font-size:15px;font-weight:500;color:white;line-height:1.6;}
+.ss-val.highlight{color:var(--terra);}
+.shift-ai-box{
+  background:rgba(200,120,90,0.06);border:1px solid rgba(200,120,90,0.15);
+  border-radius:var(--r2);padding:16px;margin:16px 0;
+}
+.ai-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(200,120,90,0.8);margin-bottom:8px;}
+.ai-text{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.75;}
+.shift-send-btn{
+  width:100%;padding:14px;background:var(--terra);color:white;
+  border:none;border-radius:var(--r2);font-size:14px;font-weight:600;
+  font-family:'Outfit',sans-serif;cursor:pointer;transition:all 0.22s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.shift-send-btn:hover{background:var(--terra2);}
+
+/* ══════════════════════════════════
+   MODALS
+══════════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(26,26,26,0.6);z-index:200;
+  align-items:center;justify-content:center;padding:20px;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--white);border-radius:18px;
+  padding:28px 24px;max-width:380px;width:100%;
+  animation:scaleIn 0.28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.modal-icon{font-size:44px;text-align:center;margin-bottom:12px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;text-align:center;margin-bottom:8px;}
+.modal-body{font-size:13px;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:22px;}
+.modal-close{
+  width:100%;padding:13px;background:var(--terra);color:white;
+  border:none;border-radius:var(--r2);font-size:14px;font-weight:600;
+  cursor:pointer;font-family:'Outfit',sans-serif;
+}
+.modal-room-inp{
+  width:100%;padding:13px 14px;font-size:15px;text-align:center;
+  border:1.5px solid var(--sand);border-radius:var(--r2);
+  font-family:'Outfit',sans-serif;background:var(--cream);outline:none;margin-bottom:12px;
+}
+.modal-room-inp:focus{border-color:var(--terra);}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:var(--dark);color:white;padding:11px 20px;border-radius:12px;
+  font-size:13px;z-index:300;font-family:'Outfit',sans-serif;
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);max-width:90vw;text-align:center;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--sand2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div class="view active" id="view-splash">
+  <div class="splash-logo">Rosalina<span>.</span></div>
+  <div class="splash-sub">Live Concierge System</div>
+  <div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div>
+  <div class="splash-powered">Powered by StayConcierge™</div>
+</div>
+
+<!-- ══ PRE-ARRIVAL FORM ══ -->
+<div class="view" id="view-prearr">
+  <div class="prearr-hero">
+    <div class="prearr-tag">Pre-Arrival · Rosalina Boutique Hotels</div>
+    <h1>Welcome.<br><em>Let's get you ready.</em></h1>
+    <p>Help us prepare your perfect stay. Takes 2 minutes — we'll have everything set before you arrive.</p>
+  </div>
+
+  <div class="prearr-progress">
+    <div class="progress-steps">
+      <div class="ps active" id="ps1"></div>
+      <div class="ps" id="ps2"></div>
+      <div class="ps" id="ps3"></div>
+      <div class="ps" id="ps4"></div>
+    </div>
+    <div class="progress-label" id="progLabel">Step 1 of 4 — Your details</div>
+  </div>
+
+  <div class="prearr-body">
+    <!-- Step 1: Basics -->
+    <div class="form-step active" id="step-1">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div class="step-title">Tell us who you are</div>
+        <div class="step-sub">We use this to personalize your stay and prepare your room.</div>
+      </div>
+      <div class="field"><label>Full name <span style="color:var(--terra)">*</span></label><input class="inp" id="pa_name" placeholder="Your full name" /></div>
+      <div class="field"><label>Email <span style="color:var(--terra)">*</span></label><input class="inp" id="pa_email" type="email" placeholder="your@email.com" /></div>
+      <div class="field"><label>Phone / WhatsApp</label><input class="inp" id="pa_phone" type="tel" placeholder="+1 000 000 0000" /></div>
+      <div class="field"><label>Number of guests <span style="color:var(--terra)">*</span></label>
+        <select class="inp" id="pa_guests"><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+      </div>
+      <button class="btn-next" onclick="paNext(1)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Arrival -->
+    <div class="form-step" id="step-2">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div class="step-title">Your arrival</div>
+        <div class="step-sub">This helps us coordinate your check-in perfectly.</div>
+      </div>
+      <div class="field"><label>Estimated arrival time <span style="color:var(--terra)">*</span></label><input class="inp" id="pa_arrive" type="time" /></div>
+      <div class="field"><label>Do you need early check-in? <span style="color:var(--muted);font-weight:400;font-size:11px;">(from 1 PM · $25 fee)</span></label>
+        <div class="chips-row">
+          <input class="chip-in" type="radio" name="early" id="e_yes" value="Yes, I'd like early check-in">
+          <label class="chip-lbl" for="e_yes">Yes please</label>
+          <input class="chip-in" type="radio" name="early" id="e_no" value="No, standard 4 PM is fine">
+          <label class="chip-lbl" for="e_no">No, 4 PM is fine</label>
+          <input class="chip-in" type="radio" name="early" id="e_dep" value="Depends on availability">
+          <label class="chip-lbl" for="e_dep">Depends on availability</label>
+        </div>
+      </div>
+      <div class="field"><label>Will you have a car?</label>
+        <div class="chips-row">
+          <input class="chip-in" type="radio" name="car" id="c_yes" value="Yes, I need parking">
+          <label class="chip-lbl" for="c_yes">Yes, need parking</label>
+          <input class="chip-in" type="radio" name="car" id="c_no" value="No car">
+          <label class="chip-lbl" for="c_no">No car</label>
+          <input class="chip-in" type="radio" name="car" id="c_uber" value="Arriving by rideshare">
+          <label class="chip-lbl" for="c_uber">Rideshare / taxi</label>
+        </div>
+      </div>
+      <div class="field"><label>How are you arriving? <span class="opt">(optional)</span></label>
+        <select class="inp" id="pa_how"><option value="">Select</option><option>Direct flight</option><option>Cruise ship</option><option>Road trip / driving</option><option>Local — already in PR</option></select>
+      </div>
+      <button class="btn-next" onclick="paNext(2)">Continue →</button>
+      <button class="btn-back" onclick="paBack(2)">← Back</button>
+    </div>
+
+    <!-- Step 3: Requests -->
+    <div class="form-step" id="step-3">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div class="step-title">Any special requests?</div>
+        <div class="step-sub">We'll do our best to have everything ready for you.</div>
+      </div>
+      <div class="field"><label>What matters most to you? <span class="opt">(choose all that apply)</span></label>
+        <div class="chips-row">
+          <input class="chip-in" type="checkbox" name="pref" id="pf1" value="Extra towels ready"><label class="chip-lbl" for="pf1">Extra towels</label>
+          <input class="chip-in" type="checkbox" name="pref" id="pf2" value="Room well cooled (AC on)"><label class="chip-lbl" for="pf2">Room pre-cooled</label>
+          <input class="chip-in" type="checkbox" name="pref" id="pf3" value="Pool towels ready"><label class="chip-lbl" for="pf3">Pool towels</label>
+          <input class="chip-in" type="checkbox" name="pref" id="pf4" value="Anniversary / birthday celebration"><label class="chip-lbl" for="pf4">🎉 Celebration</label>
+          <input class="chip-in" type="checkbox" name="pref" id="pf5" value="Quiet room preference"><label class="chip-lbl" for="pf5">Quiet room</label>
+          <input class="chip-in" type="checkbox" name="pref" id="pf6" value="Near pool preference"><label class="chip-lbl" for="pf6">Near pool</label>
+        </div>
+      </div>
+      <div class="field"><label>Celebration details <span class="opt">(if applicable)</span></label>
+        <input class="inp" id="pa_celeb" placeholder="e.g. Anniversary — 5 years, birthday, honeymoon..."></div>
+      <div class="field"><label>Allergies or health needs we should know</label>
+        <input class="inp" id="pa_allergy" placeholder="e.g. nut allergy, mobility needs..."></div>
+      <div class="field"><label>Anything else?</label>
+        <textarea class="inp" id="pa_notes" placeholder="Any other requests, questions or things we should know..."></textarea>
+      </div>
+      <button class="btn-next" onclick="paNext(3)">Continue →</button>
+      <button class="btn-back" onclick="paBack(3)">← Back</button>
+    </div>
+
+    <!-- Step 4: Confirm -->
+    <div class="form-step" id="step-4">
+      <div class="step-head">
+        <div class="step-num">4</div>
+        <div class="step-title">Almost there!</div>
+        <div class="step-sub">Review your details and submit. We'll confirm by email within minutes.</div>
+      </div>
+      <div class="confirm-card" id="confirmCard">
+        <!-- filled by JS -->
+      </div>
+      <button class="btn-next" onclick="submitPreArrival()">✓ Submit pre-arrival info</button>
+      <button class="btn-back" onclick="paBack(4)">← Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN HUB ══ -->
+<div class="view" id="view-hub">
+
+  <!-- Status ribbon -->
+  <div class="status-ribbon sr-open" id="sr">
+    <div class="sr-dot"></div>
+    <span id="srText">Concierge available · 8:00 AM – 2:00 AM</span>
+  </div>
+
+  <!-- Nav -->
+  <div class="hub-nav">
+    <div class="hub-brand">Rosalina<span>.</span></div>
+    <div class="hub-room-pill" id="roomPill" onclick="openRoomModal()">
+      <span id="roomPillText">Set room →</span>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hub-hero">
+    <div class="hub-hero-bg"></div>
+    <div class="hub-hero-texture"></div>
+    <div class="hub-hero-glow"></div>
+    <div class="hub-hero-content">
+      <div class="hub-tag">Your stay · Rosalina Boutique Hotels</div>
+      <h2>How can we<br><em>help you today?</em></h2>
+      <p class="hub-hero-sub">Real people, real support. We're here from 8 AM to 2 AM — no bots, no waiting.</p>
+      <div class="hub-actions">
+        <button class="ha-primary" onclick="scrollHub('live')">📹 Talk to us live</button>
+        <button class="ha-ghost" onclick="scrollHub('request')">Request service</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick grid -->
+  <div class="quick-grid">
+    <div class="qc active-card" onclick="scrollHub('live')">
+      <div class="qc-icon">🎥</div>
+      <div class="qc-title">Live concierge</div>
+      <div class="qc-desc">Video help now</div>
+    </div>
+    <div class="qc" onclick="scrollHub('request')">
+      <div class="qc-icon">🛎️</div>
+      <div class="qc-title">Service request</div>
+      <div class="qc-desc">Towels, housekeeping…</div>
+    </div>
+    <div class="qc" onclick="scrollHub('info')">
+      <div class="qc-icon">📋</div>
+      <div class="qc-title">Property info</div>
+      <div class="qc-desc">WiFi, checkout, pools</div>
+    </div>
+    <div class="qc" onclick="scrollHub('faq')">
+      <div class="qc-icon">❓</div>
+      <div class="qc-title">FAQ</div>
+      <div class="qc-desc">Quick answers</div>
+    </div>
+  </div>
+
+  <!-- Live Concierge Section -->
+  <div class="hub-section" id="live">
+    <div class="sec-eyebrow">Real-time support</div>
+    <div class="sec-title">Live concierge</div>
+    <div class="sec-sub">Connect with our team via video — we see your screen if you need it.</div>
+    <div class="live-panel">
+      <div class="live-panel-top">
+        <div class="live-ava">🌺</div>
+        <div class="live-name">Jessica</div>
+        <div class="live-role">Guest Services · Rosalina</div>
+        <div class="live-pill lp-on" id="livePill">
+          <span style="width:6px;height:6px;border-radius:50%;background:#6FCF88;flex-shrink:0;"></span>
+          <span id="liveStatus">Available now</span>
+        </div>
+        <div class="live-msg" id="liveMsg">Need help right now? Fill in the quick form below and we'll connect in seconds.</div>
+      </div>
+
+      <!-- Pre-video form -->
+      <div class="pre-video-form" id="pvForm">
+        <br>
+        <input class="pv-inp" id="pv_name" placeholder="Your name">
+        <input class="pv-inp" id="pv_room" placeholder="Your room (e.g. OP7)">
+        <select class="pv-inp" id="pv_reason">
+          <option value="">What's this about?</option>
+          <option>Lockbox / access issue</option>
+          <option>Housekeeping request</option>
+          <option>AC or TV problem</option>
+          <option>Check-in / check-out question</option>
+          <option>Emergency</option>
+          <option>Other</option>
+        </select>
+        <select class="pv-inp" id="pv_urgency">
+          <option value="">How urgent?</option>
+          <option value="low">Not urgent — just have a question</option>
+          <option value="medium">Soon please</option>
+          <option value="high">Urgent — need help now</option>
+        </select>
+        <button class="btn-video" id="joinBtn" onclick="joinMeet()">
+          🟢 Join video call now
+        </button>
+      </div>
+
+      <div class="live-start-btn" id="startBtnWrap">
+        <button class="btn-video" id="videoBtn" onclick="showPVForm()">📹 Start live assistance</button>
+      </div>
+
+      <!-- After hours overlay -->
+      <div class="after-hours" id="afterHours" style="display:none;">
+        <div class="ah-title">Concierge opens at 8:00 AM</div>
+        <div class="ah-body">Our team is resting right now. Leave a message through the service request form and we'll attend to it first thing. For true emergencies:</div>
+        <a class="ah-emerg" href="tel:7874389393">
+          <span class="ah-emerg-icon">🚨</span>
+          <div class="ah-emerg-text">
+            <div class="t">Emergency line — 24/7</div>
+            <div class="s">787-438-9393 · Tap to call</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Info -->
+  <div class="hub-section" id="info" style="background:var(--sand);padding:24px;">
+    <div class="sec-eyebrow">Your stay</div>
+    <div class="sec-title">Property details</div>
+    <div class="acc-list">
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <div class="acc-left"><span class="acc-em">📶</span><div><div class="acc-label">WiFi</div><div class="acc-preview">Rosalina Guest</div></div></div>
+          <span class="acc-chev">▾</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-val">Rosalina Guest</div>
+          Password: <strong>RosalinaForever1!</strong>
+          <br><button class="cp-btn" onclick="copyText('RosalinaForever1!',this)">📋 Copy password</button>
+        </div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <div class="acc-left"><span class="acc-em">🕐</span><div><div class="acc-label">Check-in & Check-out</div><div class="acc-preview">4:00 PM / 11:00 AM</div></div></div>
+          <span class="acc-chev">▾</span>
+        </div>
+        <div class="acc-body">
+          <strong>Check-in:</strong> 4:00 PM · Code sent at 11 AM day of arrival.<br>
+          <strong>Check-out:</strong> 11:00 AM · Return keys to lockbox.<br><br>
+          <strong>Early check-in</strong> from 1 PM · $25 · subject to availability.<br>
+          <strong>Late check-out</strong> until 1 PM · $25 · subject to availability.
+        </div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <div class="acc-left"><span class="acc-em">🏊</span><div><div class="acc-label">Pools & common areas</div><div class="acc-preview">2 pools · Ocean Park</div></div></div>
+          <span class="acc-chev">▾</span>
+        </div>
+        <div class="acc-body">
+          2 pools available to all guests at Ocean Park. Isla Verde guests have free access (~8 min drive).<br><br>
+          Quiet hours: <strong>10:00 PM – 8:00 AM.</strong> No gatherings after midnight.
+        </div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <div class="acc-left"><span class="acc-em">🗺️</span><div><div class="acc-label">Address</div><div class="acc-preview">2020 Av. McLeary · San Juan</div></div></div>
+          <span class="acc-chev">▾</span>
+        </div>
+        <div class="acc-body">
+          <strong>Ocean Park:</strong> 2020 Av. McLeary, San Juan PR 00911 · 5 min walk to beach.<br><br>
+          <strong>Isla Verde:</strong> 84 Calle Júpiter, Carolina PR 00979 · 4 min walk to beach.<br><br>
+          <button class="cp-btn" onclick="copyText('2020 Avenida McLeary, San Juan PR 00911',this)">📋 Copy address</button>
+        </div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-head" onclick="toggleAcc(this)">
+          <div class="acc-left"><span class="acc-em">🍴</span><div><div class="acc-label">Food & dining nearby</div><div class="acc-preview">10+ options · walking distance</div></div></div>
+          <span class="acc-chev">▾</span>
+        </div>
+        <div class="acc-body">
+          <strong>Ocean Park:</strong> Acapulco Taqueria, Burger & Mayo Lab, Bocca Osteria, Pirilo Pizza, Berlingeri — all within 10 min walk.<br><br>
+          <strong>Isla Verde:</strong> Mande Restaurant, Euphoria, Piccolos, Bistro Café, The New Ceviche — all within 10 min walk.<br><br>
+          Self-serve coffee station available at the main entrance.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Request -->
+  <div class="hub-section" id="request">
+    <div class="sec-eyebrow">Service</div>
+    <div class="sec-title">Request something</div>
+    <div class="sec-sub">Send us a request — we'll confirm and take care of it.</div>
+    <div class="req-form">
+      <label class="req-label">Name & Room</label>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input class="req-inp" id="rq_name" placeholder="Name" style="flex:1.2;margin-bottom:0;">
+        <input class="req-inp" id="rq_room" placeholder="Room" style="flex:0.7;margin-bottom:0;">
+      </div>
+      <label class="req-label">What do you need?</label>
+      <select class="req-inp" id="rq_type">
+        <option value="">Select a service</option>
+        <option>Extra towels</option>
+        <option>Housekeeping / room cleaning</option>
+        <option>AC issue</option>
+        <option>TV / streaming issue</option>
+        <option>Plumbing issue</option>
+        <option>Early check-in request</option>
+        <option>Late check-out request</option>
+        <option>Luggage storage</option>
+        <option>Lost item</option>
+        <option>Noise complaint</option>
+        <option>Other</option>
+      </select>
+      <label class="req-label">Details <span style="font-weight:400;color:var(--muted);font-size:11px;">(optional)</span></label>
+      <textarea class="req-inp" id="rq_detail" placeholder="Any additional details that help us serve you better..."></textarea>
+      <label class="req-label">How urgent?</label>
+      <div class="urgency-row">
+        <input class="urg-in" type="radio" name="urg" id="u1" value="low"><label class="urg-lbl" for="u1">🟢 No rush</label>
+        <input class="urg-in" type="radio" name="urg" id="u2" value="medium"><label class="urg-lbl" for="u2">🟡 Soon</label>
+        <input class="urg-in" type="radio" name="urg" id="u3" value="high"><label class="urg-lbl" for="u3">🔴 Urgent</label>
+      </div>
+      <button class="submit-btn" onclick="submitRequest()">Send request →</button>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="hub-section" id="faq" style="background:var(--sand);padding:24px;">
+    <div class="sec-eyebrow">Quick answers</div>
+    <div class="sec-title">FAQ</div>
+    <div class="faq-list">
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>I didn't get the lockbox code.</span><span class="fq-chev">▾</span></div><div class="fq-a">Codes are sent at 11:00 AM on your check-in day. Past 11 AM and nothing received? Start a live chat above or call 787-304-3335 — we'll share it instantly.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>Can I check in early or check out late?</span><span class="fq-chev">▾</span></div><div class="fq-a">Yes — early check-in from 1 PM and late check-out until 1 PM are both $25, subject to availability. Ask us and we'll check right away before charging anything.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>Is there breakfast or room service?</span><span class="fq-chev">▾</span></div><div class="fq-a">We're a boutique hotel — no breakfast or room service included. There's a self-serve coffee station at the entrance and 10+ restaurants within walking distance.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>Is there a kitchen in my room?</span><span class="fq-chev">▾</span></div><div class="fq-a">Only 3 rooms have a full kitchen. All rooms have a microwave and refrigerator. Ask us about your specific room.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>Can I leave my luggage before / after my stay?</span><span class="fq-chev">▾</span></div><div class="fq-a">Yes, at Ocean Park — call us when you arrive and someone will meet you. Available until 4 PM. Isla Verde guests can use Ocean Park storage (8 min away).</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>The AC is leaking or not working.</span><span class="fq-chev">▾</span></div><div class="fq-a">This is treated as urgent — contact us via Live Assistance or call 787-304-3335 immediately. We'll send maintenance right away.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>Are pets allowed?</span><span class="fq-chev">▾</span></div><div class="fq-a">Pets are not allowed. The only exception is certified service dogs (Puerto Rico law). We cannot request proof or certificates.</div></div>
+      <div class="fq"><div class="fq-q" onclick="tFaq(this)"><span>What are the quiet hours?</span><span class="fq-chev">▾</span></div><div class="fq-a">9:00 PM to 8:00 AM. No gatherings in common areas after midnight. We appreciate your respect for fellow guests.</div></div>
+    </div>
+  </div>
+
+  <!-- Emergency -->
+  <div style="background:var(--dark);padding:36px 24px;">
+    <div class="sec-eyebrow" style="color:rgba(255,255,255,0.3);">Always available</div>
+    <div class="sec-title" style="color:white;margin-bottom:6px;">Emergency contacts</div>
+    <div class="sec-sub" style="color:rgba(255,255,255,0.4);margin-bottom:20px;">Tap to call instantly.</div>
+    <div class="emerg-list">
+      <a class="ec" href="tel:7874389393"><span class="ec-icon">🚨</span><div><div class="ec-name">Emergency Line · 24/7</div><div class="ec-num">787-438-9393</div></div></a>
+      <a class="ec" href="tel:7873043335"><span class="ec-icon">📞</span><div><div class="ec-name">Main Line · 8 AM – 2 AM</div><div class="ec-num">787-304-3335</div></div></a>
+      <a class="ec" href="tel:7874802920"><span class="ec-icon">🚔</span><div><div class="ec-name">Local Police</div><div class="ec-num">787-480-2920</div></div></a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="hub-footer">
+    <div class="hf-brand">Rosalina<span>.</span></div>
+    <div class="hf-sub">Boutique Hotels · Ocean Park & Isla Verde · Puerto Rico<br>
+      <a href="tel:7873043335" style="color:var(--terra);text-decoration:none;">787-304-3335</a> · contact@rosalinapr.com</div>
+    <div class="hf-pow">Powered by StayConcierge™</div>
+  </div>
+</div>
+
+<!-- ══ SHIFT SUMMARY ══ -->
+<div class="view" id="view-shift">
+  <div class="shift-box">
+    <div class="shift-header">
+      <div class="shift-icon">🌙</div>
+      <div>
+        <div class="shift-title" id="shiftTitle">Shift closing — AM</div>
+        <div class="shift-sub" id="shiftSub">Auto-generated by StayConcierge · <span id="shiftDate"></span></div>
+      </div>
+    </div>
+    <div class="shift-stat"><div class="ss-label">Shift</div><div class="ss-val" id="ss_shift">—</div></div>
+    <div class="shift-stat"><div class="ss-label">Total guest interactions</div><div class="ss-val highlight" id="ss_interactions">0</div></div>
+    <div class="shift-stat"><div class="ss-label">Service requests</div><div class="ss-val" id="ss_requests">0</div></div>
+    <div class="shift-stat"><div class="ss-label">Video calls</div><div class="ss-val" id="ss_calls">0</div></div>
+    <div class="shift-stat"><div class="ss-label">Pre-arrivals registered</div><div class="ss-val" id="ss_prearr">0</div></div>
+    <div class="shift-ai-box">
+      <div class="ai-label">AI Shift Summary</div>
+      <div class="ai-text" id="aiSummary">Generating summary...</div>
+    </div>
+    <div class="shift-stat"><div class="ss-label">Open items for next shift</div><div class="ss-val" id="ss_open" style="color:var(--terra);">None 🎉</div></div>
+    <button class="shift-send-btn" onclick="sendShiftSummary()">
+      📧 Send to contact@rosalinapr.com
+    </button>
+    <button onclick="showView('hub')" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r2);color:rgba(255,255,255,0.4);font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:8px;">Continue to hub →</button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="successOverlay">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title" id="mo_title">Request received!</div>
+    <div class="modal-body" id="mo_body">Our team will take care of this shortly.</div>
+    <button class="modal-close" onclick="closeModal('successOverlay')">Close</button>
+  </div>
+</div>
+
+<div class="overlay" id="roomOverlay">
+  <div class="modal">
+    <div class="modal-icon">🛏️</div>
+    <div class="modal-title">What's your room?</div>
+    <div class="modal-body">We'll personalize your experience and direct your requests to the right team.</div>
+    <input class="modal-room-inp" id="roomInp" placeholder="e.g. OP7 · OP12 · IV3" autocomplete="off" />
+    <button class="modal-close" onclick="saveRoom()">Save room</button>
+    <button onclick="closeModal('roomOverlay')" style="width:100%;padding:11px;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;margin-top:6px;">Skip for now</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STAYCONCIERGE ENGINE — Configuration
+// ════════════════════════════════════════════════════════
+const CFG = {
+  property:   'Rosalina Boutique Hotels',
+  email:      'contact@rosalinapr.com',
+  phone:      '7873043335',
+  emergency:  '7874389393',
+  meetUrl:    localStorage.getItem('sc_meet') || 'https://meet.google.com',
+  // FormSubmit endpoint — replace with your form key after setup at formsubmit.co
+  formEndpoint: 'https://formsubmit.co/ajax/contact@rosalinapr.com',
+};
+
+// Shift tracking
+const session = {
+  requests: JSON.parse(sessionStorage.getItem('sc_requests') || '[]'),
+  calls:    JSON.parse(sessionStorage.getItem('sc_calls') || '[]'),
+  prearr:   JSON.parse(sessionStorage.getItem('sc_prearr') || '[]'),
+  startedAt: sessionStorage.getItem('sc_start') || new Date().toISOString(),
+};
+function saveSession() {
+  sessionStorage.setItem('sc_requests', JSON.stringify(session.requests));
+  sessionStorage.setItem('sc_calls',    JSON.stringify(session.calls));
+  sessionStorage.setItem('sc_prearr',   JSON.stringify(session.prearr));
+  sessionStorage.setItem('sc_start',    session.startedAt);
+}
+
+// Pre-arrival step data
+const paData = {};
+
+// ════════════════════════════════
+// VIEW ROUTING
+// ════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function detectView() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('prearr') === '1' || params.get('pre') === '1') {
+    showView('prearr');
+    return;
+  }
+  // Shift close auto-trigger: 5:00:00 AM and 2:00:00 AM
+  checkShiftClose();
+  showView('hub');
+}
+
+// ════════════════════════════════
+// SPLASH
+// ════════════════════════════════
+window.addEventListener('load', () => {
+  const fill = document.getElementById('splashFill');
+  setTimeout(() => fill.style.width = '100%', 50);
+  setTimeout(() => {
+    document.getElementById('view-splash').classList.remove('active');
+    detectView();
+  }, 2500);
+});
+
+// ════════════════════════════════
+// STATUS ENGINE
+// ════════════════════════════════
+function updateStatus() {
+  const h = new Date().getHours();
+  const sr    = document.getElementById('sr');
+  const srTxt = document.getElementById('srText');
+  const pill  = document.getElementById('livePill');
+  const msg   = document.getElementById('liveMsg');
+  const vBtn  = document.getElementById('videoBtn');
+  const aHrs  = document.getElementById('afterHours');
+  const sBWrap= document.getElementById('startBtnWrap');
+
+  if (h >= 8 && h < 17) {
+    sr.className = 'status-ribbon sr-open';
+    srTxt.textContent = 'Concierge available now · 8 AM – 5 PM shift';
+    setLivePill('lp-on', '🟢', 'Available now');
+    msg.textContent = 'Our AM team is here. Fill in the form below and we\'ll connect right away.';
+    vBtn && (vBtn.disabled = false);
+    aHrs.style.display = 'none'; sBWrap.style.display = 'block';
+  } else if (h >= 17 && h < 22) {
+    sr.className = 'status-ribbon sr-open';
+    srTxt.textContent = 'PM Shift active · Available until 2:00 AM';
+    setLivePill('lp-on', '🟡', 'PM Shift · here until 2 AM');
+    msg.textContent = 'Our PM team is active. We\'re available until 2 AM — ask us anything.';
+    vBtn && (vBtn.disabled = false);
+    aHrs.style.display = 'none'; sBWrap.style.display = 'block';
+  } else if (h >= 22 || h < 2) {
+    sr.className = 'status-ribbon sr-open';
+    srTxt.textContent = 'Available until 2:00 AM · Emergencies always answered';
+    setLivePill('lp-busy', '🌙', 'Late night — still here');
+    msg.textContent = 'It\'s late — we\'re still available until 2 AM. For anything urgent, tap below.';
+    vBtn && (vBtn.disabled = false);
+    aHrs.style.display = 'none'; sBWrap.style.display = 'block';
+  } else {
+    // 2 AM – 8 AM: CLOSED
+    sr.className = 'status-ribbon sr-closed';
+    srTxt.textContent = 'Concierge opens at 8:00 AM · Emergencies: 787-438-9393';
+    setLivePill('lp-off', '🔴', 'Opens at 8:00 AM');
+    msg.textContent = 'Our team is resting. Leave a request and we\'ll attend to it at 8 AM.';
+    aHrs.style.display = 'block'; sBWrap.style.display = 'none';
+    if (document.getElementById('pvForm')) document.getElementById('pvForm').classList.remove('show');
+  }
+}
+
+function setLivePill(cls, dot, text) {
+  const p = document.getElementById('livePill');
+  if (!p) return;
+  p.className = 'live-pill ' + cls;
+  p.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.8;flex-shrink:0;"></span><span id="liveStatus">${dot} ${text}</span>`;
+}
+
+// ════════════════════════════════
+// SHIFT AUTO-CLOSE
+// ════════════════════════════════
+function checkShiftClose() {
+  const h = new Date().getHours(), m = new Date().getMinutes();
+  const isAMClose = (h === 5 && m < 10);
+  const isPMClose = (h === 2 && m < 10);
+  if (isAMClose || isPMClose) buildShiftSummary(isAMClose ? 'AM Shift (8:00 AM – 5:00 PM)' : 'PM Shift (5:00 PM – 2:00 AM)');
+}
+
+function buildShiftSummary(shiftName) {
+  const now = new Date();
+  document.getElementById('shiftTitle').textContent = `${shiftName} — Closing summary`;
+  document.getElementById('shiftDate').textContent  = now.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('ss_shift').textContent   = shiftName;
+  document.getElementById('ss_interactions').textContent = session.requests.length + session.calls.length;
+  document.getElementById('ss_requests').textContent    = session.requests.length;
+  document.getElementById('ss_calls').textContent       = session.calls.length;
+  document.getElementById('ss_prearr').textContent      = session.prearr.length;
+
+  const urgent = session.requests.filter(r => r.urgency === 'high');
+  document.getElementById('ss_open').textContent = urgent.length > 0
+    ? urgent.map(r => `${r.room} — ${r.type}`).join(', ')
+    : 'None 🎉';
+
+  // AI summary generation
+  const ai = generateAISummary(shiftName, session);
+  document.getElementById('aiSummary').textContent = ai;
+
+  showView('shift');
+}
+
+function generateAISummary(shift, s) {
+  const reqs = s.requests.length;
+  const calls = s.calls.length;
+  const urgent = s.requests.filter(r => r.urgency === 'high');
+  const types = [...new Set(s.requests.map(r => r.type))];
+
+  let text = `${shift} completed. `;
+  if (reqs === 0 && calls === 0) {
+    text += 'Quiet shift — no guest interactions recorded. All systems normal.';
+  } else {
+    text += `${reqs + calls} total guest interaction${(reqs+calls)!==1?'s':''} — ${calls} video call${calls!==1?'s':''} and ${reqs} service request${reqs!==1?'s':''}.`;
+    if (types.length) text += ` Most common requests: ${types.slice(0,3).join(', ')}.`;
+    if (urgent.length) text += ` ⚠️ ${urgent.length} urgent item${urgent.length!==1?'s':''} pending for next shift: ${urgent.map(r=>r.room).join(', ')}.`;
+    if (s.prearr.length) text += ` ${s.prearr.length} pre-arrival form${s.prearr.length!==1?'s':''} received — coordinate with housekeeping.`;
+    text += ' All interactions logged.';
+  }
+  return text;
+}
+
+function sendShiftSummary() {
+  const ai   = document.getElementById('aiSummary').textContent;
+  const subj = encodeURIComponent(`[StayConcierge] Shift Summary — ${new Date().toLocaleDateString('en-US')}`);
+  const body = encodeURIComponent(document.getElementById('shiftTitle').textContent + '\n\n' + ai + '\n\nRequests: ' + session.requests.length + '\nCalls: ' + session.calls.length + '\nPre-arrivals: ' + session.prearr.length);
+  window.open(`mailto:${CFG.email}?subject=${subj}&body=${body}`, '_blank');
+  showToast('✓ Summary sent to ' + CFG.email);
+  // Reset session
+  session.requests = []; session.calls = []; session.prearr = []; session.startedAt = new Date().toISOString();
+  saveSession();
+  setTimeout(() => showView('hub'), 2000);
+}
+
+// ════════════════════════════════
+// PRE-ARRIVAL FORM
+// ════════════════════════════════
+let paStep = 1;
+function paNext(from) {
+  if (from === 1) {
+    if (!document.getElementById('pa_name').value.trim()) { showToast('Please enter your name'); return; }
+    if (!document.getElementById('pa_email').value.trim()) { showToast('Please enter your email'); return; }
+    if (!document.getElementById('pa_guests').value) { showToast('Please select number of guests'); return; }
+    paData.name    = document.getElementById('pa_name').value.trim();
+    paData.email   = document.getElementById('pa_email').value.trim();
+    paData.phone   = document.getElementById('pa_phone').value.trim();
+    paData.guests  = document.getElementById('pa_guests').value;
+  }
+  if (from === 2) {
+    if (!document.getElementById('pa_arrive').value) { showToast('Please enter your estimated arrival time'); return; }
+    paData.arrive  = document.getElementById('pa_arrive').value;
+    paData.early   = document.querySelector('input[name="early"]:checked')?.value || 'Not specified';
+    paData.car     = document.querySelector('input[name="car"]:checked')?.value || 'Not specified';
+    paData.how     = document.getElementById('pa_how').value;
+  }
+  if (from === 3) {
+    paData.prefs   = [...document.querySelectorAll('input[name="pref"]:checked')].map(e=>e.value).join(', ') || 'None';
+    paData.celeb   = document.getElementById('pa_celeb').value.trim();
+    paData.allergy = document.getElementById('pa_allergy').value.trim();
+    paData.notes   = document.getElementById('pa_notes').value.trim();
+    buildConfirmCard();
+  }
+  paGo(from + 1);
+}
+function paBack(from) { paGo(from - 1); }
+function paGo(n) {
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  paStep = n;
+  updatePAProgress(n);
+  window.scrollTo(0, 0);
+}
+function updatePAProgress(n) {
+  ['ps1','ps2','ps3','ps4'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.className = 'ps' + (i+1 < n ? ' done' : i+1 === n ? ' active' : '');
+  });
+  const labels = ['Your details','Arrival info','Preferences','Confirmation'];
+  document.getElementById('progLabel').textContent = `Step ${n} of 4 — ${labels[n-1]}`;
+}
+function buildConfirmCard() {
+  const rows = [
+    ['Name', paData.name], ['Email', paData.email],
+    ['Phone', paData.phone || '—'], ['Guests', paData.guests],
+    ['Arrival time', paData.arrive], ['Early check-in', paData.early],
+    ['Car / Parking', paData.car], ['Arriving by', paData.how || '—'],
+    ['Preferences', paData.prefs], ['Celebration', paData.celeb || '—'],
+    ['Allergies', paData.allergy || '—'], ['Notes', paData.notes || '—'],
+  ];
+  document.getElementById('confirmCard').innerHTML = rows.map(([k,v]) =>
+    `<div class="confirm-row"><div class="cr-key">${k}</div><div class="cr-val">${v}</div></div>`
+  ).join('');
+}
+
+async function submitPreArrival() {
+  // Send to email via FormSubmit
+  try {
+    const payload = {
+      _subject: `[Pre-Arrival] ${paData.name} — Arrives ${paData.arrive}`,
+      _captcha: 'false',
+      _template: 'table',
+      ...paData,
+      submitted: new Date().toISOString(),
+    };
+    await fetch(CFG.formEndpoint, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify(payload),
+    });
+  } catch(e) { /* silent fail — form still recorded locally */ }
+
+  session.prearr.push({ name: paData.name, arrive: paData.arrive, ts: new Date().toISOString() });
+  saveSession();
+
+  // Also notify via WhatsApp message (team)
+  const msg = `🛬 *Pre-Arrival — ${CFG.property}*\n\n*Guest:* ${paData.name}\n*Guests:* ${paData.guests}\n*Arrives:* ${paData.arrive}\n*Early CI:* ${paData.early}\n*Car:* ${paData.car}\n*Requests:* ${paData.prefs}\n${paData.celeb ? `*Celebration:* ${paData.celeb}\n` : ''}${paData.notes ? `*Notes:* ${paData.notes}` : ''}`;
+  window.open('https://wa.me/1' + CFG.phone + '?text=' + encodeURIComponent(msg), '_blank');
+
+  openModal('✈️', 'You\'re all set!', `Thank you ${paData.name}! We've received your pre-arrival info and will have everything ready for your arrival at ${paData.arrive}. You'll receive a confirmation at ${paData.email}.`);
+  setTimeout(() => { closeModal('successOverlay'); showView('hub'); }, 4000);
+}
+
+// ════════════════════════════════
+// SERVICE REQUEST
+// ════════════════════════════════
+async function submitRequest() {
+  const name   = document.getElementById('rq_name').value.trim();
+  const room   = document.getElementById('rq_room').value.trim();
+  const type   = document.getElementById('rq_type').value;
+  const detail = document.getElementById('rq_detail').value.trim();
+  const urgEl  = document.querySelector('input[name="urg"]:checked');
+  const urg    = urgEl?.value || 'medium';
+  if (!name || !room) { showToast('Please enter your name and room'); return; }
+  if (!type) { showToast('Please select a service type'); return; }
+
+  const req = { name, room, type, detail, urgency: urg, ts: new Date().toISOString() };
+  session.requests.push(req);
+  saveSession();
+
+  // Email via FormSubmit
+  try {
+    await fetch(CFG.formEndpoint, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({
+        _subject: `[Service Request] ${room} — ${type} (${urg.toUpperCase()})`,
+        _captcha: 'false', _template: 'table',
+        ...req
+      }),
+    });
+  } catch(e) {}
+
+  // WhatsApp to team
+  const msg = `🛎️ *Service Request — ${CFG.property}*\n\n*Room:* ${room}\n*Guest:* ${name}\n*Needs:* ${type}\n*Urgency:* ${urg.toUpperCase()}\n${detail ? `*Details:* ${detail}` : ''}`;
+  window.open('https://wa.me/1' + CFG.phone + '?text=' + encodeURIComponent(msg), '_blank');
+
+  openModal('✅', 'Request received!', `Got it, ${name}! Your request for Room ${room} has been sent to our team. We'll attend to it ${urg === 'high' ? 'right away' : 'shortly'}.`);
+  document.getElementById('rq_detail').value = '';
+  document.getElementById('rq_type').value = '';
+  document.querySelectorAll('input[name="urg"]').forEach(i => i.checked = false);
+}
+
+// ════════════════════════════════
+// LIVE VIDEO
+// ════════════════════════════════
+function showPVForm() {
+  document.getElementById('startBtnWrap').style.display = 'none';
+  document.getElementById('pvForm').classList.add('show');
+  const saved = localStorage.getItem('sc_room');
+  if (saved) document.getElementById('pv_room').value = saved;
+}
+
+async function joinMeet() {
+  const name   = document.getElementById('pv_name').value.trim();
+  const room   = document.getElementById('pv_room').value.trim();
+  const reason = document.getElementById('pv_reason').value;
+  const urg    = document.getElementById('pv_urgency').value;
+  if (!name || !room) { showToast('Please enter your name and room'); return; }
+
+  const call = { name, room, reason, urgency: urg, ts: new Date().toISOString() };
+  session.calls.push(call);
+  saveSession();
+
+  // Notify team
+  try {
+    await fetch(CFG.formEndpoint, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({ _subject: `[Video Call] ${room} — ${reason || 'General'}`, _captcha:'false', ...call }),
+    });
+  } catch(e) {}
+
+  const msg = `📹 *Video Call Incoming — ${CFG.property}*\n\n*Room:* ${room}\n*Guest:* ${name}\n*Topic:* ${reason || 'General'}\n*Urgency:* ${urg || 'Not specified'}`;
+  window.open('https://wa.me/1' + CFG.phone + '?text=' + encodeURIComponent(msg), '_blank');
+  window.open(CFG.meetUrl, '_blank');
+  showToast('✓ Opening video call — our team has been notified!');
+}
+
+// ════════════════════════════════
+// ROOM
+// ════════════════════════════════
+function openRoomModal() { document.getElementById('roomOverlay').classList.add('show'); }
+function saveRoom() {
+  const v = document.getElementById('roomInp').value.trim().toUpperCase();
+  if (!v) { showToast('Please enter your room number'); return; }
+  localStorage.setItem('sc_room', v);
+  document.getElementById('roomPillText').textContent = v;
+  document.getElementById('pv_room').value = v;
+  document.getElementById('rq_room').value = v;
+  closeModal('roomOverlay');
+  showToast('✓ Room ' + v + ' saved');
+}
+
+// ════════════════════════════════
+// ACCORDIONS / FAQ
+// ════════════════════════════════
+function toggleAcc(head) {
+  const body = head.nextElementSibling;
+  const chev = head.querySelector('.acc-chev');
+  const open = body.classList.contains('open');
+  document.querySelectorAll('.acc-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.acc-chev').forEach(c=>c.style.transform='rotate(0)');
+  if (!open) { body.classList.add('open'); chev.style.transform='rotate(180deg)'; }
+}
+function tFaq(q) {
+  const a = q.nextElementSibling;
+  const ch = q.querySelector('.fq-chev');
+  const open = a.classList.contains('open');
+  document.querySelectorAll('.fq-a').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.fq-chev').forEach(c=>c.style.transform='rotate(0)');
+  if (!open) { a.classList.add('open'); ch.style.transform='rotate(180deg)'; }
+}
+
+// ════════════════════════════════
+// MODALS / UTIL
+// ════════════════════════════════
+function openModal(icon, title, body) {
+  document.getElementById('mo_title').textContent = title;
+  document.getElementById('mo_body').textContent = body;
+  document.querySelector('#successOverlay .modal-icon').textContent = icon;
+  document.getElementById('successOverlay').classList.add('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function scrollHub(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'}); }
+function copyText(t, btn) {
+  navigator.clipboard.writeText(t).then(()=>{ const o=btn.textContent; btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent=o,2000); });
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ════════════════════════════════
+// INIT
+// ════════════════════════════════
+const savedRoom = localStorage.getItem('sc_room');
+if (savedRoom) {
+  const rp = document.getElementById('roomPillText');
+  if (rp) rp.textContent = savedRoom;
+}
+
+updateStatus();
+setInterval(updateStatus, 60000);
+setInterval(checkShiftClose, 300000); // check every 5 min
+
+// Auto show room modal after 3s if no room set
+if (!savedRoom) setTimeout(() => { if (document.getElementById('view-hub').classList.contains('active')) openRoomModal(); }, 3000);
+</script>
+</body>
+</html>

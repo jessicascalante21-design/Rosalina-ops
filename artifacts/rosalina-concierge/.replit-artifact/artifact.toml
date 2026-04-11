@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Rosalina Digital Concierge"
+version = "1.0.0"
+id = "artifacts/rosalina-concierge"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22856
+
+[services.development]
+run = "pnpm --filter @workspace/rosalina-concierge run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/rosalina-concierge", "run", "build" ]
+publicDir = "artifacts/rosalina-concierge/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22856"
+BASE_PATH = "/"
