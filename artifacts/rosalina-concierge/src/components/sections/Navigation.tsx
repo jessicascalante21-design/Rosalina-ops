@@ -1,12 +1,13 @@
 import { Home, MessageSquare, Info, ClipboardList, HelpCircle, Phone, Globe, Star, BarChart2 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { Link } from "wouter";
+import logoUrl from "@assets/image_1775935433037.png";
 
 export default function Navigation() {
   const { language, setLanguage, t } = useLanguage();
 
   const navItems = [
-    { id: "home", icon: Home, label: t("Home", "Inicio") },
+    { id: "home", icon: Home, label: t("Hub", "Inicio") },
     { id: "concierge", icon: MessageSquare, label: "Concierge" },
     { id: "info", icon: Info, label: "Info" },
     { id: "request", icon: ClipboardList, label: t("Request", "Pedir") },
@@ -25,23 +26,33 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Top Nav */}
-      <header className="hidden md:flex fixed top-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-md border-b border-border h-16 items-center px-8 justify-between">
-        <div className="font-serif text-2xl font-semibold tracking-wide text-primary">Rosalina</div>
+      <header className="hidden md:flex fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-b border-border h-16 items-center px-8 justify-between shadow-sm">
+        {/* Logo + wordmark */}
+        <div className="flex items-center gap-3">
+          <img src={logoUrl} alt="Rosalina" className="w-8 h-8 object-contain" />
+          <div>
+            <span className="font-serif text-xl font-semibold tracking-wide text-foreground">Rosalina</span>
+            <span className="hidden lg:inline text-xs text-muted-foreground ml-2 tracking-widest uppercase">LiveOps Concierge™</span>
+          </div>
+        </div>
 
-        <nav className="flex items-center gap-5">
+        <nav className="flex items-center gap-1">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/8 transition-colors"
             >
+              <item.icon className="w-3.5 h-3.5" />
               {item.label}
             </button>
           ))}
 
+          <div className="w-px h-5 bg-border mx-1" />
+
           <button
             onClick={() => setLanguage(language === "EN" ? "ES" : "EN")}
-            className="flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-full border border-border bg-card text-xs font-semibold hover:bg-secondary transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold hover:bg-secondary transition-colors"
             data-testid="button-lang-toggle"
           >
             <Globe className="w-3.5 h-3.5" />
@@ -50,18 +61,21 @@ export default function Navigation() {
 
           <Link
             href="/staff/login"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             data-testid="link-staff-report"
           >
             <BarChart2 className="w-3.5 h-3.5" />
-            {t("Staff", "Personal")}
+            {t("Admin", "Admin")}
           </Link>
         </nav>
       </header>
 
-      {/* Mobile Top Nav (logo and lang toggle) */}
-      <header className="md:hidden absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-6 pt-6">
-        <div className="font-serif text-2xl font-semibold tracking-wide text-white">Rosalina</div>
+      {/* Mobile Top Nav */}
+      <header className="md:hidden absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-5 pt-5">
+        <div className="flex items-center gap-2.5">
+          <img src={logoUrl} alt="Rosalina" className="w-8 h-8 object-contain brightness-0 invert" />
+          <span className="font-serif text-xl font-semibold tracking-wide text-white">Rosalina</span>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLanguage(language === "EN" ? "ES" : "EN")}

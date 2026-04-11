@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { clearSession } from "@/lib/staff-auth";
 import { useLocation } from "wouter";
+import logoUrl from "@assets/image_1775935433037.png";
 
 interface ReportEntry {
   type: "service" | "feedback";
@@ -146,10 +147,13 @@ export default function DailyReport() {
       {/* Header */}
       <div className="bg-[#1A1A1A] px-6 pt-12 pb-8 text-white">
         <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs font-bold tracking-[2.5px] uppercase text-primary mb-2">Staff View</p>
-            <h1 className="font-serif text-4xl font-light mb-1">Daily Report</h1>
-            <p className="text-white/50 text-sm">{today}</p>
+          <div className="flex items-start gap-4">
+            <img src={logoUrl} alt="Rosalina" className="w-10 h-10 object-contain brightness-0 invert opacity-70 mt-1 shrink-0" />
+            <div>
+              <p className="text-xs font-bold tracking-[2.5px] uppercase text-primary mb-1">Staff · Admin View</p>
+              <h1 className="font-serif text-4xl font-light mb-1">Daily Report</h1>
+              <p className="text-white/50 text-sm">{today}</p>
+            </div>
           </div>
           <button
             onClick={handleLogout}
