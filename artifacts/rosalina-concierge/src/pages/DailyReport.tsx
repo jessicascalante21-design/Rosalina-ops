@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle } from "lucide-react";
+import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
+import { clearSession } from "@/lib/staff-auth";
+import { useLocation } from "wouter";
 
 interface ReportEntry {
   type: "service" | "feedback";
@@ -17,9 +19,15 @@ interface ReportEntry {
 
 export default function DailyReport() {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
   const [entries, setEntries] = useState<ReportEntry[]>([]);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
+
+  const handleLogout = () => {
+    clearSession();
+    setLocation("/");
+  };
 
   useEffect(() => {
     loadEntries();
@@ -137,9 +145,21 @@ export default function DailyReport() {
     <div className="min-h-screen bg-background font-sans">
       {/* Header */}
       <div className="bg-[#1A1A1A] px-6 pt-12 pb-8 text-white">
-        <p className="text-xs font-bold tracking-[2.5px] uppercase text-primary mb-2">Staff View</p>
-        <h1 className="font-serif text-4xl font-light mb-1">Daily Report</h1>
-        <p className="text-white/50 text-sm">{today}</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs font-bold tracking-[2.5px] uppercase text-primary mb-2">Staff View</p>
+            <h1 className="font-serif text-4xl font-light mb-1">Daily Report</h1>
+            <p className="text-white/50 text-sm">{today}</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/8 border border-white/10 text-white/50 hover:text-white/80 text-xs transition-colors mt-1"
+            data-testid="button-staff-logout"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            {t("Logout", "Salir")}
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

@@ -49,7 +49,7 @@ export default function Footer() {
         {/* Staff link */}
         <div>
           <Link
-            href="/staff/report"
+            href="/staff/login"
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
             data-testid="footer-staff-report"
           >

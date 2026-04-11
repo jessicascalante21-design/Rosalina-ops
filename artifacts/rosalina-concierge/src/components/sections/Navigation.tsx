@@ -49,7 +49,7 @@ export default function Navigation() {
           </button>
 
           <Link
-            href="/staff/report"
+            href="/staff/login"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             data-testid="link-staff-report"
           >
@@ -72,7 +72,7 @@ export default function Navigation() {
             {language}
           </button>
           <Link
-            href="/staff/report"
+            href="/staff/login"
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs backdrop-blur-md"
             data-testid="link-staff-report-mobile"
           >
