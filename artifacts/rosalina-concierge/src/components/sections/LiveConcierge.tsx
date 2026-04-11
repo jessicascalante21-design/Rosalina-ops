@@ -26,7 +26,7 @@ export default function LiveConcierge() {
   }, []);
 
   const handleStartCall = () => {
-    window.open("https://meet.google.com/lookup/rosalina", "_blank");
+    window.open("https://meet.google.com/rcs-ugkv-cyk", "_blank");
   };
 
   return (

@@ -8,6 +8,7 @@ import PropertyInfo from "@/components/sections/PropertyInfo";
 import ServiceRequest from "@/components/sections/ServiceRequest";
 import FAQ from "@/components/sections/FAQ";
 import Emergency from "@/components/sections/Emergency";
+import Feedback from "@/components/sections/Feedback";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
@@ -34,16 +35,17 @@ export default function Home() {
           className="w-full flex flex-col"
         >
           <Navigation />
-          
+
           <main className="flex-1 w-full max-w-md mx-auto md:max-w-4xl lg:max-w-5xl">
             <Hero />
             <LiveConcierge />
             <PropertyInfo />
             <ServiceRequest />
             <FAQ />
+            <Feedback />
             <Emergency />
           </main>
-          
+
           <Footer />
         </motion.div>
       )}

@@ -31,7 +31,10 @@ export default function ServiceRequest() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    const timestamp = new Date().toISOString();
+    const entry = { type: "service", timestamp, name, room, service, urgency, details: details || "" };
+    const existing = JSON.parse(localStorage.getItem("rosalina_report") || "[]");
+    localStorage.setItem("rosalina_report", JSON.stringify([...existing, entry]));
     const message = `Hello Rosalina team! I have a service request.\n\nRoom: ${room}\nName: ${name}\nRequest: ${service}\nUrgency: ${urgency}\nDetails: ${details || 'None'}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/17874389393?text=${encodedMessage}`, '_blank');
