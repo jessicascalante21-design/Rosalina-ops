@@ -100,11 +100,6 @@ export default function Navigation() {
         }`}
       >
         <Link href="/" className="flex items-center gap-2.5 no-underline">
-          <img
-            src={logoUrl}
-            alt="Rosalina"
-            className={`w-7 h-7 object-contain transition-all duration-300 ${onHub ? "brightness-0 invert" : ""}`}
-          />
           <span className={`font-serif text-[17px] font-semibold tracking-wide transition-colors duration-300 ${onHub ? "text-white" : "text-foreground"}`}>
             Rosalina
           </span>
