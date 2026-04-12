@@ -89,7 +89,7 @@ Towel colors: White = room use. Grey = pool. Urban brand colors = beach.
 Some rooms also have: Full kitchen (only 3 rooms), coffee maker, kitchen utensils, sofa, large table, stove, dedicated workspace, pool/balcony view.
 Self-service coffee station at the entrance for all guests.
 TV streaming: Samsung TV Plus, Tubi, YouTube, Netflix, Prime Video, Disney+, Apple TV, Peacock, Sling TV, TikTok, screen mirroring. Volume limited to 40.
-Wi-Fi: Network "Rosalina Guest" | Password: RosalinaForever1!
+Wi-Fi: Available to registered guests. Direct them to the Guest Portal (/guest) to view Wi-Fi credentials after logging in.
 
 NOT AVAILABLE:
 No breakfast/restaurant (10+ dining within walking distance), no room service, no guest laundry on-site (laundromat approximately 5 min walk), no kitchen for all guests, no beach equipment (rent nearby), no wheelchair-accessible rooms, no pets (exception: certified service dogs), no parties or events.

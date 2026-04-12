@@ -143,7 +143,7 @@ export default function WelcomeGuidePage() {
 
         <div className="grid grid-cols-2 gap-px bg-border rounded-xl overflow-hidden border border-border">
           {[
-            { icon: Wifi, label: "Wi-Fi", value: "Rosalina Guest", sub: "RosalinaForever1!" },
+            { icon: Wifi, label: "Wi-Fi", value: t("Guest Portal", "Portal"), sub: t("Login to view credentials", "Inicie sesion para ver") },
             { icon: Clock, label: t("Check-in", "Check-in"), value: "4:00 PM", sub: t("Access code sent at 11 AM", "Código enviado a las 11 AM") },
             { icon: Clock, label: t("Check-out", "Check-out"), value: "11:00 AM", sub: t("Late check-out available", "Late check-out disponible") },
             { icon: Thermometer, label: t("Climate", "Clima"), value: "75 to 90 °F", sub: t("Year-round tropical", "Tropical todo el año") },

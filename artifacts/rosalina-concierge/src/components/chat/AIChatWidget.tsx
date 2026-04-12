@@ -11,7 +11,7 @@ interface Message {
 }
 
 const QUICK_QUESTIONS_EN = [
-  "What's the WiFi password?",
+  "Where can I find the WiFi info?",
   "What time is check-in?",
   "Best restaurants nearby?",
   "How far is the beach?",
@@ -20,7 +20,7 @@ const QUICK_QUESTIONS_EN = [
 ];
 
 const QUICK_QUESTIONS_ES = [
-  "Cual es la clave del WiFi?",
+  "Donde encuentro el WiFi?",
   "A que hora es el check-in?",
   "Mejores restaurantes cercanos?",
   "Que tan lejos esta la playa?",

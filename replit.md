@@ -53,7 +53,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Pages** (route-based multi-page):
   - `/` — HubPage: 4-slide layout (Hero navy → PropertyShowcase swipe carousel → Action Hub grid → LocationSection distance map + Google Maps)
   - `/pre-arrival` — PreArrivalPage: 4-step form (Guest info with phone/email/additional guests → Arrival details → Services/packages/decorations → Beach extras/notes), creates guest account on submit
-  - `/guest` — GuestPortalPage: login with reservation number + password; view stay info, add-ons, additional guests, contact team, quick actions
+  - `/guest` — GuestPortalPage: login with reservation number + password; post-login shows: (1) property-specific check-in details (room, lockbox, door code for IV 1-4), (2) property info card, (3) WiFi credentials (guest-only), (4) stay details accordion, (5) add-ons, (6) general info accordions (check-in/out, pools, parking), (7) quick actions, (8) contact team (WhatsApp, phone, video)
   - `/concierge` — ConciergePage: live concierge form → Google Meet
   - `/request` — RequestPage: service request form
   - `/feedback` — FeedbackPage: Google Review + feedback form
@@ -117,5 +117,5 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - WhatsApp Business: +1 (939) 793-8989
 - Ocean Park: 2020 Av. McLeary, San Juan PR 00911 (19 units)
 - Isla Verde: 84 Calle Jupiter, Carolina PR 00979 (6 units)
-- WiFi: "Rosalina Guest" / RosalinaForever1!
+- WiFi: "Rosalina Guest" / RosalinaForever1! (only visible in Guest Portal after login; hidden from public pages)
 - Check-in: 4PM | Check-out: 11AM

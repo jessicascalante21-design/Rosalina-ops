@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
-import { Copy, Wifi, Clock, Waves, Car, MapPin, Coffee, Utensils } from "lucide-react";
+import { Copy, Clock, Waves, Car, MapPin, Coffee, Utensils } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -31,40 +30,6 @@ export default function PropertyInfo() {
 
       <Accordion type="single" collapsible className="w-full space-y-4">
         
-        <AccordionItem value="wifi" className="bg-white border border-border rounded-2xl px-2 shadow-sm overflow-hidden">
-          <AccordionTrigger className="hover:no-underline py-4 px-2" data-testid="accordion-trigger-wifi">
-            <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-full bg-secondary/30 flex items-center justify-center text-primary">
-                <Wifi className="w-5 h-5" />
-              </div>
-              <span className="font-medium text-lg">Wi-Fi</span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-2 pb-4 pt-1">
-            <div className="space-y-3 pl-13">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t("Network Name", "Nombre de Red")}</p>
-                <p className="font-medium">Rosalina Guest</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t("Password", "Contraseña")}</p>
-                <div className="flex items-center justify-between bg-secondary/20 rounded-lg p-3">
-                  <span className="font-mono tracking-wider">RosalinaForever1!</span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleCopy("RosalinaForever1!", "WiFi Password")}
-                    className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
-                    data-testid="button-copy-wifi"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
         <AccordionItem value="checkin" className="bg-white border border-border rounded-2xl px-2 shadow-sm overflow-hidden">
           <AccordionTrigger className="hover:no-underline py-4 px-2" data-testid="accordion-trigger-checkin">
             <div className="flex items-center gap-3 text-left">
