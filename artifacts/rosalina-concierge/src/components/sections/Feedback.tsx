@@ -32,9 +32,19 @@ export default function Feedback({ pageMode = false }: FeedbackProps) {
     const entry = { type: "feedback", timestamp, feedbackType, name: name || "Anonymous", room: room || "—", message };
     const existing = JSON.parse(localStorage.getItem("rosalina_report") || "[]");
     localStorage.setItem("rosalina_report", JSON.stringify([...existing, entry]));
-    const subject = encodeURIComponent(`[Rosalina Feedback] ${feedbackType} – Room ${room || "N/A"}`);
-    const body = encodeURIComponent(`Feedback Type: ${feedbackType}\nName: ${name || "Anonymous"}\nRoom: ${room || "N/A"}\n\nMessage:\n${message}`);
-    window.location.href = `mailto:contact@rosalinapr.com?subject=${subject}&body=${body}`;
+    const waMsg = [
+      `*ROSALINA GUEST FEEDBACK*`,
+      ``,
+      `Type: ${feedbackType}`,
+      `Name: ${name || "Anonymous"}`,
+      `Room: ${room || "N/A"}`,
+      ``,
+      `Message:`,
+      message,
+      ``,
+      `_Sent via Rosalina Concierge Hub_`,
+    ].join("\n");
+    window.open(`https://wa.me/19397938989?text=${encodeURIComponent(waMsg)}`, "_blank");
     setSubmitted(true);
   };
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Trash2, Users, Edit3, Save, X, Key, StickyNote, Building2, Phone, Mail, ChevronDown, ChevronUp } from "lucide-react";
+import { Download, Trash2, Users, Edit3, Save, X, Key, StickyNote, Building2, Phone, Mail, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import { GuestRecord, getGuests, saveGuests, updateGuest, PACKAGE_OPTIONS, BEACH_EXTRAS } from "@/lib/guest-types";
+import { GuestRecord, getGuests, saveGuests, updateGuest, PACKAGE_OPTIONS, BEACH_EXTRAS, getLockboxCode, LOCKBOX_CODES, SPECIAL_CODES, OCEAN_PARK_UNITS, ISLA_VERDE_UNITS } from "@/lib/guest-types";
 import { GlassButton, GlassInput } from "./GlassUI";
 
 interface GuestsTabProps {
@@ -20,6 +20,14 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
   const handleUpdateGuest = (resNum: string, updates: Partial<GuestRecord>) => {
     updateGuest(resNum, updates);
     onGuestsChange(getGuests());
+  };
+
+  const handleRoomAssignment = (guest: GuestRecord, roomNum: string) => {
+    const lockbox = getLockboxCode(guest.property, roomNum);
+    handleUpdateGuest(guest.reservationNumber, {
+      roomNumber: roomNum,
+      lockboxCode: lockbox,
+    });
   };
 
   const handleDeleteGuest = (resNum: string) => {
@@ -42,6 +50,11 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
     const a = document.createElement("a");
     a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getRoomOptions = (property: string) => {
+    const units = property === "Ocean Park" ? OCEAN_PARK_UNITS : ISLA_VERDE_UNITS;
+    return Array.from({ length: units }, (_, i) => String(i + 1));
   };
 
   return (
@@ -127,13 +140,48 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <p className="text-[10px] text-white/30 mb-1">{t("Room #", "Habitacion")}</p>
-                                  <GlassInput value={g.roomNumber || ""} onChange={(v) => handleUpdateGuest(g.reservationNumber, { roomNumber: v })} placeholder="OP-01" />
+                                  <select
+                                    value={g.roomNumber || ""}
+                                    onChange={(e) => handleRoomAssignment(g, e.target.value)}
+                                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none"
+                                  >
+                                    <option value="" className="bg-[#0B1730] text-white/60">{t("Select room", "Seleccionar")}</option>
+                                    {getRoomOptions(g.property).map((num) => (
+                                      <option key={num} value={num} className="bg-[#0B1730] text-white">
+                                        {g.property === "Ocean Park" ? "OP" : "IV"}-{num} (Code: {getLockboxCode(g.property, num)})
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
                                 <div>
-                                  <p className="text-[10px] text-white/30 mb-1">{t("Lockbox Code", "Codigo Candado")}</p>
-                                  <GlassInput value={g.lockboxCode || ""} onChange={(v) => handleUpdateGuest(g.reservationNumber, { lockboxCode: v })} placeholder="1234" />
+                                  <p className="text-[10px] text-white/30 mb-1 flex items-center gap-1">
+                                    <Lock className="w-2.5 h-2.5" />
+                                    {t("Lockbox Code", "Codigo Candado")}
+                                  </p>
+                                  <GlassInput
+                                    value={g.lockboxCode || ""}
+                                    onChange={(v) => handleUpdateGuest(g.reservationNumber, { lockboxCode: v })}
+                                    placeholder={g.roomNumber ? getLockboxCode(g.property, g.roomNumber) || "---" : "---"}
+                                  />
+                                  {g.lockboxCode && (
+                                    <p className="text-[9px] text-green-400/60 mt-0.5">Auto-assigned</p>
+                                  )}
                                 </div>
                               </div>
+
+                              {g.property && SPECIAL_CODES[g.property] && (
+                                <div className="mt-1">
+                                  <p className="text-[9px] text-white/20 mb-1">{t("Other codes", "Otros codigos")} ({g.property}):</p>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {Object.entries(SPECIAL_CODES[g.property]).map(([label, code]) => (
+                                      <span key={label} className="text-[9px] font-mono bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-white/40">
+                                        {label}: {code}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
                               <div>
                                 <p className="text-[10px] text-white/30 mb-1">{t("Status", "Estado")}</p>
                                 <div className="flex gap-1.5 flex-wrap">
@@ -164,7 +212,7 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
                             </div>
                           ) : (
                             <div className="space-y-1.5 text-xs">
-                              {g.roomNumber && <div className="flex items-center gap-2"><Building2 className="w-3 h-3 text-white/25" /><span className="text-white/50">Room: <span className="text-white/70 font-mono">{g.roomNumber}</span></span></div>}
+                              {g.roomNumber && <div className="flex items-center gap-2"><Building2 className="w-3 h-3 text-white/25" /><span className="text-white/50">Room: <span className="text-white/70 font-mono">{g.property === "Ocean Park" ? "OP" : "IV"}-{g.roomNumber}</span></span></div>}
                               {g.lockboxCode && <div className="flex items-center gap-2"><Key className="w-3 h-3 text-white/25" /><span className="text-white/50">Lockbox: <span className="text-white/70 font-mono">{g.lockboxCode}</span></span></div>}
                               {g.staffNotes && <div className="flex items-start gap-2"><StickyNote className="w-3 h-3 text-white/25 mt-0.5 shrink-0" /><span className="text-white/50">{g.staffNotes}</span></div>}
                               {!g.roomNumber && !g.lockboxCode && !g.staffNotes && <p className="text-white/25 italic">{t("No staff notes yet", "Sin notas del staff aun")}</p>}

@@ -60,14 +60,14 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - `/emergency` — EmergencyPage: tap-to-call emergency contacts
   - `/guide` — WelcomeGuidePage: luxury editorial property guide
   - `/staff/login` → `/staff/report` — PIN-protected staff dashboard (PR Property Hub)
-- **Shared types**: `src/lib/guest-types.ts` — GuestRecord interface, PACKAGE_OPTIONS, BEACH_EXTRAS, helper functions (getGuests, saveGuests, updateGuest, generatePassword)
+- **Shared types**: `src/lib/guest-types.ts` — GuestRecord interface, PACKAGE_OPTIONS, BEACH_EXTRAS, LOCKBOX_CODES, SPECIAL_CODES, helper functions (getGuests, saveGuests, updateGuest, generatePassword, getLockboxCode), contact constants (WHATSAPP_BUSINESS, EMERGENCY_NUMBER, CONCIERGE_NUMBER)
 - **GuestRecord fields**: name, reservationNumber, property, arrivalDate, arrivalTime, departureDate, numGuests, earlyCheckin, luggageStorage, carStatus, preferredContact, specialRequests, phone, email, additionalGuests, roomNumber, lockboxCode, staffNotes, status (pre-arrival/checked-in/checked-out/no-show), packages[], beachExtras[]
 - **Key features**:
   - Language toggle (EN/ES) via React context
   - Dual property selector on HubPage (Ocean Park / Isla Verde), saved to localStorage
   - Smart concierge status by time of day (AM/PM/late/closed)
   - After-hours detection: hides Meet form, shows emergency call (2-8 AM)
-  - WhatsApp service requests: wa.me/17874389393
+  - WhatsApp Business (primary notifications): wa.me/19397938989 (+1 939-793-8989)
   - Google Meet live concierge: meet.google.com/rcs-ugkv-cyk
   - Google Review link: share.google/dMZZbAfY87Z3CDP7e
   - Emergency contacts (tap-to-call): 787-438-9393 (24/7), 787-304-3335 (8AM-2AM)
@@ -88,7 +88,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Rosa AI avatar in sidebar with online status
   - 5 tabs: Today, Property, Guests, Arrivals, AI Insights
   - **Property Hub tab**: Room status board for Ocean Park (19 units) and Isla Verde (6 units) with color-coded status cards (Vacant/Occupied/Cleaning/Maintenance/Check-out), property summary
-  - **Guests tab**: Expandable guest cards with full details, inline editing (room number, lockbox code, status, staff notes), guest deletion
+  - **Guests tab**: Expandable guest cards with full details, inline editing (room dropdown with auto-lockbox assignment, lockbox code, status, staff notes, special codes reference), guest deletion
   - **Today tab**: Daily report with KPI stats, CSV export, Email Report
   - **Arrivals tab**: Pre-arrival submissions list
   - **AI Insights tab**: FAQ tracking from chat widget, auto-categorized questions, frequency bar chart, CSV export
@@ -114,7 +114,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Emergency 24/7: 787-438-9393
 - Concierge (8AM-2AM): 787-304-3335
 - Email: contact@rosalinapr.com
-- WhatsApp: +1 787-438-9393
+- WhatsApp Business: +1 (939) 793-8989
 - Ocean Park: 2020 Av. McLeary, San Juan PR 00911 (19 units)
 - Isla Verde: 84 Calle Jupiter, Carolina PR 00979 (6 units)
 - WiFi: "Rosalina Guest" / RosalinaForever1!

@@ -95,8 +95,8 @@ export default function PreArrivalPage() {
       selectedBeachExtras.length ? `Beach Extras: ${selectedBeachExtras.join(", ")}` : "",
       `Special Requests: ${specialRequests || "None"}`,
     ].filter(Boolean).join("\n");
-    const subject = encodeURIComponent(`Pre-Arrival: ${fullName} (${reservationNumber})`);
-    window.open(`mailto:contact@rosalinapr.com?subject=${subject}&body=${encodeURIComponent(emailBody)}`, "_blank");
+    const waMsg = `*PRE-ARRIVAL: ${fullName}*\n(${reservationNumber})\n\n${emailBody}\n\n_Sent via Rosalina Concierge Hub_`;
+    window.open(`https://wa.me/19397938989?text=${encodeURIComponent(waMsg)}`, "_blank");
 
     setGuestRecord(record);
     setSubmitted(true);
@@ -345,8 +345,8 @@ export default function PreArrivalPage() {
                         <Select value={preferredContact} onValueChange={setPreferredContact}>
                           <SelectTrigger className={`${field} w-full`}><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="whatsapp">WhatsApp (+1 787-438-9393)</SelectItem>
-                            <SelectItem value="email">Email (contact@rosalinapr.com)</SelectItem>
+                            <SelectItem value="whatsapp">WhatsApp (+1 939-793-8989)</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
                             <SelectItem value="sms">SMS / Text</SelectItem>
                             <SelectItem value="phone">{t("Phone Call", "Llamada Telefonica")}</SelectItem>
                           </SelectContent>

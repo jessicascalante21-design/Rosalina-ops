@@ -41,18 +41,19 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
     const existing = JSON.parse(localStorage.getItem("rosalina_report") || "[]");
     localStorage.setItem("rosalina_report", JSON.stringify([...existing, entry]));
 
-    const subject = encodeURIComponent(`[Guest Request] ${service} – Room ${room} – ${name}`);
-    const body = encodeURIComponent(
-      `ROSALINA GUEST REQUEST\n\n` +
-      `Name: ${name}\n` +
-      `Room: ${room}\n` +
-      `Request: ${service}\n` +
-      `Urgency: ${urgency}\n` +
-      `Details: ${details || "None"}\n` +
-      `Submitted: ${new Date().toLocaleString("en-US")}\n\n` +
-      `--- Sent via Rosalina Concierge Hub ---`
-    );
-    window.open(`mailto:contact@rosalinapr.com?subject=${subject}&body=${body}`, "_blank");
+    const waMsg = [
+      `*ROSALINA GUEST REQUEST*`,
+      ``,
+      `Name: ${name}`,
+      `Room: ${room}`,
+      `Request: ${service}`,
+      `Urgency: ${urgency}`,
+      `Details: ${details || "None"}`,
+      `Submitted: ${new Date().toLocaleString("en-US")}`,
+      ``,
+      `_Sent via Rosalina Concierge Hub_`,
+    ].join("\n");
+    window.open(`https://wa.me/19397938989?text=${encodeURIComponent(waMsg)}`, "_blank");
     setSubmitted(true);
   };
 
@@ -74,14 +75,14 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
             <p className="font-serif text-2xl mb-2">{t("Request sent!", "¡Solicitud enviada!")}</p>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
               {t(
-                "Your request has been logged and emailed to our team. We'll respond within 15 minutes during concierge hours.",
-                "Su solicitud ha sido registrada y enviada a nuestro equipo. Responderemos en 15 minutos durante el horario de concierge."
+                "Your request has been logged and sent to our team via WhatsApp. We'll respond within 15 minutes during concierge hours.",
+                "Su solicitud ha sido registrada y enviada a nuestro equipo por WhatsApp. Responderemos en 15 minutos durante el horario de concierge."
               )}
             </p>
           </div>
           <div className="bg-secondary/30 border border-border rounded-xl px-4 py-3 text-xs text-muted-foreground">
             {t("Urgent issue? Call our 24/7 line: ", "¿Urgente? Llame nuestra línea 24/7: ")}
-            <a href="tel:17874389393" className="font-semibold text-foreground">787-438-9393</a>
+            <a href="https://wa.me/19397938989" target="_blank" rel="noreferrer" className="font-semibold text-foreground">WhatsApp +1 (939) 793-8989</a>
           </div>
           <button
             onClick={() => { setService(""); setName(""); setRoom(""); setDetails(""); setUrgency("No rush"); setSubmitted(false); }}

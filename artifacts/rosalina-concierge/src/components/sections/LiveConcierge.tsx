@@ -41,7 +41,7 @@ export default function LiveConcierge({ pageMode = false }: LiveConciergeProps) 
         <div className={`flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl border ${isAfterHours ? "bg-secondary/30 border-border text-muted-foreground" : "bg-green-50 border-green-200 text-green-800"}`}>
           <span className={`w-2 h-2 rounded-full shrink-0 ${isAfterHours ? "bg-secondary" : "bg-green-500 animate-pulse"}`} />
           {isAfterHours
-            ? t("Live desk closed (2 AM to 8 AM). Emergency line: 787-438-9393.", "Concierge cerrado (2 AM a 8 AM). Línea de emergencia: 787-438-9393.")
+            ? t("Live desk closed (2 AM to 8 AM). WhatsApp: +1 (939) 793-8989.", "Concierge cerrado (2 AM a 8 AM). WhatsApp: +1 (939) 793-8989.")
             : t("Your concierge team is online and ready.", "Su equipo de concierge está en línea y listo.")
           }
         </div>
@@ -53,17 +53,19 @@ export default function LiveConcierge({ pageMode = false }: LiveConciergeProps) 
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
               {t(
-                "Our live concierge desk is offline (2 AM to 8 AM). For emergencies, call the after-hours line.",
-                "Nuestro concierge está fuera de línea (2 AM a 8 AM). Para emergencias, llame a la línea de emergencia."
+                "Our live concierge desk is offline (2 AM to 8 AM). For emergencies, send a WhatsApp message or call the after-hours line.",
+                "Nuestro concierge está fuera de línea (2 AM a 8 AM). Para emergencias, envíe un mensaje por WhatsApp o llame a la línea de emergencia."
               )}
             </p>
             <a
-              href="tel:17874389393"
-              className="inline-flex items-center gap-2.5 bg-primary text-white px-7 py-3.5 rounded-xl font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+              href="https://wa.me/19397938989"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2.5 bg-green-600 text-white px-7 py-3.5 rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-sm"
               data-testid="button-call-emergency"
             >
               <PhoneCall className="w-4 h-4" />
-              787-438-9393
+              WhatsApp +1 (939) 793-8989
             </a>
           </div>
         ) : (
@@ -179,11 +181,11 @@ export default function LiveConcierge({ pageMode = false }: LiveConciergeProps) 
       {isAfterHours ? (
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
           <p className="text-secondary/80 text-sm mb-5">
-            {t("Live concierge is offline (2 AM to 8 AM). For immediate help, call the emergency line.", "El concierge en vivo está fuera de línea (2 AM a 8 AM). Para ayuda inmediata, llame a la línea de emergencia.")}
+            {t("Live concierge is offline (2 AM to 8 AM). For immediate help, send a WhatsApp message or call the emergency line.", "El concierge en vivo está fuera de línea (2 AM a 8 AM). Para ayuda inmediata, envíe un WhatsApp o llame a la línea de emergencia.")}
           </p>
-          <a href="tel:17874389393" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors" data-testid="button-call-emergency">
+          <a href="https://wa.me/19397938989" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-medium hover:bg-green-700 transition-colors" data-testid="button-call-emergency">
             <PhoneCall className="w-4 h-4" />
-            787-438-9393
+            WhatsApp +1 (939) 793-8989
           </a>
         </div>
       ) : (

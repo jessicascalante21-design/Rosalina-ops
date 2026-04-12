@@ -207,7 +207,7 @@ export default function LocationSection() {
 
           {/* WhatsApp alert to staff group */}
           <a
-            href={`https://wa.me/17874389393?text=${encodeURIComponent("🚨 EMERGENCY ALERT — Rosalina guest needs immediate assistance. Please respond.")}`}
+            href={`https://wa.me/19397938989?text=${encodeURIComponent("🚨 EMERGENCY ALERT — Rosalina guest needs immediate assistance. Please respond.")}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-3 p-4 rounded-2xl bg-green-50 border border-green-100 hover:bg-green-100/80 transition-all active:scale-[0.97]"

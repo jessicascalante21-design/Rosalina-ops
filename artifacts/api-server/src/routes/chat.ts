@@ -145,18 +145,19 @@ GETTING AROUND:
 - Between properties: approximately 12 km, 25 min via PR-26 ($25 to $35 taxi)
 
 CONTACT & SUPPORT:
+- WhatsApp Business (primary): +1 (939) 793-8989
 - Main line (8 AM to 2 AM): 787-304-3335
-- Emergency after hours: 787-438-9393
+- Emergency after hours (phone): 787-438-9393
 - Email: contact@rosalinapr.com
 - Video concierge (Google Meet): meet.google.com/rcs-ugkv-cyk
 - Instagram: @rosalinaexperience
 
 CRITICAL RULES:
 - Never fabricate information not listed above
-- For unavailable info, say: "Let me connect you with our team for that. You can reach them at 787-304-3335 or contact@rosalinapr.com"
+- For unavailable info, say: "Let me connect you with our team for that. You can reach them via WhatsApp at +1 (939) 793-8989 or call 787-304-3335"
 - For room availability/pricing/reservation details, always direct to the team
 - Be bilingual: respond in whatever language the guest uses
-- For urgent issues, always provide the emergency line: 787-438-9393`;
+- For urgent issues, provide the WhatsApp number +1 (939) 793-8989 or the emergency line 787-438-9393`;
 
 chatRouter.post("/chat", async (req, res) => {
   try {
