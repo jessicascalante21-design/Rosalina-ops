@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import logoUrl from "@assets/image_1775935433037.png";
+import conciergeAvatar from "@assets/4536937_1775962091124.png";
 
 type PropertyTab = "Ocean Park" | "Isla Verde" | "both";
 
@@ -116,17 +117,24 @@ export default function WelcomeGuidePage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 max-w-2xl mx-auto px-6 pt-24 md:pt-12 pb-14 text-center"
         >
-          <img src={logoUrl} alt="" className="w-14 h-14 object-contain mx-auto mb-6 opacity-40" />
+          <div className="relative w-20 h-20 mx-auto mb-5">
+            <div className="w-20 h-20 rounded-full bg-white/10 border border-white/15 p-1.5 backdrop-blur-sm">
+              <img src={conciergeAvatar} alt="" className="w-full h-full object-contain rounded-full" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white/10 border border-white/15 flex items-center justify-center backdrop-blur-sm">
+              <img src={logoUrl} alt="" className="w-4 h-4 object-contain brightness-0 invert opacity-50" />
+            </div>
+          </div>
           <p className="text-[10px] font-semibold tracking-[4px] uppercase text-white/35 mb-4">
-            {t("Guest Guide", "Guía del Huésped")}
+            {t("Guest Services", "Servicios al Huésped")}
           </p>
           <h1 className="font-serif text-4xl md:text-5xl font-light leading-tight tracking-tight mb-4">
             {t("Your Puerto Rico Guide", "Tu Guía de Puerto Rico")}
           </h1>
           <p className="text-white/40 text-sm leading-relaxed max-w-md mx-auto">
             {t(
-              "Curated information for your stay at Rosalina Boutique Hotels. Restaurants, activities, seasonal conditions, and local knowledge.",
-              "Información seleccionada para tu estadía en Rosalina Boutique Hotels. Restaurantes, actividades, condiciones estacionales y conocimiento local."
+              "Curated by our concierge team for your stay at Rosalina Boutique Hotels. Restaurants, activities, seasonal conditions, and local knowledge.",
+              "Seleccionado por nuestro equipo de concierge para su estadía en Rosalina Boutique Hotels. Restaurantes, actividades, condiciones estacionales y conocimiento local."
             )}
           </p>
         </motion.div>
