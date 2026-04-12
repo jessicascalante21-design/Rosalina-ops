@@ -77,7 +77,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Guest account system with extended fields (phone, email, additional guests, packages, beach extras)
   - Guest portal at `/guest`: login with reservation number + password; view stay, add-ons, quick actions, contact
   - Pre-arrival password formula: first 4 chars of name + last 4 chars of reservation + `!`
-  - Special packages: Romantic Decoration, Birthday, Anniversary, Welcome Basket, Champagne & Flowers
+  - Special packages: Happy Birthday ($70), "Cheers" Wine Experience ($55), Sweet Escape ($90), Midnight Spark ($100) — all require 72hrs advance notice
   - Beach extras: 2/4 Beach Chairs, Umbrella, Combo, Cooler (daily rentals)
   - Mobile-first: glass bottom tab bar on mobile, icon top nav on desktop
   - Framer Motion splash + page transitions

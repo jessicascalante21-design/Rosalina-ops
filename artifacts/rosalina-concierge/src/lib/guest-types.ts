@@ -25,11 +25,10 @@ export interface GuestRecord {
 }
 
 export const PACKAGE_OPTIONS = [
-  { id: "romantic", en: "Romantic Decoration Package", es: "Paquete Decoracion Romantica", price: "$75" },
-  { id: "birthday", en: "Birthday Setup", es: "Decoracion de Cumpleanos", price: "$60" },
-  { id: "anniversary", en: "Anniversary Package", es: "Paquete de Aniversario", price: "$85" },
-  { id: "welcome-basket", en: "Welcome Basket", es: "Canasta de Bienvenida", price: "$45" },
-  { id: "champagne", en: "Champagne & Flowers", es: "Champan y Flores", price: "$55" },
+  { id: "birthday", en: "Happy Birthday — Garland, cake & 6 balloons", es: "Feliz Cumpleanos — Guirnalda, bizcocho y 6 globos", price: "$70" },
+  { id: "cheers-wine", en: "\"Cheers\" Wine Experience — Bottle in room", es: "Experiencia \"Cheers\" Vino — Botella en habitacion", price: "$55" },
+  { id: "sweet-escape", en: "Sweet Escape — Petals, strawberries & wine", es: "Sweet Escape — Petalos, fresas y vino", price: "$90" },
+  { id: "midnight-spark", en: "Midnight Spark — Petals, candles, strawberries & wine", es: "Midnight Spark — Petalos, velas, fresas y vino", price: "$100" },
 ];
 
 export const BEACH_EXTRAS = [

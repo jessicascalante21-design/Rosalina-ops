@@ -8,7 +8,6 @@ import PropertyShowcase from "@/components/sections/PropertyShowcase";
 import LocationSection from "@/components/sections/LocationSection";
 import FAQ from "@/components/sections/FAQ";
 import PageHead from "@/components/PageHead";
-import logoUrl from "@assets/image_1775935433037.png";
 
 type StatusType = "am" | "pm" | "late" | "closed";
 type PropertyType = "Ocean Park" | "Isla Verde" | null;
@@ -140,15 +139,14 @@ export default function HubPage() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_30%_at_0%_100%,rgba(184,155,94,0.08),transparent)] pointer-events-none" />
 
             <div className="relative z-10 max-w-lg mx-auto text-center">
-              <motion.img
-                src={logoUrl}
-                alt="Rosalina"
+              <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="w-12 h-12 mx-auto mb-8 object-contain"
-                style={{ mixBlendMode: "screen", opacity: 0.85 }}
-              />
+                className="text-[11px] font-sans font-medium tracking-[5px] uppercase text-white/30 mb-8"
+              >
+                {t("Welcome to Rosalina", "Bienvenido a Rosalina")}
+              </motion.p>
 
               <motion.div
                 initial={{ opacity: 0, y: -8 }}

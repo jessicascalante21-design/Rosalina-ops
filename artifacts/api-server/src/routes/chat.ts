@@ -45,7 +45,11 @@ UPSELL OPPORTUNITIES (weave naturally):
 - Private Old San Juan guided tour
 - El Yunque rainforest day trip
 - Sunset beach setup arrangements
-- Special occasion decorations
+- Happy Birthday package ($70) — garland, cake, 6 balloons
+- "Cheers" Wine Experience ($55) — bottle of wine in room
+- Sweet Escape ($90) — rose petals, chocolate strawberries & wine
+- Midnight Spark ($100) — petals, candles, chocolate strawberries & wine
+All packages require 72hrs advance notice. Contact 787-304-3335 to book.
 - Airport transfer coordination
 
 PROPERTIES:
