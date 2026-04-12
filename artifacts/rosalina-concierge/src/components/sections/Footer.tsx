@@ -6,22 +6,25 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="py-12 px-6 bg-background border-t border-border mt-8 mb-16 md:mb-0 text-center">
-      <h2 className="font-serif text-3xl text-foreground mb-6 italic">Rosalina</h2>
+    <footer className="py-14 px-6 bg-background border-t border-border mt-8 mb-16 md:mb-0">
+      <div className="max-w-lg mx-auto text-center">
+        <h2 className="font-serif text-2xl text-foreground mb-1.5">Rosalina</h2>
+        <p className="text-[10px] font-sans font-medium tracking-[3px] uppercase text-muted-foreground/50 mb-8">Boutique Hotels</p>
 
-      <div className="space-y-6 text-sm text-muted-foreground">
-        <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto text-left">
+        <div className="grid grid-cols-2 gap-6 max-w-xs mx-auto text-left mb-8">
           <div>
-            <p className="font-medium text-foreground mb-1">Ocean Park</p>
-            <p className="text-xs leading-relaxed">2020 Av. McLeary,<br />San Juan PR 00911</p>
+            <p className="font-medium text-foreground text-[13px] mb-1">Ocean Park</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">2020 Av. McLeary,<br />San Juan PR 00911</p>
           </div>
           <div>
-            <p className="font-medium text-foreground mb-1">Isla Verde</p>
-            <p className="text-xs leading-relaxed">84 Calle Júpiter,<br />Carolina PR 00979</p>
+            <p className="font-medium text-foreground text-[13px] mb-1">Isla Verde</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">84 Calle Jupiter,<br />Carolina PR 00979</p>
           </div>
         </div>
 
-        <div className="pt-4 flex flex-col gap-2 border-t border-border w-3/4 mx-auto">
+        <div className="w-12 h-px bg-border mx-auto mb-8" />
+
+        <div className="flex flex-col gap-2 mb-8 text-sm text-muted-foreground">
           <a href="https://rosalinapr.com" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">
             rosalinapr.com
           </a>
@@ -33,44 +36,41 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* Social & Review links */}
-        <div className="flex items-center justify-center gap-3 flex-wrap">
+        <div className="flex items-center justify-center gap-3 flex-wrap mb-8">
           <a
             href="https://share.google/dMZZbAfY87Z3CDP7e"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-secondary/30 transition-colors text-foreground/80"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-secondary/30 transition-colors text-foreground/70 text-xs font-medium"
             data-testid="footer-google-review"
           >
             <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="text-xs font-medium">{t("Google Review", "Reseña en Google")}</span>
+            {t("Google Review", "Resena en Google")}
           </a>
-
           <a
             href="https://www.instagram.com/rosalinaexperience"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-pink-50 hover:border-pink-200 transition-colors text-foreground/80"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-pink-50 hover:border-pink-200 transition-colors text-foreground/70 text-xs font-medium"
             data-testid="footer-instagram"
           >
             <Instagram className="w-3.5 h-3.5 text-pink-500" />
-            <span className="text-xs font-medium">@rosalinaexperience</span>
+            @rosalinaexperience
           </a>
         </div>
 
-        {/* Staff & Guest links */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-5 mb-6">
           <Link
             href="/guest"
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
             data-testid="footer-guest-portal"
           >
             <User className="w-3 h-3" />
-            {t("Guest Portal", "Portal del Huésped")}
+            {t("Guest Portal", "Portal del Huesped")}
           </Link>
           <Link
             href="/staff/login"
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
             data-testid="footer-staff-report"
           >
             <BarChart2 className="w-3 h-3" />
@@ -78,8 +78,8 @@ export default function Footer() {
           </Link>
         </div>
 
-        <p className="pt-2 text-xs text-muted-foreground/60">
-          © {new Date().getFullYear()} Rosalina Boutique Hotels. {t("All rights reserved.", "Todos los derechos reservados.")}
+        <p className="text-[10px] text-muted-foreground/40">
+          &copy; {new Date().getFullYear()} Rosalina Boutique Hotels. {t("All rights reserved.", "Todos los derechos reservados.")}
         </p>
       </div>
     </footer>

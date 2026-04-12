@@ -141,7 +141,7 @@ export default function Emergency({ pageMode = false }: EmergencyProps) {
 
   /* ── Dark card version (legacy / embedded) ── */
   return (
-    <section id="emergency" className="py-16 px-6 text-white my-8 mx-4 md:mx-0 rounded-[2rem] shadow-xl" style={{ background: "var(--dark-navy, #0D1B40)" }}>
+    <section id="emergency" className="py-16 px-6 text-white my-8 mx-4 md:mx-0 rounded-[2rem] shadow-xl" style={{ background: "var(--dark-navy, #0B1730)" }}>
       <div className="mb-8 text-center">
         <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <AlertTriangle className="w-6 h-6 text-red-500" />

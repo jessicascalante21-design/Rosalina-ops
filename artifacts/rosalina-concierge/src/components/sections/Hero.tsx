@@ -59,7 +59,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="relative w-full pt-24 pb-20 px-6 overflow-hidden text-white rounded-b-[2.5rem] shadow-xl" style={{ background: "var(--dark-navy, #0D1B40)" }}>
+    <section id="home" className="relative w-full pt-24 pb-20 px-6 overflow-hidden text-white rounded-b-[2.5rem] shadow-xl" style={{ background: "var(--dark-navy, #0B1730)" }}>
       {/* Background gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(38,65,140,0.6),transparent)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />

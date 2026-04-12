@@ -173,7 +173,7 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={() => setOpen(true)}
             className="fixed bottom-[80px] right-4 md:bottom-6 z-50 w-14 h-14 rounded-full shadow-[0_6px_32px_rgba(13,27,64,0.32)] flex items-center justify-center group overflow-hidden"
-            style={{ background: "var(--mid-navy, #162B5E)" }}
+            style={{ background: "var(--mid-navy, #132350)" }}
             aria-label="Chat with AI concierge"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
@@ -194,7 +194,7 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
           >
             <div
               className="flex items-center justify-between px-4 py-3 text-white"
-              style={{ background: "var(--dark-navy, #0D1B40)" }}
+              style={{ background: "var(--dark-navy, #0B1730)" }}
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden p-0.5">

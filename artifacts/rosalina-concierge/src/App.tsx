@@ -25,7 +25,7 @@ const queryClient = new QueryClient();
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1B40]">
+    <div className="min-h-screen flex items-center justify-center bg-[#0B1730]">
       <div className="w-8 h-8 border-2 border-white/20 border-t-white/70 rounded-full animate-spin" />
     </div>
   );

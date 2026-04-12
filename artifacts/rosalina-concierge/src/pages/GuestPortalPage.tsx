@@ -42,7 +42,7 @@ export default function GuestPortalPage() {
     return (
       <div className="min-h-screen bg-background">
         <PageHead title="Guest Portal" description="View your stay details and contact the Rosalina team" />
-        <div className="px-6 pt-20 md:pt-16 pb-10 text-white bg-[#0D1B40] relative overflow-hidden">
+        <div className="px-6 pt-20 md:pt-16 pb-10 text-white bg-[#0B1730] relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_0%_0%,rgba(38,65,140,0.5),transparent)] pointer-events-none" />
           <div className="relative z-10 max-w-xl mx-auto">
             <div className="flex items-center justify-between mb-4">
@@ -199,7 +199,7 @@ export default function GuestPortalPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--dark-navy, #0D1B40)" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--dark-navy, #0B1730)" }}>
       <PageHead title="Guest Portal" description="Log in to view your stay details at Rosalina Boutique Hotels" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_30%,rgba(38,65,140,0.6),transparent)] pointer-events-none" />
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-20 relative z-10">
@@ -234,7 +234,7 @@ export default function GuestPortalPage() {
             {error && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-300 text-xs text-center bg-red-500/10 border border-red-400/20 px-3 py-2 rounded-xl">{error}</motion.p>
             )}
-            <Button type="submit" className="w-full h-12 font-semibold rounded-xl bg-white text-[#0D1B40] hover:bg-white/90 transition-colors" data-testid="guest-portal-login">
+            <Button type="submit" className="w-full h-12 font-semibold rounded-xl bg-white text-[#0B1730] hover:bg-white/90 transition-colors" data-testid="guest-portal-login">
               <LogIn className="w-4 h-4 mr-2" /> {t("Access My Stay", "Acceder a Mi Estadia")}
             </Button>
           </form>

@@ -141,7 +141,7 @@ export default function PreArrivalPage() {
                 </div>
               </div>
 
-              <div className="bg-[#0D1B40] text-white rounded-2xl p-5">
+              <div className="bg-[#0B1730] text-white rounded-2xl p-5">
                 <p className="text-white/50 text-xs font-semibold tracking-widest uppercase mb-3">{t("Your Guest Account", "Su Cuenta de Huesped")}</p>
                 <div className="space-y-2.5 mb-4">
                   <div className="flex items-center justify-between bg-white/8 border border-white/12 rounded-xl px-4 py-3">
@@ -165,7 +165,7 @@ export default function PreArrivalPage() {
                     {copied ? <CheckCircle className="w-4 h-4 text-green-300" /> : <Copy className="w-4 h-4" />}
                     {copied ? t("Copied!", "Copiado!") : t("Copy credentials", "Copiar credenciales")}
                   </button>
-                  <Link href="/guest" className="flex-1 h-10 rounded-xl bg-white text-[#0D1B40] text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/90 transition-colors">
+                  <Link href="/guest" className="flex-1 h-10 rounded-xl bg-white text-[#0B1730] text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/90 transition-colors">
                     <LogIn className="w-4 h-4" />
                     {t("Open Portal", "Abrir Portal")}
                   </Link>

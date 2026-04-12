@@ -7,7 +7,6 @@ import {
 import { useLanguage } from "@/lib/language-context";
 import PageHead from "@/components/PageHead";
 import logoUrl from "@assets/image_1775935433037.png";
-import conciergeAvatar from "@assets/4536937_1775962091124.png";
 
 type PropertyTab = "Ocean Park" | "Isla Verde" | "both";
 
@@ -108,7 +107,7 @@ export default function WelcomeGuidePage() {
   return (
     <div className="min-h-screen bg-background">
       <PageHead title="Guest Guide" description="Everything you need for your stay at Rosalina Boutique Hotels" />
-      <div className="relative overflow-hidden text-white" style={{ background: "#0D1B40" }}>
+      <div className="relative overflow-hidden text-white" style={{ background: "#0B1730" }}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(38,65,140,0.5),transparent)] pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -118,18 +117,11 @@ export default function WelcomeGuidePage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 max-w-2xl mx-auto px-6 pt-24 md:pt-12 pb-14 text-center"
         >
-          <div className="relative w-20 h-20 mx-auto mb-5">
-            <div className="w-20 h-20 rounded-full bg-white/10 border border-white/15 p-1.5 backdrop-blur-sm">
-              <img src={conciergeAvatar} alt="" className="w-full h-full object-contain rounded-full" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white/10 border border-white/15 flex items-center justify-center backdrop-blur-sm">
-              <img src={logoUrl} alt="" className="w-4 h-4 object-contain brightness-0 invert opacity-50" />
-            </div>
-          </div>
-          <p className="text-[10px] font-semibold tracking-[4px] uppercase text-white/35 mb-4">
-            {t("Guest Services", "Servicios al Huésped")}
+          <img src={logoUrl} alt="Rosalina" className="w-10 h-10 mx-auto mb-6 object-contain" style={{ mixBlendMode: "screen", opacity: 0.7 }} />
+          <p className="text-[10px] font-sans font-medium tracking-[4px] uppercase text-white/35 mb-4">
+            {t("Guest Services", "Servicios al Huesped")}
           </p>
-          <h1 className="font-serif text-4xl md:text-5xl font-light leading-tight tracking-tight mb-4">
+          <h1 className="font-serif text-3xl md:text-4xl font-medium leading-tight tracking-[-0.01em] mb-4">
             {t("Your Puerto Rico Guide", "Tu Guía de Puerto Rico")}
           </h1>
           <p className="text-white/40 text-sm leading-relaxed max-w-md mx-auto">
@@ -381,7 +373,7 @@ export default function WelcomeGuidePage() {
           ))}
         </div>
 
-        <div className="mt-6 bg-[#0D1B40] text-white rounded-xl p-5">
+        <div className="mt-6 bg-[#0B1730] text-white rounded-xl p-5">
           <div className="flex items-center gap-2 mb-2">
             <MapPin className="w-4 h-4 text-white/30" />
             <p className="font-serif text-base">{t("Between Our Properties", "Entre Nuestras Propiedades")}</p>
@@ -441,7 +433,7 @@ export default function WelcomeGuidePage() {
             </a>
             <a
               href="tel:17873043335"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#0D1B40] text-white text-sm font-medium hover:bg-[#162B5E] transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#0B1730] text-white text-sm font-medium hover:bg-[#132350] transition-colors"
             >
               <Phone className="w-4 h-4" />
               787-304-3335

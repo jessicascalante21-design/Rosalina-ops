@@ -60,13 +60,12 @@ export default function PropertyShowcase({ selectedProperty, onSelect }: Propert
 
   return (
     <section className="py-8">
-      {/* Section header */}
       <div className="flex items-center justify-between px-5 mb-5">
         <div>
-          <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+          <p className="text-[10px] font-sans font-semibold tracking-[3px] uppercase text-muted-foreground/60 mb-1">
             {t("Our Properties", "Nuestras Propiedades")}
           </p>
-          <h2 className="font-serif text-2xl mt-0.5">{t("Where are you staying?", "¿Dónde se hospeda?")}</h2>
+          <h2 className="font-serif text-2xl font-medium">{t("Where are you staying?", "Donde se hospeda?")}</h2>
         </div>
         {/* Dot indicators */}
         <div className="flex gap-1.5">
@@ -96,7 +95,7 @@ export default function PropertyShowcase({ selectedProperty, onSelect }: Propert
             const isSelected = selectedProperty === prop.id;
             return (
               <div key={prop.id} className="w-full shrink-0 px-5">
-                <div className={`rounded-3xl overflow-hidden border-2 transition-all shadow-sm ${isSelected ? "border-primary shadow-[0_4px_24px_rgba(13,27,64,0.15)]" : "border-transparent"}`}>
+                <div className={`rounded-2xl overflow-hidden border transition-all ${isSelected ? "border-primary/30 shadow-[0_4px_24px_rgba(11,23,48,0.12)]" : "border-border"}`}>
                   {/* Photo */}
                   <div className="relative h-56 overflow-hidden bg-secondary/30">
                     <img
@@ -109,7 +108,7 @@ export default function PropertyShowcase({ selectedProperty, onSelect }: Propert
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                       <div className="flex items-end justify-between">
                         <div>
-                          <p className="font-serif text-2xl font-light">{prop.name}</p>
+                          <p className="font-serif text-2xl font-medium">{prop.name}</p>
                           <p className="text-white/60 text-sm">
                             {language === "ES" ? prop.taglineES : prop.tagline}
                           </p>

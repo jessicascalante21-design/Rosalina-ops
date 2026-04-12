@@ -31,7 +31,7 @@ export default function LocationSection() {
       </div>
 
       {/* Distance map visual */}
-      <div className="bg-[#0D1B40] rounded-2xl p-5 text-white mb-4 overflow-hidden relative">
+      <div className="bg-[#0B1730] rounded-2xl p-5 text-white mb-4 overflow-hidden relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(38,65,140,0.6),transparent)] pointer-events-none" />
         <p className="text-white/40 text-[10px] font-semibold tracking-widest uppercase mb-4 relative z-10">
           {t("Puerto Rico, Caribbean", "Puerto Rico, Caribe")}

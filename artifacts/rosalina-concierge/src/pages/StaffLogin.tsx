@@ -42,7 +42,7 @@ export default function StaffLogin() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: "var(--dark-navy, #0D1B40)" }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: "#0B1730" }}>
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px]" />

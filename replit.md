@@ -42,14 +42,14 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Derived data (todayEntries, serviceEntries, etc.) wrapped in useMemo
   - localStorage reads wrapped in try-catch for resilience
 - **Brand palette (CURRENT)**:
-  - Background: `hsl(38 22% 96%)` — warm champagne cream
+  - Background: `hsl(40 20% 97%)` — warm champagne cream
   - Primary: `hsl(224 58% 24%)` — deep navy blue (matches logo)
-  - Accent: `hsl(38 72% 52%)` — warm gold
-  - Dark sections: `#0D1B40` — deep navy (PageHeader, hero, dark cards)
-  - Mid-navy: `#162B5E`
-- **Logo**: Navy blue floral R medallion (`attached_assets/image_1775935433037.png`)
-- **Concierge avatar**: `attached_assets/4536937_1775962091124.png`
-- **Fonts**: Cormorant Garamond (headings) + DM Sans (body)
+  - Accent/Gold: `#B89B5E` — warm gold
+  - Dark sections: `#0B1730` — deep navy (PageHeader, hero, dark cards)
+  - Mid-navy: `#132350`
+- **Logo**: Navy blue floral R medallion (`attached_assets/image_1775935433037.png`), displayed with `mixBlendMode: screen` on dark backgrounds
+- **Concierge avatar**: `attached_assets/4536937_1775962091124.png` (used in AI chat widget and daily report)
+- **Fonts**: Playfair Display (headings, editorial serif) + DM Sans (body, UI text) — LHW-inspired editorial luxury typography
 - **Pages** (route-based multi-page):
   - `/` — HubPage: 4-slide layout (Hero navy → PropertyShowcase swipe carousel → Action Hub grid → LocationSection distance map + Google Maps)
   - `/pre-arrival` — PreArrivalPage: 4-step form (Guest info with phone/email/additional guests → Arrival details → Services/packages/decorations → Beach extras/notes), creates guest account on submit

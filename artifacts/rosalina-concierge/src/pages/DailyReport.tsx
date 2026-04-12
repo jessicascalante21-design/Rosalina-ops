@@ -203,7 +203,7 @@ export default function DailyReport() {
           <div className="absolute inset-0 bg-cover bg-center scale-105" style={{ backgroundImage: `url(${BG_IMAGES[bgIdx]})`, filter: "blur(8px) brightness(0.3)" }} />
         </motion.div>
       </AnimatePresence>
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-[#0D1B40]/70 via-[#0D1B40]/50 to-[#0D1B40]/80 pointer-events-none" />
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-[#0B1730]/70 via-[#0B1730]/50 to-[#0B1730]/80 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col lg:flex-row min-h-screen">
         {/* Glass Sidebar */}

@@ -9,13 +9,12 @@ import LocationSection from "@/components/sections/LocationSection";
 import FAQ from "@/components/sections/FAQ";
 import PageHead from "@/components/PageHead";
 import logoUrl from "@assets/image_1775935433037.png";
-import conciergeAvatar from "@assets/4536937.png";
 
 type StatusType = "am" | "pm" | "late" | "closed";
 type PropertyType = "Ocean Park" | "Isla Verde" | null;
 
 const SLIDES = ["hero", "properties", "actions", "location"] as const;
-type SlideId = typeof SLIDES[number];
+type SlideId = (typeof SLIDES)[number];
 
 export default function HubPage() {
   const { t } = useLanguage();
@@ -48,44 +47,59 @@ export default function HubPage() {
     return () => clearInterval(iv);
   }, []);
 
-  // Track active slide via IntersectionObserver
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
-    SLIDES.forEach((id) => {
-      const el = sectionRefs.current[id];
-      if (!el) return;
+    for (const [id, el] of Object.entries(sectionRefs.current)) {
+      if (!el) continue;
       const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSlide(id); },
-        { threshold: 0.45 }
+        ([entry]) => { if (entry.isIntersecting) setActiveSlide(id as SlideId); },
+        { threshold: 0.35 }
       );
       obs.observe(el);
       observers.push(obs);
-    });
+    }
     return () => observers.forEach((o) => o.disconnect());
   }, [showSplash]);
 
-  const handlePropertySelect = (prop: PropertyType) => {
-    setSelectedProperty(prop);
-    if (prop) localStorage.setItem("rosalina_property", prop);
+  const scrollTo = (id: SlideId) => {
+    sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handlePropertySelect = (p: PropertyType) => {
+    setSelectedProperty(p);
+    if (p) localStorage.setItem("rosalina_property", p);
     else localStorage.removeItem("rosalina_property");
   };
 
-  const scrollTo = (id: SlideId) => {
-    sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const statusDisplay = {
-    am:     { dot: "bg-green-400", pulse: false, text: t("Concierge Online · AM Shift", "Concierge en Línea · Turno AM"), online: true },
-    pm:     { dot: "bg-green-400", pulse: false, text: t("Concierge Online · PM Shift", "Concierge en Línea · Turno PM"), online: true },
-    late:   { dot: "bg-amber-400", pulse: true,  text: t("Late Night · Until 2 AM", "Soporte Nocturno · Hasta 2 AM"), online: true },
-    closed: { dot: "bg-white/20",  pulse: false, text: t("Closed · Opens at 8 AM", "Cerrado · Abre a las 8 AM"), online: false },
+    am:     { text: t("Concierge Available", "Concierge Disponible"), dot: "bg-emerald-400", pulse: true, online: true },
+    pm:     { text: t("Evening Concierge", "Concierge Nocturno"), dot: "bg-amber-400", pulse: true, online: true },
+    late:   { text: t("Late Night Support", "Soporte Nocturno"), dot: "bg-amber-400", pulse: true, online: true },
+    closed: { text: t("After Hours", "Fuera de Horario"), dot: "bg-white/30", pulse: false, online: false },
   }[status];
 
   const actions = [
-    { to: "/concierge", label: t("Get Help Now", "Obtener Ayuda"), desc: t("Live video concierge", "Video en vivo"), icon: Headphones, primary: true },
-    { to: "/pre-arrival", label: t("Pre-Arrival", "Pre-Llegada"), desc: t("Confirm your arrival", "Confirme su llegada"), icon: ClipboardCheck, primary: false },
-    { to: "/request", label: t("Request Service", "Solicitar Servicio"), desc: t("Amenities & housekeeping", "Toallas y limpieza"), icon: ClipboardList, primary: false },
-    { to: "/emergency", label: t("Emergency", "Emergencia"), desc: t("Emergency contacts", "Contactos de emergencia"), icon: AlertTriangle, primary: false },
+    {
+      icon: Headphones, to: "/concierge",
+      label: t("Live Concierge", "Concierge en Vivo"),
+      desc: t("Connect via video call", "Conectar por videollamada"),
+      primary: true,
+    },
+    {
+      icon: ClipboardCheck, to: "/pre-arrival",
+      label: t("Pre-Arrival", "Pre-Llegada"),
+      desc: t("Prepare your stay", "Prepare su estadia"),
+    },
+    {
+      icon: ClipboardList, to: "/request",
+      label: t("Service Request", "Solicitud"),
+      desc: t("Towels, amenities & more", "Toallas y mas"),
+    },
+    {
+      icon: AlertTriangle, to: "/emergency",
+      label: t("Emergency", "Emergencia"),
+      desc: t("24/7 emergency line", "Linea 24/7"),
+    },
   ];
 
   const slideOrder = SLIDES;
@@ -102,7 +116,6 @@ export default function HubPage() {
           transition={{ duration: 0.4 }}
           className="relative"
         >
-          {/* ── Slide dot nav (right side, desktop) ──────────── */}
           <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-2">
             {SLIDES.map((id, i) => (
               <button
@@ -118,128 +131,121 @@ export default function HubPage() {
             ))}
           </div>
 
-          {/* ══ SLIDE 1 — HERO ══════════════════════════════════ */}
           <section
             ref={(el) => { sectionRefs.current.hero = el; }}
-            className="relative w-full min-h-[88vh] flex flex-col justify-center pt-20 md:pt-16 pb-12 px-6 overflow-hidden text-white"
-            style={{ background: "var(--dark-navy, #0D1B40)" }}
+            className="relative w-full min-h-[92vh] flex flex-col justify-center pt-20 md:pt-16 pb-16 px-6 overflow-hidden text-white"
+            style={{ background: "#0B1730" }}
           >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_65%_-10%,rgba(38,65,140,0.7),transparent)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_0%_100%,rgba(212,151,42,0.1),transparent)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_60%_-10%,rgba(30,58,110,0.6),transparent)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_30%_at_0%_100%,rgba(184,155,94,0.08),transparent)] pointer-events-none" />
 
-            <div className="relative z-10 max-w-xl mx-auto text-center">
-              {/* Logo */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-14 h-14 mx-auto mb-6 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center p-2.5"
-              >
-                <img src={conciergeAvatar} alt="Rosalina" className="w-full h-full object-contain rounded-lg" />
-              </motion.div>
+            <div className="relative z-10 max-w-lg mx-auto text-center">
+              <motion.img
+                src={logoUrl}
+                alt="Rosalina"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="w-12 h-12 mx-auto mb-8 object-contain"
+                style={{ mixBlendMode: "screen", opacity: 0.85 }}
+              />
 
-              {/* Status pill */}
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/6 mb-6 text-xs tracking-wide backdrop-blur-sm"
+                className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 mb-8 text-[11px] tracking-widest uppercase font-sans"
+                style={{ background: "rgba(255,255,255,0.04)" }}
               >
-                <span className={`w-2 h-2 rounded-full ${statusDisplay.dot} ${statusDisplay.pulse ? "animate-pulse" : ""}`} />
-                <span className={statusDisplay.online ? "text-white/70" : "text-white/40"}>{statusDisplay.text}</span>
+                <span className={`w-1.5 h-1.5 rounded-full ${statusDisplay.dot} ${statusDisplay.pulse ? "animate-pulse" : ""}`} />
+                <span className={statusDisplay.online ? "text-white/60" : "text-white/35"}>{statusDisplay.text}</span>
               </motion.div>
 
-              {/* Headline */}
               <motion.h1
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="font-serif text-5xl md:text-6xl font-light mb-4 leading-[1.08]"
+                transition={{ delay: 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="font-serif text-[44px] md:text-[56px] font-medium mb-5 leading-[1.1] tracking-[-0.02em]"
               >
-                {t("Your stay,", "Tu estadía,")}
+                {t("Your stay,", "Tu estadia,")}
                 <br />
-                <em className="not-italic" style={{ color: "hsl(38 72% 65%)" }}>
+                <span style={{ color: "var(--gold, #B89B5E)" }}>
                   {t("elevated.", "elevada.")}
-                </em>
+                </span>
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22 }}
-                className="text-white/45 text-base max-w-sm mx-auto font-light leading-relaxed mb-8"
+                transition={{ delay: 0.25 }}
+                className="text-white/40 text-[15px] max-w-sm mx-auto font-light leading-relaxed mb-10"
               >
                 {t(
-                  "One hub for everything: live support, services, and property info.",
-                  "Un hub para todo: soporte en vivo, servicios e información de la propiedad."
+                  "One hub for everything: live support, services, and local recommendations.",
+                  "Un hub para todo: soporte en vivo, servicios y recomendaciones locales."
                 )}
               </motion.p>
 
-              {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.35 }}
                 className="flex flex-col sm:flex-row items-center gap-3 justify-center"
               >
                 <Link
                   href="/concierge"
-                  className="group inline-flex items-center gap-3 bg-white/10 border border-white/20 hover:bg-white/15 text-white px-7 py-3.5 rounded-2xl font-semibold text-[15px] transition-all active:scale-[0.97]"
+                  className="group inline-flex items-center gap-3 bg-white/8 border border-white/15 hover:bg-white/12 text-white px-7 py-3.5 rounded-xl font-medium text-[14px] transition-all active:scale-[0.97]"
                   data-testid="hero-connect-cta"
                 >
-                  <Headphones className="w-5 h-5" />
+                  <Headphones className="w-4.5 h-4.5" />
                   {t("Connect with Concierge", "Conectar con Concierge")}
                 </Link>
                 <button
                   onClick={() => scrollTo("properties")}
-                  className="inline-flex items-center gap-2 text-white/50 hover:text-white/80 text-sm transition-colors"
+                  className="inline-flex items-center gap-2 text-white/40 hover:text-white/70 text-sm transition-colors font-sans"
                 >
-                  {t("Select your property", "Seleccione su propiedad")}
+                  {t("Explore properties", "Explorar propiedades")}
                   <ArrowDown className="w-3.5 h-3.5" />
                 </button>
               </motion.div>
 
-              {/* Info pills */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.45 }}
-                className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-8"
+                transition={{ delay: 0.5 }}
+                className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-10"
               >
                 {[
                   { icon: Waves, text: "Ocean Park & Isla Verde" },
                   { icon: Clock3, text: t("8 AM to 2 AM Daily", "8 AM a 2 AM Diario") },
                 ].map((item, i) => (
-                  <span key={i} className="flex items-center gap-1.5 text-white/22 text-xs">
-                    <item.icon className="w-3.5 h-3.5 text-white/18" />
+                  <span key={i} className="flex items-center gap-2 text-white/25 text-[11px] tracking-wider uppercase font-sans">
+                    <item.icon className="w-3.5 h-3.5 text-white/20" />
                     {item.text}
                   </span>
                 ))}
               </motion.div>
             </div>
 
-            {/* Scroll indicator */}
             <motion.div
               animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/20"
+              transition={{ repeat: Infinity, duration: 2.5 }}
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/15"
             >
               <ArrowDown className="w-4 h-4" />
             </motion.div>
 
-            {/* Mobile slide dots */}
             <div className="absolute bottom-4 right-4 flex gap-1.5 md:hidden">
               {SLIDES.map((id, i) => (
                 <button
                   key={id}
                   onClick={() => scrollTo(id)}
-                  className={`rounded-full transition-all ${activeSlide === id ? "w-5 h-1.5 bg-white/70" : "w-1.5 h-1.5 bg-white/20"}`}
+                  className={`rounded-full transition-all ${activeSlide === id ? "w-5 h-1.5 bg-white/60" : "w-1.5 h-1.5 bg-white/15"}`}
                 />
               ))}
             </div>
           </section>
 
-          {/* ══ SLIDE 2 — PROPERTY SHOWCASE ═════════════════════ */}
           <section
             ref={(el) => { sectionRefs.current.properties = el; }}
             className="bg-background relative"
@@ -251,62 +257,62 @@ export default function HubPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center text-xs text-muted-foreground pb-2 -mt-2"
               >
-                {t(`Your experience is personalized for ${selectedProperty}.`, `Su experiencia está personalizada para ${selectedProperty}.`)}
+                {t(`Your experience is personalized for ${selectedProperty}.`, `Su experiencia esta personalizada para ${selectedProperty}.`)}
               </motion.div>
             )}
           </section>
 
-          {/* ══ SLIDE 3 — ACTION HUB ════════════════════════════ */}
           <section
             ref={(el) => { sectionRefs.current.actions = el; }}
-            className="px-5 py-10 bg-card/50"
+            className="px-5 py-12 bg-card/50"
           >
-            <div className="flex items-baseline justify-between mb-5">
-              <div>
-                <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-1">
-                  {t("Services", "Servicios")}
-                </p>
-                <h2 className="font-serif text-2xl">{t("How can we help?", "¿Cómo podemos ayudar?")}</h2>
+            <div className="max-w-xl mx-auto">
+              <div className="flex items-baseline justify-between mb-6">
+                <div>
+                  <p className="text-[10px] font-sans font-semibold tracking-[3px] uppercase text-muted-foreground/60 mb-1.5">
+                    {t("Services", "Servicios")}
+                  </p>
+                  <h2 className="font-serif text-2xl font-medium">{t("How can we help?", "Como podemos ayudar?")}</h2>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {actions.map((action, i) => (
-                <motion.div
-                  key={action.to}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ delay: 0.05 * i }}
-                  className={action.primary ? "col-span-2" : ""}
-                >
-                  <Link
-                    href={action.to}
-                    className={`group flex items-center gap-4 p-4 rounded-2xl border transition-all active:scale-[0.975] card-hover ${
-                      action.primary
-                        ? "border-primary/15 bg-primary/5 hover:bg-primary/9"
-                        : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
-                    }`}
+              <div className="grid grid-cols-2 gap-3">
+                {actions.map((action, i) => (
+                  <motion.div
+                    key={action.to}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ delay: 0.05 * i }}
+                    className={action.primary ? "col-span-2" : ""}
                   >
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                      action.primary ? "bg-primary text-white shadow-[0_4px_14px_rgba(13,27,64,0.22)]" : "bg-secondary/50 text-foreground/70"
-                    }`}>
-                      <action.icon className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className={`font-semibold text-sm leading-snug ${action.primary ? "text-primary" : "text-foreground"}`}>
-                        {action.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      href={action.to}
+                      className={`group flex items-center gap-4 p-4 rounded-xl border transition-all active:scale-[0.975] card-hover ${
+                        action.primary
+                          ? "border-primary/12 bg-primary/4 hover:bg-primary/8"
+                          : "border-border bg-card hover:border-primary/15 hover:shadow-sm"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                        action.primary ? "bg-primary text-white shadow-[0_4px_14px_rgba(11,23,48,0.2)]" : "bg-secondary/50 text-foreground/60"
+                      }`}>
+                        <action.icon className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className={`font-medium text-[13px] leading-snug ${action.primary ? "text-primary" : "text-foreground"}`}>
+                          {action.label}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{action.desc}</p>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* ══ SLIDE 4 — LOCATION & CONTACT ════════════════════ */}
           <section
             ref={(el) => { sectionRefs.current.location = el; }}
             className="bg-background border-t border-border"
@@ -314,7 +320,6 @@ export default function HubPage() {
             <LocationSection />
           </section>
 
-          {/* ── FAQ (bonus section below slides) ─────────────── */}
           <div className="border-t border-border">
             <FAQ />
           </div>
