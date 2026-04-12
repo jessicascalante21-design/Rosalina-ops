@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -43,68 +43,114 @@
 }
 
 :root {
-  --background: 36 33% 96%;
-  --foreground: 20 5% 10%;
-  --primary: 17 48% 57%;
+  --background: 36 25% 96%;
+  --foreground: 20 10% 9%;
+  --primary: 17 46% 55%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 33 30% 85%;
-  --secondary-foreground: 25 8% 29%;
-  --muted: 33 20% 83%;
-  --muted-foreground: 27 7% 53%;
+  --secondary: 33 28% 86%;
+  --secondary-foreground: 25 10% 28%;
+  --muted: 33 18% 89%;
+  --muted-foreground: 27 8% 52%;
   --accent: 127 10% 39%;
   --accent-foreground: 0 0% 100%;
   --card: 0 0% 100%;
-  --card-foreground: 20 5% 10%;
-  --border: 33 30% 85%;
-  --input: 33 30% 85%;
-  --ring: 17 48% 57%;
+  --card-foreground: 20 10% 9%;
+  --border: 33 22% 88%;
+  --input: 33 22% 88%;
+  --ring: 17 46% 55%;
   --destructive: 4 62% 45%;
   --destructive-foreground: 0 0% 100%;
 
   --app-font-sans: 'DM Sans', sans-serif;
   --app-font-serif: 'Cormorant Garamond', serif;
-  --radius: 0.75rem; 
+  --radius: 0.875rem;
 
-  --shadow-sm: 0px 1px 20px rgba(26,26,26,0.07);
-  --shadow: 0px 1px 20px rgba(26,26,26,0.07);
-  --shadow-md: 0px 1px 20px rgba(26,26,26,0.07);
-  --shadow-lg: 0px 1px 20px rgba(26,26,26,0.07);
-}
-
-.dark {
-  --background: 20 5% 10%;
-  --foreground: 36 33% 96%;
-  --primary: 17 48% 57%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 25 8% 29%;
-  --secondary-foreground: 33 30% 85%;
-  --muted: 27 7% 53%;
-  --muted-foreground: 33 20% 83%;
-  --accent: 127 10% 39%;
-  --accent-foreground: 0 0% 100%;
-  --card: 20 5% 10%;
-  --card-foreground: 36 33% 96%;
-  --border: 25 8% 29%;
-  --input: 25 8% 29%;
-  --ring: 17 48% 57%;
+  --nav-dark: #161616;
+  --warm-dark: #1a1714;
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3 {
     @apply font-serif;
+    letter-spacing: -0.01em;
+  }
+  button, a {
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+  }
+  input, textarea, select {
+    @apply font-sans;
   }
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Page transition */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.page-enter {
+  animation: page-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Premium card hover */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(26, 26, 26, 0.1);
+}
+.card-hover:active {
+  transform: scale(0.985);
+}
+
+/* Gradient text */
+.text-gradient-warm {
+  background: linear-gradient(135deg, hsl(17 46% 55%), hsl(33 60% 65%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium input */
+.input-premium {
+  @apply bg-background border border-border rounded-xl h-12 px-4 font-sans text-base;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input-premium:focus {
+  @apply border-primary outline-none;
+  box-shadow: 0 0 0 3px hsl(17 46% 55% / 0.12);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Glass effect */
+.glass {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Safe area for bottom nav */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
