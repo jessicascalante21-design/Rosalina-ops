@@ -9,6 +9,7 @@ import LocationSection from "@/components/sections/LocationSection";
 import FAQ from "@/components/sections/FAQ";
 import PageHead from "@/components/PageHead";
 import logoUrl from "@assets/image_1775935433037.png";
+import conciergeAvatar from "@assets/4536937.png";
 
 type StatusType = "am" | "pm" | "late" | "closed";
 type PropertyType = "Ocean Park" | "Isla Verde" | null;
@@ -134,7 +135,7 @@ export default function HubPage() {
                 transition={{ duration: 0.5 }}
                 className="w-14 h-14 mx-auto mb-6 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center p-2.5"
               >
-                <img src={logoUrl} alt="Rosalina" className="w-full h-full object-contain brightness-0 invert opacity-60" />
+                <img src={conciergeAvatar} alt="Rosalina" className="w-full h-full object-contain rounded-lg" />
               </motion.div>
 
               {/* Status pill */}
