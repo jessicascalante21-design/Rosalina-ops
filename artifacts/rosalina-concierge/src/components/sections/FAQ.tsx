@@ -48,7 +48,7 @@ export default function FAQ() {
     {
       id: "q9",
       q: t("How do I access the pool?", "¿Cómo accedo a la piscina?"),
-      a: t("Pools are located at our Ocean Park property. Please ask at reception for pool wristbands or access cards.", "Las piscinas están en nuestra propiedad de Ocean Park. Por favor pida en recepción las pulseras o tarjetas de acceso.")
+      a: t("Pools are located at our Ocean Park property. Guest staying at Isla Verde location will have an extra key to enjoy as well.", "Las piscinas están en nuestra propiedad de Ocean Park. Los huéspedes de Isla Verde también tendrán una llave adicional para disfrutarlas.")
     },
     {
       id: "q10",
