@@ -1,110 +1,97 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Waves, Plane, Utensils, Activity, Car, Sun, Calendar, Wifi, Clock, MapPin,
-  Star, Umbrella, Thermometer, Info, ChevronDown, ChevronRight,
+  Waves, Plane, Utensils, Car, Calendar, Wifi, Clock, MapPin,
+  Star, Thermometer, ChevronDown, Mail, Phone, ArrowRight,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import PageHeader from "@/components/layout/PageHeader";
+import logoUrl from "@assets/image_1775935433037.png";
 
 type PropertyTab = "Ocean Park" | "Isla Verde" | "both";
 
 const SEASONS = [
   {
-    months: { en: "Dec – Apr", es: "Dic – Abr" },
-    emoji: "☀️",
+    months: { en: "December through April", es: "Diciembre a Abril" },
     label: { en: "Dry Season", es: "Temporada Seca" },
-    temp: "75–83°F / 24–28°C",
-    chips: {
-      en: ["Clear skies", "Low humidity", "Busy beaches", "Book early"],
-      es: ["Cielos despejados", "Baja humedad", "Playas concurridas", "Reserve con anticipación"],
+    temp: "75 to 83 °F",
+    conditions: {
+      en: "Clear skies, low humidity, calm ocean. Peak visitor season with higher occupancy.",
+      es: "Cielos despejados, baja humedad, océano tranquilo. Temporada alta con mayor ocupación.",
     },
-    tip: { en: "Peak season — expect higher rates and more crowds.", es: "Temporada alta — tarifas más altas y más turistas." },
-    dot: "bg-amber-400",
   },
   {
-    months: { en: "May – Jun", es: "May – Jun" },
-    emoji: "🌤️",
+    months: { en: "May through June", es: "Mayo a Junio" },
     label: { en: "Shoulder Season", es: "Temporada Intermedia" },
-    temp: "82–88°F / 28–31°C",
-    chips: {
-      en: ["Warm days", "Occasional showers", "Fewer crowds", "Good rates"],
-      es: ["Días cálidos", "Lluvias ocasionales", "Menos turistas", "Buenas tarifas"],
+    temp: "82 to 88 °F",
+    conditions: {
+      en: "Warm days, occasional afternoon showers. Fewer visitors, favorable rates.",
+      es: "Días cálidos, lluvias ocasionales por la tarde. Menos visitantes, tarifas favorables.",
     },
-    tip: { en: "Good balance of weather and availability.", es: "Buen balance entre clima y disponibilidad." },
-    dot: "bg-green-400",
   },
   {
-    months: { en: "Jul – Aug", es: "Jul – Ago" },
-    emoji: "🔆",
+    months: { en: "July through August", es: "Julio a Agosto" },
     label: { en: "Summer", es: "Verano" },
-    temp: "85–90°F / 29–32°C",
-    chips: {
-      en: ["Hot and humid", "Ocean calm", "Local festivals", "Book early"],
-      es: ["Caluroso y húmedo", "Océano tranquilo", "Festivales locales", "Reserve temprano"],
+    temp: "85 to 90 °F",
+    conditions: {
+      en: "Hot and humid. Ocean conditions are ideal. Local festivals and cultural events throughout.",
+      es: "Caluroso y húmedo. Condiciones ideales del océano. Festivales y eventos culturales locales.",
     },
-    tip: { en: "Lively atmosphere — lots of Puerto Rican culture and events.", es: "Ambiente animado con mucha cultura y eventos locales." },
-    dot: "bg-orange-400",
   },
   {
-    months: { en: "Sep – Nov", es: "Sep – Nov" },
-    emoji: "🌧️",
+    months: { en: "September through November", es: "Septiembre a Noviembre" },
     label: { en: "Rainy Season", es: "Temporada de Lluvia" },
-    temp: "82–87°F / 28–31°C",
-    chips: {
-      en: ["Afternoon showers", "Clear mornings", "Best rates", "Hurricane season"],
-      es: ["Lluvias por la tarde", "Mañanas despejadas", "Mejores tarifas", "Temporada de huracanes"],
+    temp: "82 to 87 °F",
+    conditions: {
+      en: "Brief afternoon showers, clear mornings. Best availability and rates. Hurricane season peaks August through October.",
+      es: "Lluvias breves por la tarde, mañanas despejadas. Mejor disponibilidad y tarifas. Temporada de huracanes pico agosto a octubre.",
     },
-    tip: { en: "Mornings are often sunny. Showers are short and the ocean stays warm.", es: "Las mañanas suelen ser soleadas. Los aguaceros son breves y el océano sigue cálido." },
-    dot: "bg-blue-400",
   },
 ];
 
 const ACTIVITIES = [
-  { icon: "🤿", name: { en: "Aqua Adventure PR", es: "Aqua Adventure PR" }, desc: { en: "Snorkeling & diving tours. Reef exploration in crystal waters.", es: "Snorkeling y buceo. Exploración de arrecifes en aguas cristalinas." } },
-  { icon: "🚣", name: { en: "Night Kayak", es: "Kayak Nocturno" }, desc: { en: "Bioluminescent bay kayaking — one of PR's most magical experiences.", es: "Kayak en bahía bioluminiscente — una de las experiencias más mágicas de PR." } },
-  { icon: "🚲", name: { en: "San Juan Bike Rentals", es: "Bicicletas San Juan" }, desc: { en: "Explore Old San Juan on two wheels — historic forts, colorful streets.", es: "Explora el Viejo San Juan en bici — fortalezas históricas y calles coloridas." } },
-  { icon: "🧩", name: { en: "Escape Room PR", es: "Escape Room PR" }, desc: { en: "Fun team escape room challenges in San Juan.", es: "Emocionantes retos de escape room en San Juan." } },
-  { icon: "🕵️", name: { en: "Clue Murder Mystery", es: "Misterio Tipo Clue" }, desc: { en: "Interactive murder mystery dining experience.", es: "Experiencia de cena con misterio interactivo." } },
-  { icon: "🎬", name: { en: "Fine Arts Miramar", es: "Fine Arts Miramar" }, desc: { en: "Arthouse cinema in the trendy Miramar neighborhood.", es: "Cine de arte en el elegante barrio de Miramar." } },
-  { icon: "🏔️", name: { en: "El Yunque Rainforest", es: "El Yunque" }, desc: { en: "The only tropical rainforest in the US National Forest system. ~40 min drive.", es: "El único bosque tropical del sistema forestal de EE.UU. ~40 min en auto." } },
-  { icon: "🏰", name: { en: "Old San Juan", es: "Viejo San Juan" }, desc: { en: "500-year-old Spanish colonial city with blue cobblestones, El Morro & La Fortaleza.", es: "Ciudad colonial española de 500 años, adoquines azules, El Morro y La Fortaleza." } },
-  { icon: "🥃", name: { en: "Casa Bacardí", es: "Casa Bacardí" }, desc: { en: "The world-famous Bacardi rum distillery tour & cocktail experience.", es: "El famoso tour de la destilería Bacardí y experiencia de cócteles." } },
+  { name: { en: "Aqua Adventure PR", es: "Aqua Adventure PR" }, category: { en: "Snorkeling & Diving", es: "Snorkeling y Buceo" }, desc: { en: "Reef exploration and guided snorkeling in crystal-clear Caribbean waters.", es: "Exploración de arrecifes y snorkeling guiado en aguas cristalinas del Caribe." } },
+  { name: { en: "Bioluminescent Bay Kayak", es: "Kayak Bahía Bioluminiscente" }, category: { en: "Night Excursion", es: "Excursión Nocturna" }, desc: { en: "One of Puerto Rico's most extraordinary natural experiences. Night kayaking through glowing waters.", es: "Una de las experiencias naturales más extraordinarias de Puerto Rico. Kayak nocturno en aguas luminiscentes." } },
+  { name: { en: "San Juan Bike Rentals", es: "Bicicletas San Juan" }, category: { en: "City Exploration", es: "Exploración Urbana" }, desc: { en: "Guided and self-guided cycling through Old San Juan's historic forts and cobblestone streets.", es: "Ciclismo guiado y por cuenta propia por las fortalezas históricas y calles adoquinadas del Viejo San Juan." } },
+  { name: { en: "Escape Room PR", es: "Escape Room PR" }, category: { en: "Entertainment", es: "Entretenimiento" }, desc: { en: "Immersive team challenges in themed rooms throughout San Juan.", es: "Retos inmersivos en equipo en salas temáticas por todo San Juan." } },
+  { name: { en: "Clue Murder Mystery", es: "Misterio Tipo Clue" }, category: { en: "Dining Experience", es: "Experiencia Gastronómica" }, desc: { en: "Interactive murder mystery dinner combining entertainment with fine cuisine.", es: "Cena interactiva de misterio que combina entretenimiento con alta cocina." } },
+  { name: { en: "Fine Arts Miramar", es: "Fine Arts Miramar" }, category: { en: "Cinema", es: "Cine" }, desc: { en: "Independent and international films in the elegant Miramar district.", es: "Películas independientes e internacionales en el elegante distrito de Miramar." } },
+  { name: { en: "El Yunque National Forest", es: "Bosque Nacional El Yunque" }, category: { en: "Nature", es: "Naturaleza" }, desc: { en: "The only tropical rainforest in the US National Forest System. Approximately 40 minutes by car.", es: "El único bosque tropical en el Sistema Forestal Nacional de EE.UU. Aproximadamente 40 minutos en auto." } },
+  { name: { en: "Old San Juan", es: "Viejo San Juan" }, category: { en: "Heritage & Culture", es: "Patrimonio y Cultura" }, desc: { en: "A 500-year-old Spanish colonial city. Blue cobblestones, El Morro fortress, and La Fortaleza.", es: "Ciudad colonial española de 500 años. Adoquines azules, El Morro y La Fortaleza." } },
+  { name: { en: "Casa Bacardi", es: "Casa Bacardi" }, category: { en: "Distillery Tour", es: "Tour de Destilería" }, desc: { en: "The world-renowned Bacardi rum distillery. Guided tours and cocktail crafting experiences.", es: "La destilería de ron Bacardi de fama mundial. Tours guiados y experiencias de coctelería." } },
 ];
 
-const RESTAURANTS: Record<"Ocean Park" | "Isla Verde", { name: string; type: { en: string; es: string }; note?: { en: string; es: string } }[]> = {
+const RESTAURANTS: Record<"Ocean Park" | "Isla Verde", { name: string; cuisine: { en: string; es: string } }[]> = {
   "Ocean Park": [
-    { name: "Acapulco Taqueria Mexicana", type: { en: "Mexican", es: "Mexicano" } },
-    { name: "Burger & Mayo Lab", type: { en: "Burgers", es: "Hamburguesas" } },
-    { name: "Bocca Osteria Romana", type: { en: "Italian", es: "Italiano" } },
-    { name: "Pirilo Pizza Rustica", type: { en: "Pizza", es: "Pizza" } },
-    { name: "Berlingeri", type: { en: "Local Cuisine", es: "Cocina Local" } },
+    { name: "Acapulco Taqueria Mexicana", cuisine: { en: "Mexican", es: "Mexicano" } },
+    { name: "Burger & Mayo Lab", cuisine: { en: "Gourmet Burgers", es: "Hamburguesas Gourmet" } },
+    { name: "Bocca Osteria Romana", cuisine: { en: "Italian", es: "Italiano" } },
+    { name: "Pirilo Pizza Rustica", cuisine: { en: "Artisan Pizza", es: "Pizza Artesanal" } },
+    { name: "Berlingeri", cuisine: { en: "Puerto Rican Cuisine", es: "Cocina Puertorriqueña" } },
   ],
   "Isla Verde": [
-    { name: "Mande Restaurant", type: { en: "Modern", es: "Moderno" } },
-    { name: "Euphoria Restaurant", type: { en: "Fine Dining", es: "Alta Cocina" } },
-    { name: "Piccolos", type: { en: "Italian", es: "Italiano" } },
-    { name: "Bistro Cafe", type: { en: "Café & Brunch", es: "Café y Brunch" } },
-    { name: "The New Ceviche", type: { en: "Seafood", es: "Mariscos" } },
+    { name: "Mande Restaurant", cuisine: { en: "Modern Caribbean", es: "Caribeño Moderno" } },
+    { name: "Euphoria Restaurant", cuisine: { en: "Fine Dining", es: "Alta Cocina" } },
+    { name: "Piccolos", cuisine: { en: "Italian", es: "Italiano" } },
+    { name: "Bistro Cafe", cuisine: { en: "Brunch & Cafe", es: "Brunch y Cafe" } },
+    { name: "The New Ceviche", cuisine: { en: "Seafood", es: "Mariscos" } },
   ],
 };
 
-const GETTING_AROUND = [
-  { icon: Car, title: { en: "Uber & Lyft", es: "Uber y Lyft" }, desc: { en: "Widely available throughout San Juan metro. Best for short trips and airport transfers.", es: "Ampliamente disponible en San Juan. Ideal para trayectos cortos y traslados al aeropuerto." } },
-  { icon: Car, title: { en: "Car Rental", es: "Alquiler de Auto" }, desc: { en: "Recommended for day trips to El Yunque, Ponce or the west coast beaches. SJU Airport has all major brands.", es: "Recomendado para excursiones a El Yunque, Ponce o las playas del oeste. SJU tiene todas las marcas principales." } },
-  { icon: MapPin, title: { en: "Taxi", es: "Taxi" }, desc: { en: "Available at airport and hotels. Negotiate fare or request meter. Fixed rates to some areas.", es: "Disponibles en aeropuerto y hoteles. Negocie la tarifa o solicite taxímetro." } },
+const TRANSPORT = [
+  { title: { en: "Rideshare", es: "Transporte por App" }, desc: { en: "Uber and Lyft are widely available throughout the San Juan metro area. Best option for short trips and airport transfers.", es: "Uber y Lyft están ampliamente disponibles en el área metro de San Juan. La mejor opción para trayectos cortos y traslados al aeropuerto." } },
+  { title: { en: "Car Rental", es: "Alquiler de Auto" }, desc: { en: "Recommended for day trips to El Yunque, Ponce, or the west coast beaches. All major rental brands operate from SJU Airport.", es: "Recomendado para excursiones a El Yunque, Ponce o las playas del oeste. Todas las principales marcas operan desde el aeropuerto SJU." } },
+  { title: { en: "Taxi Service", es: "Servicio de Taxi" }, desc: { en: "Available at the airport and hotels. Fixed rates apply to select routes. Negotiate the fare or request the meter for other destinations.", es: "Disponible en el aeropuerto y hoteles. Tarifas fijas para rutas selectas. Negocie la tarifa o solicite el taxímetro para otros destinos." } },
 ];
 
-function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
+function SectionDivider() {
+  return <div className="h-px bg-border my-10" />;
+}
+
+function SectionHeader({ label, title }: { label: string; title: string }) {
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-primary/70" />
-        </div>
-        <h2 className="font-serif text-xl">{title}</h2>
-      </div>
-      {children}
+    <div className="mb-6">
+      <p className="text-[10px] font-semibold tracking-[3px] uppercase text-primary/50 mb-2">{label}</p>
+      <h2 className="font-serif text-2xl md:text-3xl tracking-tight leading-tight">{title}</h2>
     </div>
   );
 }
@@ -117,257 +104,343 @@ export default function WelcomeGuidePage() {
   const ln = language === "ES" ? "es" : "en";
 
   return (
-    <div className="min-h-screen">
-      <PageHeader
-        badge={t("Welcome Guide", "Guía de Bienvenida")}
-        badgeIcon={<Star className="w-3 h-3" />}
-        title={t("Your Puerto Rico Guide", "Tu Guía de Puerto Rico")}
-        description={t(
-          "Everything you need for an unforgettable stay: restaurants, activities, seasons, and local tips.",
-          "Todo lo que necesitas para una estadía inolvidable: restaurantes, actividades, temporadas y consejos locales."
-        )}
-        accentClass="from-amber-500/20 via-amber-500/5 to-transparent"
-      />
+    <div className="min-h-screen bg-background">
+      {/* Hero */}
+      <div className="relative overflow-hidden text-white" style={{ background: "#0D1B40" }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(38,65,140,0.5),transparent)] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      <div className="px-5 py-8 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 max-w-2xl mx-auto px-6 pt-24 md:pt-12 pb-14 text-center"
+        >
+          <img src={logoUrl} alt="" className="w-14 h-14 object-contain mx-auto mb-6 opacity-40" />
+          <p className="text-[10px] font-semibold tracking-[4px] uppercase text-white/35 mb-4">
+            {t("Guest Guide", "Guía del Huésped")}
+          </p>
+          <h1 className="font-serif text-4xl md:text-5xl font-light leading-tight tracking-tight mb-4">
+            {t("Your Puerto Rico Guide", "Tu Guía de Puerto Rico")}
+          </h1>
+          <p className="text-white/40 text-sm leading-relaxed max-w-md mx-auto">
+            {t(
+              "Curated information for your stay at Rosalina Boutique Hotels. Restaurants, activities, seasonal conditions, and local knowledge.",
+              "Información seleccionada para tu estadía en Rosalina Boutique Hotels. Restaurantes, actividades, condiciones estacionales y conocimiento local."
+            )}
+          </p>
+        </motion.div>
+      </div>
 
-        {/* ── Essential Info ────────────────────────────────── */}
-        <Section title={t("Essential Info", "Información Esencial")} icon={Info}>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: Wifi,         label: "Wi-Fi",                     value: "Rosalina Guest · RosalinaForever1!" },
-              { icon: Clock,        label: t("Check-in", "Check-in"),   value: t("4:00 PM (code sent 11 AM)", "4:00 PM (código 11 AM)") },
-              { icon: Clock,        label: t("Check-out", "Check-out"), value: "11:00 AM" },
-              { icon: Thermometer,  label: t("Year-round temp", "Temp. todo el año"), value: "75–90°F / 24–32°C" },
-            ].map((item) => (
-              <div key={item.label} className="bg-card border border-border rounded-2xl p-4">
-                <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
-                  <item.icon className="w-3.5 h-3.5" />
-                  <span className="text-[11px] font-medium">{item.label}</span>
-                </div>
-                <p className="font-semibold text-sm leading-snug">{item.value}</p>
+      <div className="max-w-2xl mx-auto px-6 py-12">
+
+        {/* ── Essential Info ──────────────────────────────────── */}
+        <SectionHeader
+          label={t("Essentials", "Esenciales")}
+          title={t("Before You Arrive", "Antes de Llegar")}
+        />
+
+        <div className="grid grid-cols-2 gap-px bg-border rounded-xl overflow-hidden border border-border">
+          {[
+            { icon: Wifi, label: "Wi-Fi", value: "Rosalina Guest", sub: "RosalinaForever1!" },
+            { icon: Clock, label: t("Check-in", "Check-in"), value: "4:00 PM", sub: t("Access code sent at 11 AM", "Código enviado a las 11 AM") },
+            { icon: Clock, label: t("Check-out", "Check-out"), value: "11:00 AM", sub: t("Late check-out available", "Late check-out disponible") },
+            { icon: Thermometer, label: t("Climate", "Clima"), value: "75 to 90 °F", sub: t("Year-round tropical", "Tropical todo el año") },
+          ].map((item) => (
+            <div key={item.label} className="bg-card p-5">
+              <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                <item.icon className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-semibold tracking-wider uppercase">{item.label}</span>
               </div>
-            ))}
-          </div>
-          <div className="mt-3 bg-secondary/30 border border-border rounded-2xl px-4 py-3 text-xs text-muted-foreground leading-relaxed">
-            ☕ {t("Self-service coffee station at the entrance, available for all guests.", "Estación de café self-service en la entrada, disponible para todos los huéspedes.")}
-          </div>
-        </Section>
-
-        {/* ── Your Neighborhood ─────────────────────────────── */}
-        <Section title={t("Your Neighborhood", "Tu Vecindario")} icon={MapPin}>
-          <div className="flex gap-1.5 bg-secondary/30 p-1 rounded-xl mb-4">
-            {(["Ocean Park", "Isla Verde", "both"] as PropertyTab[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPropertyTab(p)}
-                className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all ${propertyTab === p ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
-              >
-                {p === "both" ? t("Both", "Ambas") : p}
-              </button>
-            ))}
-          </div>
-
-          {(propertyTab === "Ocean Park" || propertyTab === "both") && (
-            <div className="bg-card border border-border rounded-2xl p-4 mb-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Waves className="w-4 h-4 text-blue-500" />
-                <p className="font-semibold text-sm">Ocean Park · San Juan</p>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {t(
-                  "A peaceful residential neighborhood beloved by locals, expats, and surfers. Palm-lined streets, colorful homes, and one of San Juan's most beautiful beaches just a 5-minute walk away. Perfect for those who want an authentic, community-feel Puerto Rico experience.",
-                  "Un tranquilo barrio residencial amado por locales, expatriados y surfistas. Calles bordeadas de palmeras, casas coloridas y una de las playas más hermosas de San Juan a solo 5 minutos caminando. Ideal para quienes quieren una experiencia auténtica de Puerto Rico."
-                )}
-              </p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {[
-                  t("5 min to beach", "5 min a la playa"),
-                  t("9 min to airport", "9 min al aeropuerto"),
-                  t("2 pools on-site", "2 piscinas"),
-                  t("10+ restaurants walking", "10+ restaurantes caminando"),
-                ].map((tag) => (
-                  <span key={tag} className="text-[11px] bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full">{tag}</span>
-                ))}
-              </div>
+              <p className="font-serif text-lg leading-snug mb-0.5">{item.value}</p>
+              <p className="text-[11px] text-muted-foreground">{item.sub}</p>
             </div>
-          )}
+          ))}
+        </div>
 
-          {(propertyTab === "Isla Verde" || propertyTab === "both") && (
-            <div className="bg-card border border-border rounded-2xl p-4 mb-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Plane className="w-4 h-4 text-emerald-500" />
-                <p className="font-semibold text-sm">Isla Verde · Carolina</p>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {t(
-                  "A vibrant beach strip known for its nightlife, luxury hotels, and 4-minute walk to a stunning Atlantic beach. Ideal for guests arriving by air or wanting to be in the center of the action. Free access to Ocean Park pools (~8 min drive).",
-                  "Una animada franja playera conocida por su vida nocturna y playa atlántica a 4 minutos caminando. Ideal para huéspedes que llegan en avión o quieren estar en el centro de la acción. Acceso gratuito a las piscinas de Ocean Park (~8 min en auto)."
-                )}
-              </p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {[
-                  t("4 min to beach", "4 min a la playa"),
-                  t("6 min to airport", "6 min al aeropuerto"),
-                  t("Free pool access OP", "Acceso gratis piscinas OP"),
-                  t("Vibrant nightlife", "Vida nocturna"),
-                ].map((tag) => (
-                  <span key={tag} className="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-full">{tag}</span>
-                ))}
-              </div>
+        <div className="mt-4 flex items-center gap-3 px-1">
+          <div className="w-px h-4 bg-primary/20" />
+          <p className="text-xs text-muted-foreground italic">
+            {t("Complimentary self-service coffee station at the entrance for all guests.", "Estación de café self-service cortesía en la entrada para todos los huéspedes.")}
+          </p>
+        </div>
+
+        <SectionDivider />
+
+        {/* ── Properties ──────────────────────────────────────── */}
+        <SectionHeader
+          label={t("Properties", "Propiedades")}
+          title={t("Your Neighborhood", "Tu Vecindario")}
+        />
+
+        <div className="flex bg-secondary/30 p-1 rounded-lg mb-6">
+          {(["Ocean Park", "Isla Verde", "both"] as PropertyTab[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPropertyTab(p)}
+              className={`flex-1 py-2.5 rounded-md text-xs font-semibold tracking-wide transition-all ${
+                propertyTab === p ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {p === "both" ? t("Both", "Ambas") : p}
+            </button>
+          ))}
+        </div>
+
+        {(propertyTab === "Ocean Park" || propertyTab === "both") && (
+          <div className="mb-4 border-l-2 border-primary/20 pl-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Waves className="w-4 h-4 text-primary/40" />
+              <h3 className="font-serif text-lg">Ocean Park</h3>
+              <span className="text-[10px] text-muted-foreground tracking-wider uppercase ml-1">San Juan</span>
             </div>
-          )}
-        </Section>
-
-        {/* ── Seasons ───────────────────────────────────────── */}
-        <Section title={t("Seasonal Awareness", "Referencia por Temporada")} icon={Calendar}>
-          <p className="text-xs text-muted-foreground mb-4">
-            {t("Quick reference for what to expect during your dates.", "Referencia rápida de lo que puedes esperar según tu fecha de visita.")}
-          </p>
-          <div className="space-y-2">
-            {SEASONS.map((s, i) => (
-              <div key={i} className="bg-card border border-border rounded-2xl p-4">
-                <div className="flex items-center gap-3 mb-2.5">
-                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${s.dot}`} />
-                  <span className="font-semibold text-sm">{language === "ES" ? s.months.es : s.months.en}</span>
-                  <span className="text-lg leading-none">{s.emoji}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">{s.temp}</span>
-                </div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                  {language === "ES" ? s.label.es : s.label.en}
-                </p>
-                <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  {(language === "ES" ? s.chips.es : s.chips.en).map((chip) => (
-                    <span key={chip} className="text-[11px] bg-secondary/50 text-foreground/70 border border-border px-2 py-0.5 rounded-full">
-                      {chip}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground italic leading-snug">
-                  {language === "ES" ? s.tip.es : s.tip.en}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            🌊 {t("Ocean temperature year-round: 80 to 84°F (27 to 29°C). Always perfect for swimming.", "Temperatura del océano todo el año: 27 a 29°C. Siempre perfecto para nadar.")}
-          </p>
-        </Section>
-
-        {/* ── Restaurants ───────────────────────────────────── */}
-        <Section title={t("Restaurants Nearby", "Restaurantes Cercanos")} icon={Utensils}>
-          <div className="flex gap-1.5 bg-secondary/30 p-1 rounded-xl mb-4">
-            {(["Ocean Park", "Isla Verde"] as const).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPropertyTab(p)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${propertyTab === p ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-          <div className="space-y-2">
-            {(propertyTab === "both" ? RESTAURANTS["Ocean Park"] : RESTAURANTS[propertyTab as "Ocean Park" | "Isla Verde"]).map((r, i) => (
-              <div key={r.name} className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 text-[10px] flex items-center justify-center font-bold text-primary">{i + 1}</span>
-                  <p className="font-medium text-sm">{r.name}</p>
-                </div>
-                <span className="text-xs text-muted-foreground">{language === "ES" ? r.type.es : r.type.en}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            {t("All within walking distance. Ask Rosa or our team for specific recommendations!", "Todos a distancia caminable. ¡Pregúntale a Rosa o a nuestro equipo por recomendaciones!")}
-          </p>
-        </Section>
-
-        {/* ── Activities ────────────────────────────────────── */}
-        <Section title={t("Activities & Experiences", "Actividades y Experiencias")} icon={Activity}>
-          <div className="space-y-2">
-            {ACTIVITIES.map((act, i) => (
-              <motion.div
-                key={act.name.en}
-                initial={false}
-                className="bg-card border border-border rounded-2xl overflow-hidden"
-              >
-                <button
-                  onClick={() => setExpanded(expanded === i ? null : i)}
-                  className="w-full flex items-center gap-3 p-4 text-left"
-                >
-                  <span className="text-2xl">{act.icon}</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">{language === "ES" ? act.name.es : act.name.en}</p>
-                  </div>
-                  {expanded === i
-                    ? <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    : <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  }
-                </button>
-                {expanded === i && (
-                  <div className="px-4 pb-4 text-sm text-muted-foreground leading-relaxed border-t border-border pt-3">
-                    {language === "ES" ? act.desc.es : act.desc.en}
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </Section>
-
-        {/* ── Getting Around ────────────────────────────────── */}
-        <Section title={t("Getting Around", "Cómo Moverse")} icon={Car}>
-          <div className="space-y-3">
-            {GETTING_AROUND.map((g) => (
-              <div key={g.title.en} className="bg-card border border-border rounded-2xl p-4 flex gap-3">
-                <g.icon className="w-5 h-5 text-primary/60 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-sm mb-1">{language === "ES" ? g.title.es : g.title.en}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{language === "ES" ? g.desc.es : g.desc.en}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 bg-[#0D1B40] text-white rounded-2xl p-4 text-sm">
-            <p className="font-medium mb-1">🗺️ {t("Between our properties", "Entre nuestras propiedades")}</p>
-            <p className="text-white/60 text-xs leading-relaxed">
-              {t("Ocean Park ↔ Isla Verde: ~12 km · ~25 min via PR-26 highway. Taxi approx. $25–35.", "Ocean Park ↔ Isla Verde: ~12 km · ~25 min por PR-26. Taxi aprox. $25–35.")}
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              {t(
+                "A peaceful residential neighborhood beloved by locals, expats, and surfers. Palm-lined streets, colorful homes, and one of San Juan's most beautiful beaches within a five-minute walk. An authentic, community-centered Puerto Rico experience.",
+                "Un barrio residencial tranquilo amado por locales, expatriados y surfistas. Calles bordeadas de palmeras, casas coloridas y una de las playas más hermosas de San Juan a solo cinco minutos caminando."
+              )}
             </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+              {[
+                t("5 min to beach", "5 min a la playa"),
+                t("9 min to airport", "9 min al aeropuerto"),
+                t("2 pools on site", "2 piscinas"),
+                t("10+ restaurants walking", "10+ restaurantes caminando"),
+              ].map((d) => (
+                <span key={d} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-primary/30" />
+                  {d}
+                </span>
+              ))}
+            </div>
           </div>
-        </Section>
+        )}
 
-        {/* ── Beach Guide ───────────────────────────────────── */}
-        <Section title={t("Beach Tips", "Consejos para la Playa")} icon={Waves}>
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-5 text-sm text-blue-900 leading-relaxed space-y-3">
-            <p>🏊 {t("Use grey towels for the pool and ask our team about beach towels. They are the urban brand-color ones.", "Use toallas grises para la piscina. Para la playa, pregunte a nuestro equipo, son las de colores de marca Urbano.")}</p>
-            <p>☀️ {t("Apply sunscreen before hitting the beach. Caribbean sun is intense year-round.", "Aplique protector solar antes de ir a la playa. El sol caribeño es intenso todo el año.")}</p>
-            <p>🤿 {t("Ocean Park beach is calmer and ideal for swimming. Isla Verde beach has more energy and activity.", "La playa de Ocean Park es más tranquila e ideal para nadar. La de Isla Verde tiene más ambiente y actividad.")}</p>
-            <p>🌅 {t("Sunrise and early morning are magical. The beach is nearly empty and the light is stunning.", "El amanecer y la mañana temprana son mágicos. La playa está casi vacía y la luz es espectacular.")}</p>
-            <p>🚿 {t("Outdoor showers available at the beach access points.", "Duchas exteriores disponibles en los accesos a la playa.")}</p>
+        {(propertyTab === "Isla Verde" || propertyTab === "both") && (
+          <div className="mb-4 border-l-2 border-primary/20 pl-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Plane className="w-4 h-4 text-primary/40" />
+              <h3 className="font-serif text-lg">Isla Verde</h3>
+              <span className="text-[10px] text-muted-foreground tracking-wider uppercase ml-1">Carolina</span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+              {t(
+                "A vibrant beach strip known for its energy, oceanfront dining, and proximity to the airport. A four-minute walk to a stunning Atlantic beach. Isla Verde guests receive complimentary access to Ocean Park pools, approximately eight minutes by car.",
+                "Una animada franja playera conocida por su energía, gastronomía frente al mar y cercanía al aeropuerto. Cuatro minutos caminando a una playa atlántica. Huéspedes de Isla Verde tienen acceso gratuito a las piscinas de Ocean Park, aproximadamente ocho minutos en auto."
+              )}
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+              {[
+                t("4 min to beach", "4 min a la playa"),
+                t("6 min to airport", "6 min al aeropuerto"),
+                t("Pool access at OP", "Acceso a piscinas OP"),
+                t("Vibrant nightlife", "Vida nocturna"),
+              ].map((d) => (
+                <span key={d} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-primary/30" />
+                  {d}
+                </span>
+              ))}
+            </div>
           </div>
-        </Section>
+        )}
 
-        {/* ── Need help CTA ─────────────────────────────────── */}
-        <div className="bg-[#0D1B40] text-white rounded-2xl p-5 text-center">
-          <p className="font-serif text-xl mb-1.5">{t("Still have questions?", "¿Todavía tienes preguntas?")}</p>
-          <p className="text-white/50 text-sm mb-4 leading-relaxed">
-            {t("Chat with Rosa, our AI concierge, or reach our team directly.", "Chatea con Rosa, nuestra IA, o contacta directamente a nuestro equipo.")}
+        <SectionDivider />
+
+        {/* ── Seasonal Reference ──────────────────────────────── */}
+        <SectionHeader
+          label={t("Climate", "Clima")}
+          title={t("Seasonal Reference", "Referencia Estacional")}
+        />
+
+        <div className="border border-border rounded-xl overflow-hidden">
+          {SEASONS.map((s, i) => (
+            <div key={i} className={`p-5 ${i < SEASONS.length - 1 ? "border-b border-border" : ""}`}>
+              <div className="flex items-baseline justify-between mb-1.5">
+                <h3 className="font-serif text-base">{s.months[ln]}</h3>
+                <span className="text-xs text-muted-foreground font-mono">{s.temp}</span>
+              </div>
+              <p className="text-[10px] font-semibold tracking-[2px] uppercase text-primary/40 mb-1.5">
+                {s.label[ln]}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{s.conditions[ln]}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-center gap-3 px-1">
+          <div className="w-px h-4 bg-primary/20" />
+          <p className="text-xs text-muted-foreground italic">
+            {t("Ocean temperature year-round: 80 to 84 °F (27 to 29 °C). Ideal for swimming in every season.", "Temperatura del océano todo el año: 27 a 29 °C. Ideal para nadar en cualquier temporada.")}
           </p>
-          <div className="flex gap-2 justify-center">
+        </div>
+
+        <SectionDivider />
+
+        {/* ── Dining ──────────────────────────────────────────── */}
+        <SectionHeader
+          label={t("Dining", "Gastronomía")}
+          title={t("Nearby Restaurants", "Restaurantes Cercanos")}
+        />
+
+        <div className="flex bg-secondary/30 p-1 rounded-lg mb-6">
+          {(["Ocean Park", "Isla Verde"] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPropertyTab(p)}
+              className={`flex-1 py-2.5 rounded-md text-xs font-semibold tracking-wide transition-all ${
+                propertyTab === p ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+
+        <div className="border border-border rounded-xl overflow-hidden">
+          {(propertyTab === "both" ? RESTAURANTS["Ocean Park"] : RESTAURANTS[propertyTab as "Ocean Park" | "Isla Verde"]).map((r, i, arr) => (
+            <div key={r.name} className={`flex items-center justify-between px-5 py-4 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
+              <div>
+                <p className="font-medium text-sm">{r.name}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{r.cuisine[ln]}</p>
+              </div>
+              <span className="text-[10px] font-semibold tracking-wider uppercase text-primary/30">
+                {t("Walking", "Caminando")}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-3 px-1">
+          {t("All within walking distance of your property. Our concierge team can provide personalized recommendations.", "Todos a distancia caminable de su propiedad. Nuestro equipo de concierge puede ofrecer recomendaciones personalizadas.")}
+        </p>
+
+        <SectionDivider />
+
+        {/* ── Activities ──────────────────────────────────────── */}
+        <SectionHeader
+          label={t("Explore", "Explorar")}
+          title={t("Activities and Experiences", "Actividades y Experiencias")}
+        />
+
+        <div className="border border-border rounded-xl overflow-hidden">
+          {ACTIVITIES.map((act, i) => (
+            <div key={act.name.en} className={i < ACTIVITIES.length - 1 ? "border-b border-border" : ""}>
+              <button
+                onClick={() => setExpanded(expanded === i ? null : i)}
+                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-secondary/20 transition-colors"
+              >
+                <div>
+                  <p className="font-medium text-sm">{act.name[ln]}</p>
+                  <p className="text-[10px] text-primary/40 font-semibold tracking-wider uppercase mt-0.5">{act.category[ln]}</p>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${expanded === i ? "rotate-180" : ""}`} />
+              </button>
+              <AnimatePresence initial={false}>
+                {expanded === i && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-4 text-sm text-muted-foreground leading-relaxed">
+                      {act.desc[ln]}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        <SectionDivider />
+
+        {/* ── Getting Around ──────────────────────────────────── */}
+        <SectionHeader
+          label={t("Transport", "Transporte")}
+          title={t("Getting Around", "Cómo Moverse")}
+        />
+
+        <div className="space-y-4">
+          {TRANSPORT.map((g) => (
+            <div key={g.title.en} className="border-l-2 border-border pl-5">
+              <h3 className="font-medium text-sm mb-1">{g.title[ln]}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{g.desc[ln]}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 bg-[#0D1B40] text-white rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <MapPin className="w-4 h-4 text-white/30" />
+            <p className="font-serif text-base">{t("Between Our Properties", "Entre Nuestras Propiedades")}</p>
+          </div>
+          <p className="text-white/50 text-sm leading-relaxed">
+            {t(
+              "Ocean Park to Isla Verde: approximately 12 km, 25 minutes via PR-26 highway. Taxi fare ranges from $25 to $35.",
+              "Ocean Park a Isla Verde: aproximadamente 12 km, 25 minutos por la autopista PR-26. Tarifa de taxi de $25 a $35."
+            )}
+          </p>
+        </div>
+
+        <SectionDivider />
+
+        {/* ── Beach ───────────────────────────────────────────── */}
+        <SectionHeader
+          label={t("Beach", "Playa")}
+          title={t("Beach Guide", "Guía de Playa")}
+        />
+
+        <div className="space-y-0 border border-border rounded-xl overflow-hidden">
+          {[
+            t("Grey towels are designated for pool use. Please ask our team for beach towels, which are the branded urban-color style.", "Las toallas grises son para la piscina. Solicite toallas de playa a nuestro equipo, son las de colores de marca Urbano."),
+            t("Apply sunscreen generously before heading to the beach. The Caribbean sun is intense throughout the year.", "Aplique protector solar generosamente antes de ir a la playa. El sol caribeño es intenso durante todo el año."),
+            t("Ocean Park beach is calmer and ideal for swimming. Isla Verde beach is more energetic with greater activity.", "La playa de Ocean Park es más tranquila e ideal para nadar. La playa de Isla Verde es más dinámica con mayor actividad."),
+            t("Sunrise and the early morning hours are particularly beautiful. The beach is quiet and the light is exceptional.", "El amanecer y las primeras horas de la mañana son especialmente hermosos. La playa está tranquila y la luz es excepcional."),
+            t("Outdoor showers are available at the beach access points for your convenience.", "Hay duchas exteriores disponibles en los accesos a la playa para su comodidad."),
+          ].map((tip, i, arr) => (
+            <div key={i} className={`flex gap-4 px-5 py-4 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
+              <span className="text-[10px] font-mono text-primary/30 mt-0.5 shrink-0">0{i + 1}</span>
+              <p className="text-sm text-muted-foreground leading-relaxed">{tip}</p>
+            </div>
+          ))}
+        </div>
+
+        <SectionDivider />
+
+        {/* ── Contact CTA ─────────────────────────────────────── */}
+        <div className="text-center py-4">
+          <p className="text-[10px] font-semibold tracking-[3px] uppercase text-primary/40 mb-3">
+            {t("Assistance", "Asistencia")}
+          </p>
+          <h2 className="font-serif text-2xl mb-2">{t("We are here for you", "Estamos aquí para usted")}</h2>
+          <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
+            {t(
+              "Speak with Rosa, our AI concierge, or reach our team directly for personalized assistance.",
+              "Hable con Rosa, nuestra concierge IA, o contacte directamente a nuestro equipo para asistencia personalizada."
+            )}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="mailto:contact@rosalinapr.com"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 border border-white/15 text-sm font-medium hover:bg-white/15 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-border text-sm font-medium hover:bg-secondary/30 transition-colors"
             >
-              📧 {t("Email us", "Escríbanos")}
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              contact@rosalinapr.com
             </a>
             <a
               href="tel:17873043335"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#0D1B40] text-sm font-semibold hover:bg-white/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#0D1B40] text-white text-sm font-medium hover:bg-[#162B5E] transition-colors"
             >
-              📞 787-304-3335
+              <Phone className="w-4 h-4" />
+              787-304-3335
             </a>
           </div>
         </div>
+
+        <div className="h-12" />
       </div>
     </div>
   );
