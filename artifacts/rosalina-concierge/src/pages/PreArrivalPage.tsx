@@ -447,8 +447,8 @@ export default function PreArrivalPage() {
                       {/* Info box */}
                       <div className="bg-secondary/30 border border-border rounded-xl px-4 py-3 text-xs text-muted-foreground leading-relaxed">
                         {t(
-                          "Submitting this form creates your Guest Account — you'll receive login credentials to track your stay.",
-                          "Al enviar este formulario se crea su Cuenta de Huésped — recibirá credenciales para acceder a su estadía."
+                          "Submitting this form creates your Guest Account. You will receive login credentials to track your stay.",
+                          "Al enviar este formulario se crea su Cuenta de Huésped. Recibirá credenciales para acceder a su estadía."
                         )}
                       </div>
 

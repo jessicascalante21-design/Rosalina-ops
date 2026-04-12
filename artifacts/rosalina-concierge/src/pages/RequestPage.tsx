@@ -12,7 +12,7 @@ export default function RequestPage() {
         badgeIcon={<ClipboardList className="w-3 h-3" />}
         title={t("Request a Service", "Solicitar un Servicio")}
         description={t(
-          "Anything you need during your stay — just let us know.",
+          "Anything you need during your stay, just let us know.",
           "Todo lo que necesite durante su estadía, solo díganos."
         )}
         accentClass="from-amber-500/18 via-amber-500/5 to-transparent"

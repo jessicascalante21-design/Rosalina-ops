@@ -177,7 +177,7 @@ export default function GuestPortalPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">{t("Call Concierge", "Llamar al Concierge")}</p>
-                  <p className="text-xs text-muted-foreground">787-304-3335 · 8 AM – 2 AM</p>
+                  <p className="text-xs text-muted-foreground">787-304-3335 · 8 AM to 2 AM</p>
                 </div>
               </a>
               <a

@@ -12,8 +12,8 @@ export default function ConciergePage() {
         badgeIcon={<Video className="w-3 h-3" />}
         title={t("Connect With Our Team", "Conectar Con Nuestro Equipo")}
         description={t(
-          "Real-time video support — your concierge is one tap away.",
-          "Soporte en video en tiempo real — su concierge a un toque."
+          "Real-time video support. Your concierge is one tap away.",
+          "Soporte en video en tiempo real. Su concierge a un toque."
         )}
         accentClass="from-primary/22 via-primary/5 to-transparent"
       />

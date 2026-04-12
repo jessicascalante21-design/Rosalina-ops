@@ -105,8 +105,8 @@ export default function WelcomeGuidePage() {
         badgeIcon={<Star className="w-3 h-3" />}
         title={t("Your Puerto Rico Guide", "Tu Guía de Puerto Rico")}
         description={t(
-          "Everything you need for an unforgettable stay — restaurants, activities, seasons, and local tips.",
-          "Todo lo que necesitas para una estadía inolvidable — restaurantes, actividades, temporadas y consejos locales."
+          "Everything you need for an unforgettable stay: restaurants, activities, seasons, and local tips.",
+          "Todo lo que necesitas para una estadía inolvidable: restaurantes, actividades, temporadas y consejos locales."
         )}
         accentClass="from-amber-500/20 via-amber-500/5 to-transparent"
       />
@@ -132,7 +132,7 @@ export default function WelcomeGuidePage() {
             ))}
           </div>
           <div className="mt-3 bg-secondary/30 border border-border rounded-2xl px-4 py-3 text-xs text-muted-foreground leading-relaxed">
-            ☕ {t("Self-service coffee station at the entrance — available for all guests.", "Estación de café self-service en la entrada — disponible para todos los huéspedes.")}
+            ☕ {t("Self-service coffee station at the entrance, available for all guests.", "Estación de café self-service en la entrada, disponible para todos los huéspedes.")}
           </div>
         </Section>
 
@@ -311,10 +311,10 @@ export default function WelcomeGuidePage() {
         {/* ── Beach Guide ───────────────────────────────────── */}
         <Section title={t("Beach Tips", "Consejos para la Playa")} icon={Waves}>
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-5 text-sm text-blue-900 leading-relaxed space-y-3">
-            <p>🏊 {t("Use grey towels for the pool and ask our team about beach towels — they're the urban brand-color ones.", "Use toallas grises para la piscina. Para la playa, pregunte a nuestro equipo — son las de colores de marca Urbano.")}</p>
-            <p>☀️ {t("Apply sunscreen before hitting the beach — Caribbean sun is intense year-round.", "Aplique protector solar antes de ir a la playa — el sol caribeño es intenso todo el año.")}</p>
+            <p>🏊 {t("Use grey towels for the pool and ask our team about beach towels. They are the urban brand-color ones.", "Use toallas grises para la piscina. Para la playa, pregunte a nuestro equipo, son las de colores de marca Urbano.")}</p>
+            <p>☀️ {t("Apply sunscreen before hitting the beach. Caribbean sun is intense year-round.", "Aplique protector solar antes de ir a la playa. El sol caribeño es intenso todo el año.")}</p>
             <p>🤿 {t("Ocean Park beach is calmer and ideal for swimming. Isla Verde beach has more energy and activity.", "La playa de Ocean Park es más tranquila e ideal para nadar. La de Isla Verde tiene más ambiente y actividad.")}</p>
-            <p>🌅 {t("Sunrise and early morning are magical — the beach is nearly empty and the light is stunning.", "El amanecer y la mañana temprana son mágicos — la playa está casi vacía y la luz es espectacular.")}</p>
+            <p>🌅 {t("Sunrise and early morning are magical. The beach is nearly empty and the light is stunning.", "El amanecer y la mañana temprana son mágicos. La playa está casi vacía y la luz es espectacular.")}</p>
             <p>🚿 {t("Outdoor showers available at the beach access points.", "Duchas exteriores disponibles en los accesos a la playa.")}</p>
           </div>
         </Section>

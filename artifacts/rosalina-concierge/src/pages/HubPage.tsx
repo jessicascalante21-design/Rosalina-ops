@@ -28,14 +28,10 @@ export default function HubPage() {
     hero: null, properties: null, actions: null, location: null,
   });
 
-  useEffect(() => {
-    if (!showSplash) return;
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-      sessionStorage.setItem("rosalina_splash_seen", "1");
-    }, 2200);
-    return () => clearTimeout(timer);
-  }, [showSplash]);
+  const handleSplashDismiss = () => {
+    setShowSplash(false);
+    sessionStorage.setItem("rosalina_splash_seen", "1");
+  };
 
   useEffect(() => {
     const update = () => {
@@ -87,7 +83,7 @@ export default function HubPage() {
     { to: "/concierge", label: t("Get Help Now", "Obtener Ayuda"), desc: t("Live video concierge", "Video en vivo"), icon: Headphones, primary: true },
     { to: "/pre-arrival", label: t("Pre-Arrival", "Pre-Llegada"), desc: t("Confirm your arrival", "Confirme su llegada"), icon: ClipboardCheck, primary: false },
     { to: "/request", label: t("Request Service", "Solicitar Servicio"), desc: t("Amenities & housekeeping", "Toallas y limpieza"), icon: ClipboardList, primary: false },
-    { to: "/emergency", label: t("Emergency", "Emergencia"), desc: t("24/7 emergency line", "Línea 24/7"), icon: AlertTriangle, primary: false },
+    { to: "/emergency", label: t("Emergency", "Emergencia"), desc: t("Emergency contacts", "Contactos de emergencia"), icon: AlertTriangle, primary: false },
   ];
 
   const slideOrder = SLIDES;
@@ -95,7 +91,7 @@ export default function HubPage() {
 
   return (
     <>
-      <AnimatePresence>{showSplash && <Splash />}</AnimatePresence>
+      <AnimatePresence>{showSplash && <Splash onDismiss={handleSplashDismiss} />}</AnimatePresence>
 
       {!showSplash && (
         <motion.div
@@ -172,8 +168,8 @@ export default function HubPage() {
                 className="text-white/45 text-base max-w-sm mx-auto font-light leading-relaxed mb-8"
               >
                 {t(
-                  "One hub for everything — live support, services, and property info.",
-                  "Un hub para todo — soporte en vivo, servicios e información de la propiedad."
+                  "One hub for everything: live support, services, and property info.",
+                  "Un hub para todo: soporte en vivo, servicios e información de la propiedad."
                 )}
               </motion.p>
 
@@ -210,7 +206,7 @@ export default function HubPage() {
               >
                 {[
                   { icon: Waves, text: "Ocean Park & Isla Verde" },
-                  { icon: Clock3, text: t("8 AM – 2 AM Daily", "8 AM – 2 AM Diario") },
+                  { icon: Clock3, text: t("8 AM to 2 AM Daily", "8 AM a 2 AM Diario") },
                 ].map((item, i) => (
                   <span key={i} className="flex items-center gap-1.5 text-white/22 text-xs">
                     <item.icon className="w-3.5 h-3.5 text-white/18" />

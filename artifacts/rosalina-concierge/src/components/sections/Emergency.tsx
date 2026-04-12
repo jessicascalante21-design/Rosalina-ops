@@ -1,5 +1,6 @@
 import { useLanguage } from "@/lib/language-context";
-import { PhoneCall, AlertTriangle, ShieldAlert, HeartPulse } from "lucide-react";
+import { PhoneCall, AlertTriangle, ShieldAlert, HeartPulse, MessageCircle } from "lucide-react";
+import { useAfterHours } from "@/lib/use-after-hours";
 
 interface EmergencyProps {
   pageMode?: boolean;
@@ -7,21 +8,24 @@ interface EmergencyProps {
 
 export default function Emergency({ pageMode = false }: EmergencyProps) {
   const { t } = useLanguage();
+  const afterHours = useAfterHours();
 
   const contacts = [
     {
-      title: t("Emergency Line 24/7", "Línea de Emergencia 24/7"),
+      title: afterHours
+        ? t("After-Hours Emergency Line (2 AM to 8 AM)", "Línea de Emergencia (2 AM a 8 AM)")
+        : t("Emergency Line, After Hours Only (2 AM to 8 AM)", "Línea de Emergencia, Solo fuera de horario (2 AM a 8 AM)"),
       number: "787-438-9393",
       icon: AlertTriangle,
-      accent: "bg-primary/15 text-primary",
-      highlight: true,
+      accent: afterHours ? "bg-red-100 text-red-600" : "bg-primary/15 text-primary",
+      highlight: afterHours,
     },
     {
-      title: t("Main Concierge (8 AM–2 AM)", "Concierge Principal (8 AM–2 AM)"),
+      title: t("Main Concierge (8 AM to 2 AM)", "Concierge Principal (8 AM a 2 AM)"),
       number: "787-304-3335",
       icon: PhoneCall,
       accent: "bg-secondary/30 text-secondary-foreground",
-      highlight: false,
+      highlight: !afterHours,
     },
     {
       title: t("Local Police", "Policía Local"),
@@ -39,13 +43,37 @@ export default function Emergency({ pageMode = false }: EmergencyProps) {
     },
   ];
 
+  // Sort so the time-appropriate contact is first
+  const sorted = afterHours
+    ? contacts
+    : [contacts[1], contacts[0], contacts[2], contacts[3]];
+
   if (pageMode) {
     return (
       <div className="max-w-xl mx-auto space-y-3">
+        {/* Time-aware status banner */}
+        <div className={`flex items-center gap-2 p-3 rounded-xl mb-2 ${
+          afterHours ? "bg-red-50 border border-red-100" : "bg-secondary/30 border border-border"
+        }`}>
+          <div className={`w-2 h-2 rounded-full shrink-0 ${afterHours ? "bg-red-400 animate-pulse" : "bg-green-400"}`} />
+          <p className={`text-xs font-medium ${afterHours ? "text-red-700" : "text-muted-foreground"}`}>
+            {afterHours
+              ? t(
+                  "After-hours (2 AM to 8 AM): concierge desk is closed. Call the emergency line or send a WhatsApp alert.",
+                  "Fuera de horario (2 AM a 8 AM): el concierge está cerrado. Llame a la línea de emergencia o envíe un alerta por WhatsApp."
+                )
+              : t(
+                  "Concierge is online (8 AM to 2 AM). For non-urgent requests use the Service Request form.",
+                  "El concierge está en línea (8 AM a 2 AM). Para solicitudes no urgentes use el formulario de Servicio."
+                )}
+          </p>
+        </div>
+
         <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-4 px-1">
           {t("Tap to call immediately", "Toque para llamar de inmediato")}
         </p>
-        {contacts.map((c, i) => (
+
+        {sorted.map((c, i) => (
           <a
             key={i}
             href={`tel:${c.number.replace(/-/g, "")}`}
@@ -75,6 +103,30 @@ export default function Emergency({ pageMode = false }: EmergencyProps) {
           </a>
         ))}
 
+        {/* WhatsApp staff alert — shown during after hours */}
+        {afterHours && (
+          <a
+            href={`https://wa.me/17874389393?text=${encodeURIComponent("🚨 EMERGENCY ALERT — Rosalina guest needs immediate assistance. Please respond.")}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-between p-4 rounded-2xl border border-green-100 bg-green-50 hover:bg-green-100/80 transition-all active:scale-[0.97] group"
+            data-testid="emergency-whatsapp-alert"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-green-500 flex items-center justify-center shrink-0">
+                <MessageCircle className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">{t("Alert staff group via WhatsApp", "Alertar al grupo del personal por WhatsApp")}</p>
+                <p className="font-semibold text-sm text-green-800">WhatsApp Alert</p>
+              </div>
+            </div>
+            <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors">
+              <MessageCircle className="w-4 h-4" />
+            </div>
+          </a>
+        )}
+
         <div className="mt-6 p-4 rounded-2xl bg-secondary/30 border border-border text-center">
           <p className="text-xs text-muted-foreground leading-relaxed">
             {t(
@@ -98,7 +150,7 @@ export default function Emergency({ pageMode = false }: EmergencyProps) {
         <p className="text-secondary/70 text-sm">{t("Tap to call immediately", "Toque para llamar inmediatamente")}</p>
       </div>
       <div className="space-y-3">
-        {contacts.map((c, i) => (
+        {sorted.map((c, i) => (
           <a key={i} href={`tel:${c.number.replace(/-/g, "")}`} className="flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-xl transition-colors active:scale-[0.98]" data-testid={`emergency-contact-${i}`}>
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70">
