@@ -15,6 +15,7 @@ import FeedbackPage from "@/pages/FeedbackPage";
 import EmergencyPage from "@/pages/EmergencyPage";
 import DailyReport from "@/pages/DailyReport";
 import StaffLogin from "@/pages/StaffLogin";
+import GuestPortalPage from "@/pages/GuestPortalPage";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/request">{() => <GuestRoute component={RequestPage} />}</Route>
       <Route path="/feedback">{() => <GuestRoute component={FeedbackPage} />}</Route>
       <Route path="/emergency">{() => <GuestRoute component={EmergencyPage} />}</Route>
+      <Route path="/guest" component={GuestPortalPage} />
       <Route path="/staff/login" component={StaffLogin} />
       <Route path="/staff/report">{() => <ProtectedRoute component={DailyReport} />}</Route>
       <Route component={NotFound} />

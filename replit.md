@@ -41,13 +41,14 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Logo**: Navy blue floral R medallion (`attached_assets/image_1775935433037.png`)
 - **Fonts**: Cormorant Garamond (headings) + DM Sans (body)
 - **Pages** (route-based multi-page):
-  - `/` — HubPage: Splash → Hero (dark navy) → Property Selector → Action Cards → PropertyInfo → FAQ
-  - `/pre-arrival` — PreArrivalPage: check-in form with PageHeader
+  - `/` — HubPage: 4-slide layout (Hero navy → PropertyShowcase swipe carousel → Action Hub grid → LocationSection distance map)
+  - `/pre-arrival` — PreArrivalPage: 3-step form (Booking info → Arrival details → Requests), creates guest account on submit
+  - `/guest` — GuestPortalPage: login with reservation number + password; view stay info + contact team
   - `/concierge` — ConciergePage: live concierge form → Google Meet
   - `/request` — RequestPage: service request form
   - `/feedback` — FeedbackPage: Google Review + feedback form
   - `/emergency` — EmergencyPage: tap-to-call emergency contacts
-  - `/staff/login` → `/staff/report` — PIN-protected staff daily report
+  - `/staff/login` → `/staff/report` — PIN-protected staff dashboard with 3 tabs (Today, Pre-Arrivals, Guest Accounts) + CSV downloads
 - **Key features**:
   - Language toggle (EN/ES) via React context
   - Dual property selector on HubPage (Ocean Park / Isla Verde), saved to localStorage
@@ -58,6 +59,12 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Google Review link: share.google/dMZZbAfY87Z3CDP7e
   - Emergency contacts (tap-to-call): 787-438-9393 (24/7), 787-304-3335 (8AM–2AM)
   - AI chat widget ("Rosa") — floating bottom-right button → streaming chat panel
+  - Property showcase carousel: swipeable photos for Ocean Park + Isla Verde with selection
+  - Location distance map: visual PR map showing ~12km / 25 min between both properties
+  - Guest account system: created on pre-arrival submit; localStorage key `rosalina_guests`
+  - Guest portal at `/guest`: login with reservation number + password; WhatsApp/email/Meet contact
+  - Footer: Google Review, Instagram (@rosalinaexperience), Guest Portal, Staff links
+  - Pre-arrival password formula: first 4 chars of name + last 4 chars of reservation + `!`
   - Mobile-first: glass bottom tab bar on mobile, icon top nav on desktop
   - Framer Motion splash + page transitions
   - PageHeader component: `bg-[#0D1B40]` with radial accent glow per page
