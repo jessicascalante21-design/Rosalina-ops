@@ -145,7 +145,7 @@ export default function DailyReport() {
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Header */}
-      <div className="bg-[#1A1A1A] px-6 pt-12 pb-8 text-white">
+      <div className="px-6 pt-12 pb-8 text-white" style={{ background: "var(--dark-navy, #0D1B40)" }}>
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
             <img src={logoUrl} alt="Rosalina" className="w-10 h-10 object-contain brightness-0 invert opacity-70 mt-1 shrink-0" />

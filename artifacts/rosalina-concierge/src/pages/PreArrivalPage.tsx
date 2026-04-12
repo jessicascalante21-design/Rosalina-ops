@@ -220,7 +220,7 @@ export default function PreArrivalPage() {
 
               <Button
                 type="submit"
-                className="w-full h-13 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-[0_4px_20px_rgba(196,139,107,0.28)]"
+                className="w-full h-13 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-[0_4px_20px_rgba(13,27,64,0.25)]"
                 disabled={!fullName || !reservationNumber || !arrivalDate}
                 data-testid="button-pa-submit"
               >

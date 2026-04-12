@@ -29,33 +29,65 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 ## Artifacts
 
 ### Rosalina LiveOps Concierge™ Hub (`artifacts/rosalina-concierge`)
-- **Type**: React + Vite web app (fully static, no backend)
+- **Type**: React + Vite web app (frontend SPA; calls API server via `/api` proxy)
 - **Preview path**: `/`
 - **Purpose**: Bilingual (EN/ES) guest-facing LiveOps Concierge hub for Rosalina Boutique Hotels (Ocean Park & Isla Verde), Puerto Rico
-- **Brand**: Tropical Minimal Boutique — cream (#F8F5F0), sand (#EDE4D6), olive (#5C6E5E), terracotta (#C8785A)
-- **Logo**: Navy blue floral R medallion (`attached_assets/image_1775935433037.png`) used in Splash, Navigation, LiveConcierge, DailyReport
+- **Brand palette (CURRENT)**:
+  - Background: `hsl(38 22% 96%)` — warm champagne cream
+  - Primary: `hsl(224 58% 24%)` — deep navy blue (matches logo)
+  - Accent: `hsl(38 72% 52%)` — warm gold
+  - Dark sections: `#0D1B40` — deep navy (PageHeader, hero, dark cards)
+  - Mid-navy: `#162B5E`
+- **Logo**: Navy blue floral R medallion (`attached_assets/image_1775935433037.png`)
 - **Fonts**: Cormorant Garamond (headings) + DM Sans (body)
-- **Sections**: Splash, Hero, Live Concierge, Property Info, Service Request, FAQ, Feedback/Reviews, Emergency Contacts, Footer
+- **Pages** (route-based multi-page):
+  - `/` — HubPage: Splash → Hero (dark navy) → Property Selector → Action Cards → PropertyInfo → FAQ
+  - `/pre-arrival` — PreArrivalPage: check-in form with PageHeader
+  - `/concierge` — ConciergePage: live concierge form → Google Meet
+  - `/request` — RequestPage: service request form
+  - `/feedback` — FeedbackPage: Google Review + feedback form
+  - `/emergency` — EmergencyPage: tap-to-call emergency contacts
+  - `/staff/login` → `/staff/report` — PIN-protected staff daily report
 - **Key features**:
   - Language toggle (EN/ES) via React context
-  - Smart status ribbon by time of day (8AM–5PM AM shift, 5PM–10PM PM shift, 10PM–2AM late night, 2AM–8AM closed)
-  - After-hours detection: hides Meet form and shows emergency call (2–8 AM)
+  - Dual property selector on HubPage (Ocean Park / Isla Verde), saved to localStorage
+  - Smart concierge status by time of day (AM/PM/late/closed)
+  - After-hours detection: hides Meet form, shows emergency call (2–8 AM)
   - WhatsApp service requests: wa.me/17874389393
   - Google Meet live concierge: meet.google.com/rcs-ugkv-cyk
-  - Feedback form → mailto:contact@rosalinapr.com + Google Review link
+  - Google Review link: share.google/dMZZbAfY87Z3CDP7e
   - Emergency contacts (tap-to-call): 787-438-9393 (24/7), 787-304-3335 (8AM–2AM)
-  - Mobile-first: sticky bottom tab bar (7 tabs) on mobile, icon top nav on desktop
+  - AI chat widget ("Rosa") — floating bottom-right button → streaming chat panel
+  - Mobile-first: glass bottom tab bar on mobile, icon top nav on desktop
   - Framer Motion splash + page transitions
-- **Staff portal** (`/staff/login` → `/staff/report`):
-  - PIN-protected login (default PIN: `Rosalina2025!`, override via `VITE_STAFF_PIN` env var)
-  - 8-hour session stored in localStorage (`rosalina_staff_session`)
-  - Protected route: unauthenticated access redirects to login
-  - Daily Report: KPI stats, full log, Copy CSV, Download CSV, Email Report, Clear Today
-  - All guest service requests and feedback logged to localStorage (`rosalina_report`)
+  - PageHeader component: `bg-[#0D1B40]` with radial accent glow per page
+- **Staff portal**:
+  - PIN: `Rosalina2025!` (override via `VITE_STAFF_PIN` env var)
+  - Session: 8hr stored in localStorage (`rosalina_staff_session`)
+  - Daily Report with KPI stats, CSV export, Email Report, Clear Today
+  - Logs stored in localStorage (`rosalina_report`)
+- **Vite proxy**: `/api` → `http://localhost:8080` (API server)
 
 ### API Server (`artifacts/api-server`)
-- Express 5 API server
-- Health endpoint at `/api/healthz`
+- Express 5 API server, port 8080
+- Routes mounted under `/api`
+- Health endpoint: `GET /api/healthz`
+- **AI Chat endpoint**: `POST /api/chat`
+  - Accepts `{ messages: ChatMessage[], property?: string }`
+  - Streams SSE responses from OpenAI gpt-5-mini
+  - "Rosa" persona with full Rosalina hotel context (WiFi, policies, hours, both properties)
+  - OpenAI via Replit AI Integrations (`@workspace/integrations-openai-ai-server`)
+  - Env vars: `AI_INTEGRATIONS_OPENAI_BASE_URL`, `AI_INTEGRATIONS_OPENAI_API_KEY` (auto-provisioned)
 
 ### Canvas / Mockup Sandbox (`artifacts/mockup-sandbox`)
 - Design sandbox for UI prototyping
+
+## Contact & Hotel Info (Rosalina)
+- Emergency 24/7: 787-438-9393
+- Concierge (8AM–2AM): 787-304-3335
+- Email: contact@rosalinapr.com
+- WhatsApp: +1 787-438-9393
+- Ocean Park: 2020 Av. McLeary, San Juan PR 00911
+- Isla Verde: 84 Calle Júpiter, Carolina PR 00979
+- WiFi: "Rosalina Guest" / RosalinaForever1!
+- Check-in: 4PM | Check-out: 11AM

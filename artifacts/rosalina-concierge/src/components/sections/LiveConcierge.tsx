@@ -139,7 +139,7 @@ export default function LiveConcierge({ pageMode = false }: LiveConciergeProps) 
             </div>
 
             <Button
-              className="w-full h-13 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-[0_4px_20px_rgba(196,139,107,0.28)]"
+              className="w-full h-13 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-[0_4px_20px_rgba(13,27,64,0.25)]"
               onClick={handleStartCall}
               disabled={!name || !room || !reason}
               data-testid="button-start-live-call"
@@ -159,13 +159,13 @@ export default function LiveConcierge({ pageMode = false }: LiveConciergeProps) 
 
   /* ── Embedded (dark card) version for when used inside Hub ── */
   return (
-    <section id="concierge" className="py-16 px-6 bg-[#161616] text-white my-8 mx-4 md:mx-0 rounded-[2rem] shadow-xl">
+    <section id="concierge" className="py-16 px-6 text-white my-8 mx-4 md:mx-0 rounded-[2rem] shadow-xl" style={{ background: "var(--dark-navy, #0D1B40)" }}>
       <div className="flex flex-col items-center mb-8">
         <div className="relative mb-4">
           <div className="w-20 h-20 rounded-full bg-white/90 border border-white/20 flex items-center justify-center overflow-hidden">
             <img src={logoUrl} alt="Rosalina Concierge Team" className="w-14 h-14 object-contain" />
           </div>
-          <div className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-[#161616] ${isAfterHours ? "bg-secondary" : "bg-green-500"}`} />
+          <div className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-[#0D1B40] ${isAfterHours ? "bg-secondary" : "bg-green-500"}`} />
         </div>
         <h2 className="font-serif text-3xl mb-2 text-center">{t("Live Assistance", "Asistencia en Vivo")}</h2>
         <p className="text-secondary/80 text-sm text-center max-w-xs">

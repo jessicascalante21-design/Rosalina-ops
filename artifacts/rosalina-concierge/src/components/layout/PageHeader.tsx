@@ -17,7 +17,7 @@ export default function PageHeader({
   accentClass = "from-primary/25 via-transparent to-transparent",
 }: PageHeaderProps) {
   return (
-    <div className={`relative overflow-hidden bg-[#161616] px-6 pt-20 md:pt-8 pb-10 text-white`}>
+    <div className={`relative overflow-hidden px-6 pt-20 md:pt-8 pb-10 text-white bg-[#0D1B40]`}>
       {/* Radial accent glow */}
       <div className={`absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--tw-gradient-stops))] ${accentClass} pointer-events-none`} />
       {/* Bottom fade */}

@@ -2,12 +2,15 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import Navigation from "@/components/sections/Navigation";
 import Footer from "@/components/sections/Footer";
+import AIChatWidget from "@/components/chat/AIChatWidget";
 
 interface GuestLayoutProps {
   children: ReactNode;
 }
 
 export default function GuestLayout({ children }: GuestLayoutProps) {
+  const property = localStorage.getItem("rosalina_property") || undefined;
+
   return (
     <div className="relative min-h-screen bg-background pb-20 md:pb-0">
       <Navigation />
@@ -20,6 +23,7 @@ export default function GuestLayout({ children }: GuestLayoutProps) {
         {children}
       </motion.main>
       <Footer />
+      <AIChatWidget property={property} />
     </div>
   );
 }

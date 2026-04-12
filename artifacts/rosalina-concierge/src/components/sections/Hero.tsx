@@ -59,9 +59,9 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="relative w-full pt-24 pb-20 px-6 bg-[#1A1A1A] overflow-hidden text-white rounded-b-[2.5rem] shadow-xl">
+    <section id="home" className="relative w-full pt-24 pb-20 px-6 overflow-hidden text-white rounded-b-[2.5rem] shadow-xl" style={{ background: "var(--dark-navy, #0D1B40)" }}>
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(196,139,107,0.25),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(38,65,140,0.6),transparent)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-xl mx-auto">
@@ -93,7 +93,7 @@ export default function Hero() {
         {/* CTA */}
         <button
           onClick={scrollToConcierge}
-          className="group inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-white px-7 py-4 rounded-2xl font-semibold text-base transition-all shadow-[0_4px_24px_rgba(196,139,107,0.35)] hover:shadow-[0_6px_32px_rgba(196,139,107,0.5)] active:scale-[0.97]"
+          className="group inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-white px-7 py-4 rounded-2xl font-semibold text-base transition-all shadow-[0_4px_24px_rgba(13,27,64,0.35)] hover:shadow-[0_6px_32px_rgba(13,27,64,0.45)] active:scale-[0.97]"
           data-testid="hero-connect-cta"
         >
           <Headphones className="w-5 h-5" />

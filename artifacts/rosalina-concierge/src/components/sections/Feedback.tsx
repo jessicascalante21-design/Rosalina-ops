@@ -50,7 +50,8 @@ export default function Feedback({ pageMode = false }: FeedbackProps) {
         target="_blank"
         rel="noreferrer"
         data-testid="link-google-review"
-        className="flex items-center justify-between gap-4 bg-[#161616] text-white px-5 py-4 rounded-2xl hover:bg-[#222] transition-colors group card-hover"
+        className="flex items-center justify-between gap-4 text-white px-5 py-4 rounded-2xl transition-colors group card-hover hover:opacity-90"
+                    style={{ background: "var(--dark-navy, #0D1B40)" }}
       >
         <div className="flex items-center gap-3.5">
           <div className="flex gap-0.5">
