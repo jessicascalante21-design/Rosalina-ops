@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle, LogOut, Users, ClipboardList, Hotel, TrendingUp, BarChart3, Sparkles, Bell, Mail } from "lucide-react";
+import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle, LogOut, Users, ClipboardList, Hotel, TrendingUp, BarChart3, Sparkles, Bell, Mail, Edit3, Save, X, Key, StickyNote, Building2, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { clearSession } from "@/lib/staff-auth";
 import { useLocation } from "wouter";
 import logoUrl from "@assets/image_1775935433037.png";
 import conciergeAvatar from "@assets/4536937_1775962091124.png";
+import { GuestRecord, getGuests, saveGuests, updateGuest, OCEAN_PARK_UNITS, ISLA_VERDE_UNITS, PACKAGE_OPTIONS, BEACH_EXTRAS } from "@/lib/guest-types";
 
-type TabType = "today" | "prearrivals" | "guests" | "insights";
+type TabType = "today" | "prearrivals" | "guests" | "insights" | "property";
 
 interface ReportEntry {
   type: "service" | "feedback" | "pre-arrival";
@@ -25,23 +26,6 @@ interface ReportEntry {
   arrivalTime?: string;
   earlyCheckin?: boolean;
   luggageStorage?: boolean;
-}
-
-interface GuestRecord {
-  name: string;
-  reservationNumber: string;
-  property: string;
-  arrivalDate: string;
-  arrivalTime: string;
-  departureDate: string;
-  numGuests: string;
-  earlyCheckin: boolean;
-  luggageStorage: boolean;
-  carStatus: string;
-  preferredContact: string;
-  specialRequests: string;
-  createdAt: string;
-  password: string;
 }
 
 interface FAQEntry { q: string; ts: string; }
@@ -85,22 +69,30 @@ function groupFAQs(entries: FAQEntry[]): FAQGroup[] {
 
 const BG_IMAGES = ["/ocean-park.jpg", "/isla-verde.jpg"];
 
+const ROOM_STATUS_COLORS: Record<string, { bg: string; border: string; text: string; label: string; labelEs: string }> = {
+  vacant: { bg: "rgba(74,222,128,0.12)", border: "rgba(74,222,128,0.25)", text: "text-green-300", label: "Vacant", labelEs: "Vacante" },
+  occupied: { bg: "rgba(96,165,250,0.12)", border: "rgba(96,165,250,0.25)", text: "text-blue-300", label: "Occupied", labelEs: "Ocupada" },
+  cleaning: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.25)", text: "text-amber-300", label: "Cleaning", labelEs: "Limpieza" },
+  maintenance: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.25)", text: "text-red-300", label: "Maintenance", labelEs: "Mantenimiento" },
+  checkout: { bg: "rgba(168,85,247,0.12)", border: "rgba(168,85,247,0.25)", text: "text-purple-300", label: "Check-out", labelEs: "Check-out" },
+};
+
 function GlassButton({ children, onClick, disabled, destructive, testId }: {
   children: React.ReactNode; onClick?: () => void; disabled?: boolean; destructive?: boolean; testId?: string;
 }) {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      data-testid={testId}
+    <button onClick={onClick} disabled={disabled} data-testid={testId}
       className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all backdrop-blur-sm border disabled:opacity-30 disabled:cursor-not-allowed ${
-        destructive
-          ? "bg-red-500/10 border-red-300/20 text-red-300 hover:bg-red-500/20"
-          : "bg-white/8 border-white/12 text-white/70 hover:bg-white/14 hover:text-white"
-      }`}
-    >
-      {children}
-    </button>
+        destructive ? "bg-red-500/10 border-red-300/20 text-red-300 hover:bg-red-500/20" : "bg-white/8 border-white/12 text-white/70 hover:bg-white/14 hover:text-white"
+      }`}>{children}</button>
+  );
+}
+
+function GlassInput({ value, onChange, placeholder, className = "" }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
+  return (
+    <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
+      className={`bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-white/20 w-full ${className}`}
+    />
   );
 }
 
@@ -114,11 +106,16 @@ export default function DailyReport() {
   const [copied, setCopied] = useState<string | null>(null);
   const [cleared, setCleared] = useState(false);
   const [bgIdx, setBgIdx] = useState(0);
+  const [editingGuest, setEditingGuest] = useState<string | null>(null);
+  const [expandedGuest, setExpandedGuest] = useState<string | null>(null);
+  const [roomStatuses, setRoomStatuses] = useState<Record<string, string>>(() =>
+    JSON.parse(localStorage.getItem("rosalina_room_status") || "{}")
+  );
+  const [activeProperty, setActiveProperty] = useState<"Ocean Park" | "Isla Verde">("Ocean Park");
 
   const handleLogout = () => { clearSession(); setLocation("/"); };
 
   useEffect(() => { loadData(); }, []);
-
   useEffect(() => {
     const iv = setInterval(() => setBgIdx((p) => (p + 1) % BG_IMAGES.length), 6000);
     return () => clearInterval(iv);
@@ -126,7 +123,7 @@ export default function DailyReport() {
 
   const loadData = () => {
     setEntries(JSON.parse(localStorage.getItem("rosalina_report") || "[]"));
-    setGuests(JSON.parse(localStorage.getItem("rosalina_guests") || "[]"));
+    setGuests(getGuests());
     setFaqEntries(JSON.parse(localStorage.getItem("rosalina_chat_faq") || "[]"));
   };
 
@@ -156,9 +153,7 @@ export default function DailyReport() {
 
   const downloadCSV = (csv: string, filename: string) => {
     const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
   };
 
   const toReportCSV = () => {
@@ -169,9 +164,9 @@ export default function DailyReport() {
   };
 
   const toGuestsCSV = () => {
-    const hdr = "Name,Reservation,Property,Arrival Date,Arrival Time,Departure,Guests,Early Check-in,Luggage Storage,Car,Contact,Special Requests,Registered\n";
+    const hdr = "Name,Reservation,Property,Room,Phone,Email,Arrival,Departure,Guests,Additional Guests,Status,Lockbox,Staff Notes,Packages,Beach Extras,Registered\n";
     return hdr + guests.map((g) =>
-      [g.name, g.reservationNumber, g.property, g.arrivalDate, g.arrivalTime || "", g.departureDate || "", g.numGuests, g.earlyCheckin ? "YES" : "No", g.luggageStorage ? "YES" : "No", g.carStatus, g.preferredContact, `"${(g.specialRequests || "").replace(/"/g, '""')}"`, new Date(g.createdAt).toLocaleString("en-US")].join(",")
+      [g.name, g.reservationNumber, g.property, g.roomNumber || "", g.phone || "", g.email || "", g.arrivalDate, g.departureDate || "", g.numGuests, `"${g.additionalGuests || ""}"`, g.status || "pre-arrival", g.lockboxCode || "", `"${(g.staffNotes || "").replace(/"/g, '""')}"`, `"${(g.packages || []).join(", ")}"`, `"${(g.beachExtras || []).join(", ")}"`, new Date(g.createdAt).toLocaleString("en-US")].join(",")
     ).join("\n");
   };
 
@@ -213,45 +208,55 @@ export default function DailyReport() {
 
   const handleClearFaq = () => { localStorage.setItem("rosalina_chat_faq", "[]"); setFaqEntries([]); };
 
+  const handleUpdateGuest = (resNum: string, updates: Partial<GuestRecord>) => {
+    updateGuest(resNum, updates);
+    setGuests(getGuests());
+  };
+
+  const handleDeleteGuest = (resNum: string) => {
+    const updated = guests.filter((g) => g.reservationNumber.toUpperCase() !== resNum.toUpperCase());
+    saveGuests(updated);
+    setGuests(updated);
+    setEditingGuest(null);
+  };
+
+  const handleSetRoomStatus = (roomId: string, status: string) => {
+    const updated = { ...roomStatuses, [roomId]: status };
+    setRoomStatuses(updated);
+    localStorage.setItem("rosalina_room_status", JSON.stringify(updated));
+  };
+
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   const hour = new Date().getHours();
   const greeting = hour < 12 ? t("Good morning", "Buenos dias") : hour < 18 ? t("Good afternoon", "Buenas tardes") : t("Good evening", "Buenas noches");
 
+  const checkedInCount = guests.filter((g) => g.status === "checked-in").length;
   const tabs: { id: TabType; label: string; count: number; icon: React.ElementType }[] = [
     { id: "today", label: t("Today", "Hoy"), count: todayEntries.length, icon: ClipboardList },
-    { id: "prearrivals", label: t("Pre-Arrivals", "Pre-Llegadas"), count: preArrivalEntries.length, icon: Hotel },
+    { id: "property", label: t("Property", "Propiedad"), count: checkedInCount, icon: Building2 },
     { id: "guests", label: t("Guests", "Huespedes"), count: guests.length, icon: Users },
-    { id: "insights", label: t("AI Insights", "IA Insights"), count: faqEntries.length, icon: BarChart3 },
+    { id: "prearrivals", label: t("Arrivals", "Llegadas"), count: preArrivalEntries.length, icon: Hotel },
+    { id: "insights", label: t("AI", "IA"), count: faqEntries.length, icon: BarChart3 },
   ];
 
   return (
     <div className="min-h-screen relative font-sans overflow-x-hidden">
       <AnimatePresence mode="wait">
-        <motion.div
-          key={bgIdx}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
-          className="fixed inset-0 z-0"
-        >
+        <motion.div key={bgIdx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2 }} className="fixed inset-0 z-0">
           <div className="absolute inset-0 bg-cover bg-center scale-105" style={{ backgroundImage: `url(${BG_IMAGES[bgIdx]})`, filter: "blur(8px) brightness(0.3)" }} />
         </motion.div>
       </AnimatePresence>
-
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-[#0D1B40]/70 via-[#0D1B40]/50 to-[#0D1B40]/80 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col lg:flex-row min-h-screen">
-
         {/* Glass Sidebar */}
         <div className="lg:w-72 lg:min-h-screen lg:sticky lg:top-0 shrink-0">
           <div className="lg:h-full p-5 lg:p-6 lg:border-r border-white/8" style={{ background: "rgba(13,27,64,0.45)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
             <div className="flex lg:flex-col items-center lg:items-stretch gap-4 lg:gap-0">
-
               <div className="flex items-center gap-3 lg:mb-8">
                 <img src={logoUrl} alt="Rosalina" className="w-8 h-8 lg:w-10 lg:h-10 object-contain brightness-0 invert opacity-70 shrink-0" />
                 <div className="lg:block">
-                  <p className="text-[10px] font-bold tracking-[2px] uppercase" style={{ color: "hsl(38 72% 65%)" }}>Staff Portal</p>
+                  <p className="text-[10px] font-bold tracking-[2px] uppercase" style={{ color: "hsl(38 72% 65%)" }}>PR Property Hub</p>
                   <p className="text-white/40 text-[10px] hidden lg:block">Rosalina Boutique Hotels</p>
                 </div>
                 <button onClick={handleLogout} className="ml-auto lg:ml-0 lg:absolute lg:top-6 lg:right-6 w-8 h-8 rounded-full bg-white/6 border border-white/10 flex items-center justify-center text-white/40 hover:text-white/70 transition-colors" data-testid="button-staff-logout">
@@ -278,25 +283,12 @@ export default function DailyReport() {
 
               <div className="hidden lg:block space-y-1.5">
                 {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                      activeTab === tab.id
-                        ? "text-white"
-                        : "text-white/40 hover:text-white/65 hover:bg-white/4"
-                    }`}
-                    style={activeTab === tab.id ? { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" } : {}}
-                  >
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id ? "text-white" : "text-white/40 hover:text-white/65 hover:bg-white/4"}`}
+                    style={activeTab === tab.id ? { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" } : {}}>
                     <tab.icon className="w-4 h-4" />
                     {tab.label}
-                    {tab.count > 0 && (
-                      <span className={`text-[10px] ml-auto px-1.5 py-0.5 rounded-full font-mono ${
-                        activeTab === tab.id ? "bg-white/10 text-white/70" : "text-white/30"
-                      }`}>
-                        {tab.count}
-                      </span>
-                    )}
+                    {tab.count > 0 && <span className={`text-[10px] ml-auto px-1.5 py-0.5 rounded-full font-mono ${activeTab === tab.id ? "bg-white/10 text-white/70" : "text-white/30"}`}>{tab.count}</span>}
                   </button>
                 ))}
               </div>
@@ -308,6 +300,9 @@ export default function DailyReport() {
                     <button onClick={handleEmailReport} className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs text-white/50 hover:text-white/80 hover:bg-white/5 transition-all">
                       <Mail className="w-3.5 h-3.5" /> {t("Email Report", "Enviar Reporte")}
                     </button>
+                    <button onClick={loadData} className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs text-white/50 hover:text-white/80 hover:bg-white/5 transition-all">
+                      <RefreshCw className="w-3.5 h-3.5" /> {t("Refresh Data", "Actualizar Datos")}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -317,63 +312,43 @@ export default function DailyReport() {
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
-          <div className="p-5 lg:p-8 max-w-4xl">
-
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
+          <div className="p-5 lg:p-8 max-w-5xl">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
               <p className="text-white/30 text-xs mb-1">{today}</p>
               <h1 className="font-serif text-3xl lg:text-4xl text-white font-light mb-1">{greeting}</h1>
               <p className="text-white/40 text-sm">{t("Property management overview", "Vista general de gestion de propiedades")}</p>
             </motion.div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
               {[
-                { value: todayEntries.length, label: t("Today's Activity", "Actividad de Hoy"), accent: false },
-                { value: serviceEntries.length, label: t("Service Requests", "Solicitudes"), accent: false },
-                { value: urgentCount, label: t("Urgent", "Urgentes"), accent: urgentCount > 0, urgent: true },
-                { value: todayFaqCount, label: t("AI Conversations", "Conversaciones IA"), accent: false },
+                { value: todayEntries.length, label: t("Today", "Hoy") },
+                { value: serviceEntries.length, label: t("Requests", "Solicitudes") },
+                { value: urgentCount, label: t("Urgent", "Urgentes"), urgent: urgentCount > 0 },
+                { value: checkedInCount, label: t("Checked In", "Hospedados") },
+                { value: todayFaqCount, label: t("AI Chats", "Chats IA") },
               ].map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * i }}
-                  className={`rounded-2xl p-4 border ${s.urgent && s.accent ? "border-red-400/30" : "border-white/10"}`}
-                  style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
-                >
-                  <p className={`font-serif text-3xl font-light ${s.urgent && s.accent ? "text-red-300" : "text-white"}`}>
-                    {s.value}
-                  </p>
+                <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}
+                  className={`rounded-2xl p-4 border ${s.urgent ? "border-red-400/30" : "border-white/10"}`}
+                  style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}>
+                  <p className={`font-serif text-3xl font-light ${s.urgent ? "text-red-300" : "text-white"}`}>{s.value}</p>
                   <p className="text-white/35 text-[10px] mt-1 tracking-wider uppercase">{s.label}</p>
                 </motion.div>
               ))}
             </div>
 
             {/* Mobile Tab Bar */}
-            <div className="lg:hidden flex gap-1 p-1 rounded-xl mb-5 border border-white/8" style={{ background: "rgba(255,255,255,0.04)" }}>
+            <div className="lg:hidden flex gap-0.5 p-1 rounded-xl mb-5 border border-white/8 overflow-x-auto no-scrollbar" style={{ background: "rgba(255,255,255,0.04)" }}>
               {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
-                    activeTab === tab.id ? "bg-white/12 text-white" : "text-white/35"
-                  }`}
-                >
-                  <tab.icon className="w-3.5 h-3.5" />
-                  {tab.label}
-                  {tab.count > 0 && (
-                    <span className="text-[10px] text-white/30 ml-0.5">{tab.count}</span>
-                  )}
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap min-w-0 ${activeTab === tab.id ? "bg-white/12 text-white" : "text-white/35"}`}>
+                  <tab.icon className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Tab: TODAY */}
+            {/* ═══ TAB: TODAY ═══ */}
             {activeTab === "today" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex flex-wrap gap-2 mb-5">
@@ -381,17 +356,16 @@ export default function DailyReport() {
                     {copied === "report" ? <CheckCircle className="w-3.5 h-3.5 text-green-400" /> : <ClipboardCopy className="w-3.5 h-3.5" />}
                     {copied === "report" ? t("Copied!", "Copiado!") : t("Copy CSV", "Copiar CSV")}
                   </GlassButton>
-                  <GlassButton onClick={() => { downloadCSV(toReportCSV(), `rosalina-report-${new Date().toISOString().split("T")[0]}.csv`); }} disabled={todayEntries.length === 0} testId="button-download-csv">
+                  <GlassButton onClick={() => downloadCSV(toReportCSV(), `rosalina-report-${new Date().toISOString().split("T")[0]}.csv`)} disabled={todayEntries.length === 0} testId="button-download-csv">
                     <Download className="w-3.5 h-3.5" /> {t("Download", "Descargar")}
                   </GlassButton>
                   <GlassButton onClick={handleEmailReport} disabled={todayEntries.length === 0} testId="button-email-report">
-                    <RefreshCw className="w-3.5 h-3.5" /> {t("Email", "Email")}
+                    <Mail className="w-3.5 h-3.5" /> {t("Email", "Email")}
                   </GlassButton>
                   <GlassButton onClick={handleClearToday} disabled={todayEntries.length === 0} destructive testId="button-clear-today">
                     <Trash2 className="w-3.5 h-3.5" /> {cleared ? t("Cleared", "Eliminado") : t("Clear", "Limpiar")}
                   </GlassButton>
                 </div>
-
                 <div className="space-y-3">
                   {todayEntries.length === 0 ? (
                     <div className="text-center py-20">
@@ -401,14 +375,9 @@ export default function DailyReport() {
                     </div>
                   ) : (
                     [...todayEntries].reverse().map((entry, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.03 * i }}
+                      <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 * i }}
                         className={`rounded-2xl p-4 border ${entry.urgency === "Urgent" ? "border-red-400/25" : "border-white/8"}`}
-                        style={{ background: entry.urgency === "Urgent" ? "rgba(239,68,68,0.06)" : "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
-                      >
+                        style={{ background: entry.urgency === "Urgent" ? "rgba(239,68,68,0.06)" : "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
                         <div className="flex items-start justify-between gap-3 mb-2.5">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full ${entry.type === "service" ? "bg-blue-400/15 text-blue-300" : "text-amber-300"}`} style={entry.type !== "service" ? { background: "rgba(180,140,60,0.15)" } : {}}>
@@ -430,7 +399,215 @@ export default function DailyReport() {
               </motion.div>
             )}
 
-            {/* Tab: PRE-ARRIVALS */}
+            {/* ═══ TAB: PROPERTY HUB ═══ */}
+            {activeTab === "property" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="flex gap-2 mb-5">
+                  {(["Ocean Park", "Isla Verde"] as const).map((prop) => (
+                    <button key={prop} onClick={() => setActiveProperty(prop)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${activeProperty === prop ? "bg-white/12 border-white/20 text-white" : "border-white/8 text-white/40 hover:text-white/60"}`}>
+                      {prop}
+                      <span className="text-[10px] ml-1.5 text-white/30">{prop === "Ocean Park" ? `${OCEAN_PARK_UNITS} units` : `${ISLA_VERDE_UNITS} units`}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mb-4 flex items-center gap-3 flex-wrap">
+                  {Object.entries(ROOM_STATUS_COLORS).map(([key, val]) => (
+                    <div key={key} className="flex items-center gap-1.5 text-[10px]">
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: val.bg, border: `1px solid ${val.border}` }} />
+                      <span className={val.text}>{t(val.label, val.labelEs)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2.5">
+                  {Array.from({ length: activeProperty === "Ocean Park" ? OCEAN_PARK_UNITS : ISLA_VERDE_UNITS }, (_, i) => {
+                    const roomId = `${activeProperty === "Ocean Park" ? "OP" : "IV"}-${String(i + 1).padStart(2, "0")}`;
+                    const status = roomStatuses[roomId] || "vacant";
+                    const colors = ROOM_STATUS_COLORS[status] || ROOM_STATUS_COLORS.vacant;
+                    const assignedGuest = guests.find((g) => g.roomNumber === roomId && g.status === "checked-in");
+                    return (
+                      <div key={roomId} className="rounded-xl p-3 border cursor-pointer transition-all hover:scale-[1.02] group relative"
+                        style={{ background: colors.bg, borderColor: colors.border }}
+                        onClick={() => {
+                          const statuses = Object.keys(ROOM_STATUS_COLORS);
+                          const nextIdx = (statuses.indexOf(status) + 1) % statuses.length;
+                          handleSetRoomStatus(roomId, statuses[nextIdx]);
+                        }}>
+                        <p className="font-mono text-sm text-white/80 font-bold">{roomId}</p>
+                        <p className={`text-[9px] font-semibold tracking-wider uppercase mt-0.5 ${colors.text}`}>{t(colors.label, colors.labelEs)}</p>
+                        {assignedGuest && (
+                          <p className="text-[10px] text-white/50 mt-1 truncate">{assignedGuest.name.split(" ")[0]}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 rounded-2xl border border-white/8 p-4" style={{ background: "rgba(255,255,255,0.04)" }}>
+                  <p className="text-white/30 text-[10px] font-semibold tracking-[2px] uppercase mb-3">{t("Property Summary", "Resumen de Propiedad")}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    {Object.entries(ROOM_STATUS_COLORS).map(([key, val]) => {
+                      const units = activeProperty === "Ocean Park" ? OCEAN_PARK_UNITS : ISLA_VERDE_UNITS;
+                      const count = Array.from({ length: units }, (_, i) => {
+                        const roomId = `${activeProperty === "Ocean Park" ? "OP" : "IV"}-${String(i + 1).padStart(2, "0")}`;
+                        return (roomStatuses[roomId] || "vacant") === key ? 1 : 0;
+                      }).reduce((a, b) => a + b, 0);
+                      return (
+                        <div key={key} className="text-center">
+                          <p className={`text-2xl font-serif font-light ${val.text}`}>{count}</p>
+                          <p className="text-[10px] text-white/30">{t(val.label, val.labelEs)}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ═══ TAB: GUESTS ═══ */}
+            {activeTab === "guests" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="flex flex-wrap gap-2 mb-5">
+                  <GlassButton onClick={() => downloadCSV(toGuestsCSV(), `rosalina-guests-${new Date().toISOString().split("T")[0]}.csv`)} disabled={guests.length === 0}>
+                    <Download className="w-3.5 h-3.5" /> {t("Download Guest List", "Descargar Lista")}
+                  </GlassButton>
+                </div>
+                <div className="space-y-3">
+                  {guests.length === 0 ? (
+                    <div className="text-center py-20">
+                      <Users className="w-10 h-10 mx-auto mb-4 text-white/15" />
+                      <p className="font-serif text-2xl text-white/50 mb-2">{t("No guest accounts yet", "Sin cuentas de huesped aun")}</p>
+                    </div>
+                  ) : (
+                    [...guests].reverse().map((g) => {
+                      const isExpanded = expandedGuest === g.reservationNumber;
+                      const isEditing = editingGuest === g.reservationNumber;
+                      return (
+                        <motion.div key={g.reservationNumber} layout className="rounded-2xl border border-white/8 overflow-hidden"
+                          style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
+                          <div className="p-4 cursor-pointer" onClick={() => setExpandedGuest(isExpanded ? null : g.reservationNumber)}>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="font-semibold text-sm text-white/90">{g.name}</p>
+                                  <span className={`text-[9px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded-full ${
+                                    g.status === "checked-in" ? "bg-green-400/15 text-green-300" :
+                                    g.status === "checked-out" ? "bg-purple-400/15 text-purple-300" :
+                                    g.status === "no-show" ? "bg-red-400/15 text-red-300" :
+                                    "bg-blue-400/15 text-blue-300"
+                                  }`}>{t(g.status === "checked-in" ? "In-House" : g.status === "checked-out" ? "Departed" : g.status === "no-show" ? "No-Show" : "Pre-Arrival",
+                                    g.status === "checked-in" ? "Hospedado" : g.status === "checked-out" ? "Salido" : g.status === "no-show" ? "No-Show" : "Pre-Llegada")}</span>
+                                </div>
+                                <p className="text-xs text-white/35">#{g.reservationNumber} · {g.property}{g.roomNumber ? ` · Room ${g.roomNumber}` : ""}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-white/25 font-mono">{fmtDate(g.createdAt)}</span>
+                                {isExpanded ? <ChevronUp className="w-4 h-4 text-white/30" /> : <ChevronDown className="w-4 h-4 text-white/30" />}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/40">
+                              {g.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{g.phone}</span>}
+                              {g.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{g.email}</span>}
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {isExpanded && (
+                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                <div className="px-4 pb-4 pt-0 border-t border-white/8">
+                                  <div className="grid grid-cols-2 gap-3 mt-3 text-xs">
+                                    <div><span className="text-white/35">Arrival: </span><span className="text-white/70">{g.arrivalDate}{g.arrivalTime ? " ~" + g.arrivalTime : ""}</span></div>
+                                    <div><span className="text-white/35">Departure: </span><span className="text-white/70">{g.departureDate || "TBD"}</span></div>
+                                    <div><span className="text-white/35">Guests: </span><span className="text-white/70">{g.numGuests}</span></div>
+                                    <div><span className="text-white/35">Contact: </span><span className="text-white/70">{g.preferredContact}</span></div>
+                                    {g.additionalGuests && <div className="col-span-2"><span className="text-white/35">Additional: </span><span className="text-white/70">{g.additionalGuests}</span></div>}
+                                    {g.earlyCheckin && <div className="text-blue-300 font-medium">Early check-in</div>}
+                                    {g.luggageStorage && <div style={{ color: "hsl(38 72% 65%)" }} className="font-medium">Luggage storage</div>}
+                                    {(g.packages || []).length > 0 && <div className="col-span-2"><span className="text-white/35">Packages: </span><span className="text-white/70">{(g.packages || []).map((id) => PACKAGE_OPTIONS.find((p) => p.id === id)?.en || id).join(", ")}</span></div>}
+                                    {(g.beachExtras || []).length > 0 && <div className="col-span-2"><span className="text-white/35">Beach: </span><span className="text-white/70">{(g.beachExtras || []).map((id) => BEACH_EXTRAS.find((e) => e.id === id)?.en || id).join(", ")}</span></div>}
+                                    {g.specialRequests && <div className="col-span-2 pt-1 border-t border-white/8 mt-1"><span className="text-white/35">Guest Notes: </span><span className="text-white/50">{g.specialRequests}</span></div>}
+                                  </div>
+
+                                  <div className="mt-3 pt-3 border-t border-white/8 flex items-center justify-between text-[10px]">
+                                    <span className="text-white/25">Login: <span className="font-mono text-white/50">{g.reservationNumber}</span></span>
+                                    <span className="text-white/25">Pass: <span className="font-mono text-white/50">{g.password}</span></span>
+                                  </div>
+
+                                  {/* Staff Edit Section */}
+                                  <div className="mt-3 pt-3 border-t border-white/8 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <p className="text-white/30 text-[10px] tracking-wider uppercase font-semibold">{t("Staff Controls", "Controles del Staff")}</p>
+                                      <button onClick={(e) => { e.stopPropagation(); setEditingGuest(isEditing ? null : g.reservationNumber); }}
+                                        className="flex items-center gap-1 text-[10px] text-white/40 hover:text-white/70 transition-colors">
+                                        {isEditing ? <X className="w-3 h-3" /> : <Edit3 className="w-3 h-3" />}
+                                        {isEditing ? t("Cancel", "Cancelar") : t("Edit", "Editar")}
+                                      </button>
+                                    </div>
+
+                                    {isEditing ? (
+                                      <div className="space-y-2.5">
+                                        <div className="grid grid-cols-2 gap-2">
+                                          <div>
+                                            <p className="text-[10px] text-white/30 mb-1">{t("Room #", "Habitacion")}</p>
+                                            <GlassInput value={g.roomNumber || ""} onChange={(v) => handleUpdateGuest(g.reservationNumber, { roomNumber: v })} placeholder="OP-01" />
+                                          </div>
+                                          <div>
+                                            <p className="text-[10px] text-white/30 mb-1">{t("Lockbox Code", "Codigo Candado")}</p>
+                                            <GlassInput value={g.lockboxCode || ""} onChange={(v) => handleUpdateGuest(g.reservationNumber, { lockboxCode: v })} placeholder="1234" />
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] text-white/30 mb-1">{t("Status", "Estado")}</p>
+                                          <div className="flex gap-1.5 flex-wrap">
+                                            {(["pre-arrival", "checked-in", "checked-out", "no-show"] as const).map((s) => (
+                                              <button key={s} onClick={() => handleUpdateGuest(g.reservationNumber, { status: s })}
+                                                className={`px-2.5 py-1 rounded-lg text-[10px] font-medium border transition-all ${g.status === s ? "bg-white/12 border-white/20 text-white" : "border-white/8 text-white/35 hover:text-white/60"}`}>
+                                                {s}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] text-white/30 mb-1"><StickyNote className="w-3 h-3 inline mr-1" />{t("Staff Notes (internal)", "Notas del Staff (internas)")}</p>
+                                          <textarea value={g.staffNotes || ""} onChange={(e) => handleUpdateGuest(g.reservationNumber, { staffNotes: e.target.value })}
+                                            className="bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-white/20 w-full min-h-[60px] resize-none"
+                                            placeholder={t("Add internal notes about this guest...", "Agregar notas internas sobre este huesped...")} />
+                                        </div>
+                                        <div className="flex gap-2">
+                                          <button onClick={() => setEditingGuest(null)}
+                                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-500/15 border border-green-400/20 text-green-300 hover:bg-green-500/25 transition-all">
+                                            <Save className="w-3 h-3" /> {t("Done", "Listo")}
+                                          </button>
+                                          <button onClick={() => { if (window.confirm(t("Remove this guest?", "Eliminar este huesped?"))) handleDeleteGuest(g.reservationNumber); }}
+                                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 border border-red-400/20 text-red-300 hover:bg-red-500/20 transition-all">
+                                            <Trash2 className="w-3 h-3" /> {t("Remove Guest", "Eliminar Huesped")}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-1.5 text-xs">
+                                        {g.roomNumber && <div className="flex items-center gap-2"><Building2 className="w-3 h-3 text-white/25" /><span className="text-white/50">Room: <span className="text-white/70 font-mono">{g.roomNumber}</span></span></div>}
+                                        {g.lockboxCode && <div className="flex items-center gap-2"><Key className="w-3 h-3 text-white/25" /><span className="text-white/50">Lockbox: <span className="text-white/70 font-mono">{g.lockboxCode}</span></span></div>}
+                                        {g.staffNotes && <div className="flex items-start gap-2"><StickyNote className="w-3 h-3 text-white/25 mt-0.5 shrink-0" /><span className="text-white/50">{g.staffNotes}</span></div>}
+                                        {!g.roomNumber && !g.lockboxCode && !g.staffNotes && <p className="text-white/25 italic">{t("No staff notes yet", "Sin notas del staff aun")}</p>}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ═══ TAB: PRE-ARRIVALS ═══ */}
             {activeTab === "prearrivals" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex flex-wrap gap-2 mb-5">
@@ -446,18 +623,12 @@ export default function DailyReport() {
                     </div>
                   ) : (
                     [...preArrivalEntries].reverse().map((e, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.03 * i }}
-                        className="rounded-2xl p-4 border border-white/8"
-                        style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}
-                      >
+                      <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 * i }}
+                        className="rounded-2xl p-4 border border-white/8" style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
                         <div className="flex items-start justify-between gap-3 mb-2.5">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-green-400/15 text-green-300">Pre-Arrival</span>
-                            {e.earlyCheckin && <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-blue-400/15 text-blue-300">Early Check-in</span>}
+                            {e.earlyCheckin && <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-blue-400/15 text-blue-300">Early</span>}
                             {e.luggageStorage && <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full text-amber-300" style={{ background: "rgba(180,140,60,0.15)" }}>Luggage</span>}
                           </div>
                           <span className="text-[11px] text-white/30 font-mono shrink-0">{fmtDate(e.timestamp)}</span>
@@ -474,57 +645,7 @@ export default function DailyReport() {
               </motion.div>
             )}
 
-            {/* Tab: GUESTS */}
-            {activeTab === "guests" && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="flex flex-wrap gap-2 mb-5">
-                  <GlassButton onClick={() => downloadCSV(toGuestsCSV(), `rosalina-guests-${new Date().toISOString().split("T")[0]}.csv`)} disabled={guests.length === 0}>
-                    <Download className="w-3.5 h-3.5" /> {t("Download Guest List", "Descargar Lista")}
-                  </GlassButton>
-                </div>
-                <div className="space-y-3">
-                  {guests.length === 0 ? (
-                    <div className="text-center py-20">
-                      <Users className="w-10 h-10 mx-auto mb-4 text-white/15" />
-                      <p className="font-serif text-2xl text-white/50 mb-2">{t("No guest accounts yet", "Sin cuentas de huesped aun")}</p>
-                    </div>
-                  ) : (
-                    [...guests].reverse().map((g, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.03 * i }}
-                        className="rounded-2xl p-4 border border-white/8"
-                        style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div>
-                            <p className="font-semibold text-sm text-white/90">{g.name}</p>
-                            <p className="text-xs text-white/35">#{g.reservationNumber} · {g.property}</p>
-                          </div>
-                          <span className="text-[10px] text-white/25 font-mono shrink-0">{fmtDate(g.createdAt)}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-                          <div><span className="text-white/35">Arrival: </span><span className="text-white/70 font-medium">{g.arrivalDate}{g.arrivalTime ? " ~" + g.arrivalTime : ""}</span></div>
-                          <div><span className="text-white/35">Guests: </span><span className="text-white/70 font-medium">{g.numGuests}</span></div>
-                          {g.earlyCheckin && <div className="text-blue-300 font-medium">Early check-in</div>}
-                          {g.luggageStorage && <div className="font-medium" style={{ color: "hsl(38 72% 65%)" }}>Luggage storage</div>}
-                          <div className="col-span-2"><span className="text-white/35">Contact: </span><span className="text-white/70 font-medium">{g.preferredContact}</span></div>
-                          {g.specialRequests && <div className="col-span-2 pt-1 border-t border-white/8 mt-1"><span className="text-white/35">Notes: </span><span className="text-white/50">{g.specialRequests}</span></div>}
-                        </div>
-                        <div className="mt-3 pt-2 border-t border-white/8 flex items-center justify-between">
-                          <span className="text-[10px] text-white/25">Login: <span className="font-mono text-white/50">{g.reservationNumber}</span></span>
-                          <span className="text-[10px] text-white/25">Pass: <span className="font-mono text-white/50">{g.password}</span></span>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Tab: AI INSIGHTS */}
+            {/* ═══ TAB: AI INSIGHTS ═══ */}
             {activeTab === "insights" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex flex-wrap gap-2 mb-5">
@@ -535,7 +656,6 @@ export default function DailyReport() {
                     <Trash2 className="w-3.5 h-3.5" /> {t("Reset", "Reiniciar")}
                   </GlassButton>
                 </div>
-
                 {faqGroups.length === 0 ? (
                   <div className="text-center py-20">
                     <BarChart3 className="w-10 h-10 mx-auto mb-4 text-white/15" />
@@ -545,9 +665,7 @@ export default function DailyReport() {
                 ) : (
                   <>
                     <div className="mb-6">
-                      <p className="text-white/30 text-[10px] font-semibold tracking-[2px] uppercase mb-3">
-                        {t("Question Categories", "Categorias de Preguntas")}
-                      </p>
+                      <p className="text-white/30 text-[10px] font-semibold tracking-[2px] uppercase mb-3">{t("Question Categories", "Categorias de Preguntas")}</p>
                       <div className="grid grid-cols-2 gap-2">
                         {categoryStats.slice(0, 8).map((cat) => {
                           const maxCount = categoryStats[0]?.count || 1;
@@ -564,14 +682,10 @@ export default function DailyReport() {
                         })}
                       </div>
                     </div>
-
                     <div className="mb-4 flex items-center justify-between">
-                      <p className="text-white/30 text-[10px] font-semibold tracking-[2px] uppercase">
-                        {t("Most Frequent Questions", "Preguntas Mas Frecuentes")}
-                      </p>
+                      <p className="text-white/30 text-[10px] font-semibold tracking-[2px] uppercase">{t("Most Frequent Questions", "Preguntas Mas Frecuentes")}</p>
                       <span className="text-[10px] text-white/20 font-mono">{faqGroups.length} {t("unique", "unicas")}</span>
                     </div>
-
                     <div className="rounded-2xl overflow-hidden border border-white/8" style={{ background: "rgba(255,255,255,0.04)" }}>
                       {faqGroups.slice(0, 20).map((g, i, arr) => (
                         <div key={i} className={`flex items-center gap-3 px-4 py-3.5 ${i < arr.length - 1 ? "border-b border-white/6" : ""}`}>

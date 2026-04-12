@@ -109,9 +109,9 @@ export default function Splash({ onDismiss }: SplashProps) {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="w-20 h-20 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm flex items-center justify-center"
+          className="w-20 h-20 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm flex items-center justify-center p-3"
         >
-          <img src={logoUrl} alt="Rosalina" className="w-14 h-14 object-contain drop-shadow-lg" />
+          <img src={logoUrl} alt="Rosalina" className="w-full h-full object-contain drop-shadow-lg" />
         </motion.div>
 
         <motion.div
