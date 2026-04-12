@@ -11,34 +11,52 @@ type PropertyTab = "Ocean Park" | "Isla Verde" | "both";
 
 const SEASONS = [
   {
-    icon: Sun,
-    name: { en: "Dec – Apr · Best Season", es: "Dic – Abr · Mejor Época" },
-    desc: {
-      en: "Dry season. Temperatures 75–85°F. Best weather for the beach, lowest humidity. Book early — this is peak season.",
-      es: "Temporada seca. 24–29°C. El mejor clima para la playa, humedad baja. Reserve con anticipación — es temporada alta.",
+    months: { en: "Dec – Apr", es: "Dic – Abr" },
+    emoji: "☀️",
+    label: { en: "Dry Season", es: "Temporada Seca" },
+    temp: "75–83°F / 24–28°C",
+    chips: {
+      en: ["Clear skies", "Low humidity", "Busy beaches", "Book early"],
+      es: ["Cielos despejados", "Baja humedad", "Playas concurridas", "Reserve con anticipación"],
     },
-    color: "bg-amber-50 border-amber-200 text-amber-800",
-    badge: { en: "Peak Season", es: "Temporada Alta" },
+    tip: { en: "Peak season — expect higher rates and more crowds.", es: "Temporada alta — tarifas más altas y más turistas." },
+    dot: "bg-amber-400",
   },
   {
-    icon: Activity,
-    name: { en: "Jun – Aug · Hot & Lively", es: "Jun – Ago · Caluroso y Activo" },
-    desc: {
-      en: "Warm season, 85–90°F. Ocean perfect for swimming. Lots of local festivals and live music. Book early.",
-      es: "Temporada cálida, 29–32°C. El océano está perfecto. Festivales locales y música en vivo. Reserve temprano.",
+    months: { en: "May – Jun", es: "May – Jun" },
+    emoji: "🌤️",
+    label: { en: "Shoulder Season", es: "Temporada Intermedia" },
+    temp: "82–88°F / 28–31°C",
+    chips: {
+      en: ["Warm days", "Occasional showers", "Fewer crowds", "Good rates"],
+      es: ["Días cálidos", "Lluvias ocasionales", "Menos turistas", "Buenas tarifas"],
     },
-    color: "bg-orange-50 border-orange-200 text-orange-800",
-    badge: { en: "Summer High", es: "Verano Alto" },
+    tip: { en: "Good balance of weather and availability.", es: "Buen balance entre clima y disponibilidad." },
+    dot: "bg-green-400",
   },
   {
-    icon: Umbrella,
-    name: { en: "Sep – Nov · Quieter Deals", es: "Sep – Nov · Más Tranquilo" },
-    desc: {
-      en: "Rainy season — short afternoon showers, clear mornings. Best rates and fewer crowds. Hurricane season peaks Aug–Oct.",
-      es: "Temporada de lluvia — chubascos breves por la tarde, mañanas despejadas. Mejores tarifas y menos turistas.",
+    months: { en: "Jul – Aug", es: "Jul – Ago" },
+    emoji: "🔆",
+    label: { en: "Summer", es: "Verano" },
+    temp: "85–90°F / 29–32°C",
+    chips: {
+      en: ["Hot and humid", "Ocean calm", "Local festivals", "Book early"],
+      es: ["Caluroso y húmedo", "Océano tranquilo", "Festivales locales", "Reserve temprano"],
     },
-    color: "bg-blue-50 border-blue-200 text-blue-800",
-    badge: { en: "Off-Peak Value", es: "Mejor Precio" },
+    tip: { en: "Lively atmosphere — lots of Puerto Rican culture and events.", es: "Ambiente animado con mucha cultura y eventos locales." },
+    dot: "bg-orange-400",
+  },
+  {
+    months: { en: "Sep – Nov", es: "Sep – Nov" },
+    emoji: "🌧️",
+    label: { en: "Rainy Season", es: "Temporada de Lluvia" },
+    temp: "82–87°F / 28–31°C",
+    chips: {
+      en: ["Afternoon showers", "Clear mornings", "Best rates", "Hurricane season"],
+      es: ["Lluvias por la tarde", "Mañanas despejadas", "Mejores tarifas", "Temporada de huracanes"],
+    },
+    tip: { en: "Mornings are often sunny. Showers are short and the ocean stays warm.", es: "Las mañanas suelen ser soleadas. Los aguaceros son breves y el océano sigue cálido." },
+    dot: "bg-blue-400",
   },
 ];
 
@@ -202,27 +220,37 @@ export default function WelcomeGuidePage() {
         </Section>
 
         {/* ── Seasons ───────────────────────────────────────── */}
-        <Section title={t("When to Visit", "Cuándo Visitar")} icon={Calendar}>
-          <div className="space-y-3">
+        <Section title={t("Seasonal Awareness", "Referencia por Temporada")} icon={Calendar}>
+          <p className="text-xs text-muted-foreground mb-4">
+            {t("Quick reference for what to expect during your dates.", "Referencia rápida de lo que puedes esperar según tu fecha de visita.")}
+          </p>
+          <div className="space-y-2">
             {SEASONS.map((s, i) => (
-              <div key={i} className={`border rounded-2xl p-4 ${s.color}`}>
-                <div className="flex items-start gap-3">
-                  <s.icon className="w-5 h-5 mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-sm">{language === "ES" ? s.name.es : s.name.en}</p>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/40 border border-current/20">
-                        {language === "ES" ? s.badge.es : s.badge.en}
-                      </span>
-                    </div>
-                    <p className="text-sm leading-relaxed opacity-85">{language === "ES" ? s.desc.es : s.desc.en}</p>
-                  </div>
+              <div key={i} className="bg-card border border-border rounded-2xl p-4">
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${s.dot}`} />
+                  <span className="font-semibold text-sm">{language === "ES" ? s.months.es : s.months.en}</span>
+                  <span className="text-lg leading-none">{s.emoji}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">{s.temp}</span>
                 </div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                  {language === "ES" ? s.label.es : s.label.en}
+                </p>
+                <div className="flex flex-wrap gap-1.5 mb-2.5">
+                  {(language === "ES" ? s.chips.es : s.chips.en).map((chip) => (
+                    <span key={chip} className="text-[11px] bg-secondary/50 text-foreground/70 border border-border px-2 py-0.5 rounded-full">
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground italic leading-snug">
+                  {language === "ES" ? s.tip.es : s.tip.en}
+                </p>
               </div>
             ))}
           </div>
           <p className="text-xs text-muted-foreground mt-3 text-center">
-            🌊 {t("Ocean temperature year-round: 80–84°F (27–29°C). Always perfect for swimming.", "Temperatura del océano todo el año: 27–29°C. Siempre perfecto para nadar.")}
+            🌊 {t("Ocean temperature year-round: 80 to 84°F (27 to 29°C). Always perfect for swimming.", "Temperatura del océano todo el año: 27 a 29°C. Siempre perfecto para nadar.")}
           </p>
         </Section>
 
