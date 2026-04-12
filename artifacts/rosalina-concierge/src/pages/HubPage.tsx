@@ -132,7 +132,7 @@ export default function HubPage() {
                 transition={{ duration: 0.5 }}
                 className="w-14 h-14 mx-auto mb-6 bg-white/10 border border-white/15 rounded-2xl flex items-center justify-center"
               >
-                <img src={logoUrl} alt="Rosalina" className="w-9 h-9 object-contain brightness-0 invert border-t-[#222223] border-r-[#222223] border-b-[#222223] border-l-[#222223] opacity-[0.05]" />
+                <img src={logoUrl} alt="Rosalina" className="w-9 h-9 object-contain brightness-0 invert opacity-60" />
               </motion.div>
 
               {/* Status pill */}

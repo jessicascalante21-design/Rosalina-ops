@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, MessageCircle, Loader2, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import logoUrl from "@assets/image_1775935433037.png";
+import conciergeAvatar from "@assets/4536937_1775962091124.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -13,20 +13,29 @@ interface Message {
 const QUICK_QUESTIONS_EN = [
   "What's the WiFi password?",
   "What time is check-in?",
-  "Is there a pool?",
+  "Best restaurants nearby?",
   "How far is the beach?",
-  "Do you allow pets?",
-  "What's the lockbox code?",
+  "What can I do today?",
+  "How do I get to Old San Juan?",
 ];
 
 const QUICK_QUESTIONS_ES = [
-  "¿Cuál es la contraseña de WiFi?",
-  "¿A qué hora es el check-in?",
-  "¿Hay piscina?",
-  "¿Qué tan lejos está la playa?",
-  "¿Se permiten mascotas?",
-  "¿Cuál es el código del candado?",
+  "Cual es la clave del WiFi?",
+  "A que hora es el check-in?",
+  "Mejores restaurantes cercanos?",
+  "Que tan lejos esta la playa?",
+  "Que puedo hacer hoy?",
+  "Como llego al Viejo San Juan?",
 ];
+
+function trackQuestion(question: string) {
+  try {
+    const data = JSON.parse(localStorage.getItem("rosalina_chat_faq") || "[]") as { q: string; ts: string }[];
+    data.push({ q: question.trim().toLowerCase(), ts: new Date().toISOString() });
+    if (data.length > 500) data.splice(0, data.length - 500);
+    localStorage.setItem("rosalina_chat_faq", JSON.stringify(data));
+  } catch {}
+}
 
 interface AIChatWidgetProps {
   property?: string;
@@ -39,8 +48,8 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
     {
       role: "assistant",
       content: t(
-        "Hello! I'm Rosa, your AI concierge. How can I help you today?",
-        "¡Hola! Soy Rosa, tu concierge virtual. ¿En qué puedo ayudarte hoy?"
+        "Welcome to Rosalina. I'm here to make your stay unforgettable. What can I help you discover today?",
+        "Bienvenido a Rosalina. Estoy aqui para hacer tu estadia inolvidable. Que puedo ayudarte a descubrir hoy?"
       ),
     },
   ]);
@@ -71,6 +80,8 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
     setMessages(newMessages);
     setInput("");
     setLoading(true);
+
+    trackQuestion(text);
 
     const assistantMessage: Message = { role: "assistant", content: "", streaming: true };
     setMessages([...newMessages, assistantMessage]);
@@ -153,7 +164,6 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
 
   return (
     <>
-      {/* Floating button */}
       <AnimatePresence>
         {!open && (
           <motion.button
@@ -168,13 +178,11 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
             <MessageCircle className="w-6 h-6 text-white relative z-10 group-hover:scale-110 transition-transform" />
-            {/* Pulse ring */}
             <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: "var(--mid-navy)" }} />
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* Chat panel */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -184,21 +192,20 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
             className="fixed bottom-[72px] right-3 md:bottom-6 md:right-6 z-50 w-[calc(100vw-24px)] max-w-sm rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(13,27,64,0.25),0_0_0_1px_rgba(13,27,64,0.08)]"
           >
-            {/* Header */}
             <div
               className="flex items-center justify-between px-4 py-3 text-white"
               style={{ background: "var(--dark-navy, #0D1B40)" }}
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center shrink-0 overflow-hidden">
-                  <img src={logoUrl} alt="Rosalina" className="w-6 h-6 object-contain" />
+                <div className="w-9 h-9 rounded-full bg-white/15 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+                  <img src={conciergeAvatar} alt="Rosa" className="w-full h-full object-contain rounded-full" />
                 </div>
                 <div className="leading-tight">
                   <div className="flex items-center gap-1.5">
                     <p className="font-semibold text-sm">Rosa</p>
                     <span className="flex items-center gap-1 text-white/50 text-[10px]">
                       <Sparkles className="w-2.5 h-2.5" />
-                      {t("AI Concierge", "Concierge Virtual")}
+                      {t("Experience AI", "Experience AI")}
                     </span>
                   </div>
                   <p className="text-white/45 text-[10px]">
@@ -217,7 +224,6 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
               </button>
             </div>
 
-            {/* Messages */}
             <div className="h-72 overflow-y-auto bg-[#F8F6F1] p-4 space-y-3 no-scrollbar">
               {messages.map((msg, i) => (
                 <div
@@ -225,8 +231,8 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="w-6 h-6 rounded-full bg-white border border-border flex items-center justify-center shrink-0 mr-2 mt-0.5 overflow-hidden">
-                      <img src={logoUrl} alt="Rosa" className="w-4 h-4 object-contain" />
+                    <div className="w-6 h-6 rounded-full bg-white/80 border border-border flex items-center justify-center shrink-0 mr-2 mt-0.5 overflow-hidden p-0.5">
+                      <img src={conciergeAvatar} alt="Rosa" className="w-full h-full object-contain rounded-full" />
                     </div>
                   )}
                   <div
@@ -245,7 +251,6 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
                 </div>
               ))}
 
-              {/* Quick replies */}
               {showQuickReplies && !loading && (
                 <div className="flex flex-wrap gap-2 pt-1">
                   {quickQuestions.map((q) => (
@@ -263,7 +268,6 @@ export default function AIChatWidget({ property }: AIChatWidgetProps) {
               <div ref={bottomRef} />
             </div>
 
-            {/* Input */}
             <div className="bg-white border-t border-border px-3 py-3 flex items-center gap-2">
               <input
                 ref={inputRef}

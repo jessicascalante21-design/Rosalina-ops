@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle, LogOut, Users, ClipboardList, MessageSquare, Hotel } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Download, Trash2, RefreshCw, ClipboardCopy, CheckCircle, LogOut, Users, ClipboardList, MessageSquare, Hotel, TrendingUp, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { clearSession } from "@/lib/staff-auth";
 import { useLocation } from "wouter";
 import logoUrl from "@assets/image_1775935433037.png";
 
-type TabType = "today" | "prearrivals" | "guests";
+type TabType = "today" | "prearrivals" | "guests" | "insights";
 
 interface ReportEntry {
   type: "service" | "feedback" | "pre-arrival";
@@ -43,11 +43,78 @@ interface GuestRecord {
   password: string;
 }
 
+interface FAQEntry {
+  q: string;
+  ts: string;
+}
+
+interface FAQGroup {
+  question: string;
+  count: number;
+  lastAsked: string;
+  category: string;
+}
+
+const FAQ_CATEGORIES: Record<string, { keywords: string[]; label: string; labelEs: string }> = {
+  wifi: { keywords: ["wifi", "wi-fi", "password", "clave", "internet", "contraseña"], label: "WiFi & Connectivity", labelEs: "WiFi y Conectividad" },
+  checkin: { keywords: ["check-in", "checkin", "check in", "lockbox", "candado", "codigo", "code", "key", "llave", "arrival", "llegada"], label: "Check-in & Access", labelEs: "Check-in y Acceso" },
+  checkout: { keywords: ["check-out", "checkout", "check out", "late", "salida"], label: "Check-out", labelEs: "Check-out" },
+  beach: { keywords: ["beach", "playa", "towel", "toalla", "swim", "nadar", "ocean", "oceano", "surf"], label: "Beach & Pool", labelEs: "Playa y Piscina" },
+  food: { keywords: ["restaurant", "restaurante", "food", "comida", "eat", "comer", "breakfast", "desayuno", "dinner", "cena", "brunch", "coffee", "cafe"], label: "Dining", labelEs: "Gastronomia" },
+  activities: { keywords: ["do", "hacer", "activity", "actividad", "tour", "kayak", "snorkel", "yunque", "san juan", "bacardi", "experience", "experiencia"], label: "Activities", labelEs: "Actividades" },
+  transport: { keywords: ["uber", "lyft", "taxi", "car", "auto", "airport", "aeropuerto", "drive", "parking", "estacionar", "bus"], label: "Transport", labelEs: "Transporte" },
+  amenities: { keywords: ["pool", "piscina", "tv", "ac", "air", "kitchen", "cocina", "fridge", "microwave", "laundry", "lavanderia"], label: "Amenities", labelEs: "Amenidades" },
+  rules: { keywords: ["pet", "mascota", "smoke", "fumar", "quiet", "party", "fiesta", "noise", "ruido", "guest"], label: "Policies", labelEs: "Politicas" },
+  general: { keywords: [], label: "General", labelEs: "General" },
+};
+
+function categorizeQuestion(q: string): string {
+  const lower = q.toLowerCase();
+  for (const [cat, { keywords }] of Object.entries(FAQ_CATEGORIES)) {
+    if (cat === "general") continue;
+    if (keywords.some((kw) => lower.includes(kw))) return cat;
+  }
+  return "general";
+}
+
+function groupFAQs(entries: FAQEntry[]): FAQGroup[] {
+  const groups = new Map<string, { count: number; lastAsked: string; original: string }>();
+
+  for (const entry of entries) {
+    const normalized = entry.q
+      .replace(/[?¿!¡.,]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const key = normalized.split(" ").slice(0, 6).join(" ");
+
+    const existing = groups.get(key);
+    if (existing) {
+      existing.count++;
+      if (entry.ts > existing.lastAsked) {
+        existing.lastAsked = entry.ts;
+      }
+    } else {
+      groups.set(key, { count: 1, lastAsked: entry.ts, original: entry.q });
+    }
+  }
+
+  return Array.from(groups.entries())
+    .map(([, v]) => ({
+      question: v.original,
+      count: v.count,
+      lastAsked: v.lastAsked,
+      category: categorizeQuestion(v.original),
+    }))
+    .sort((a, b) => b.count - a.count);
+}
+
 export default function DailyReport() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const [entries, setEntries] = useState<ReportEntry[]>([]);
   const [guests, setGuests] = useState<GuestRecord[]>([]);
+  const [faqEntries, setFaqEntries] = useState<FAQEntry[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("today");
   const [copied, setCopied] = useState<string | null>(null);
   const [cleared, setCleared] = useState(false);
@@ -61,6 +128,8 @@ export default function DailyReport() {
     setEntries(data);
     const gData = JSON.parse(localStorage.getItem("rosalina_guests") || "[]") as GuestRecord[];
     setGuests(gData);
+    const fData = JSON.parse(localStorage.getItem("rosalina_chat_faq") || "[]") as FAQEntry[];
+    setFaqEntries(fData);
   };
 
   const isToday = (iso: string) => {
@@ -73,6 +142,24 @@ export default function DailyReport() {
   const serviceEntries = todayEntries.filter((e) => e.type === "service");
   const feedbackEntries = todayEntries.filter((e) => e.type === "feedback");
   const urgentCount = serviceEntries.filter((e) => e.urgency === "Urgent").length;
+
+  const faqGroups = useMemo(() => groupFAQs(faqEntries), [faqEntries]);
+  const todayFaqCount = faqEntries.filter((e) => isToday(e.ts)).length;
+
+  const categoryStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const g of faqGroups) {
+      counts[g.category] = (counts[g.category] || 0) + g.count;
+    }
+    return Object.entries(counts)
+      .map(([cat, count]) => ({
+        category: cat,
+        label: FAQ_CATEGORIES[cat]?.label || cat,
+        labelEs: FAQ_CATEGORIES[cat]?.labelEs || cat,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [faqGroups]);
 
   const fmt = (iso: string) => new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
   const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -88,8 +175,8 @@ export default function DailyReport() {
   const toReportCSV = () => {
     const hdr = "Type,Timestamp,Name,Room,Service/Feedback Type,Urgency,Details\n";
     const rows = todayEntries.map((e) =>
-      [e.type, new Date(e.timestamp).toLocaleString("en-US"), e.name || "Anonymous", e.room || "—",
-       e.service || e.feedbackType || "—", e.urgency || "—",
+      [e.type, new Date(e.timestamp).toLocaleString("en-US"), e.name || "Anonymous", e.room || "",
+       e.service || e.feedbackType || "", e.urgency || "",
        `"${(e.details || e.message || "").replace(/"/g, '""')}"`].join(",")
     ).join("\n");
     return hdr + rows;
@@ -98,8 +185,8 @@ export default function DailyReport() {
   const toGuestsCSV = () => {
     const hdr = "Name,Reservation,Property,Arrival Date,Arrival Time,Departure,Guests,Early Check-in,Luggage Storage,Car,Contact,Special Requests,Registered\n";
     const rows = guests.map((g) =>
-      [g.name, g.reservationNumber, g.property, g.arrivalDate, g.arrivalTime || "—",
-       g.departureDate || "—", g.numGuests, g.earlyCheckin ? "YES" : "No", g.luggageStorage ? "YES" : "No",
+      [g.name, g.reservationNumber, g.property, g.arrivalDate, g.arrivalTime || "",
+       g.departureDate || "", g.numGuests, g.earlyCheckin ? "YES" : "No", g.luggageStorage ? "YES" : "No",
        g.carStatus, g.preferredContact, `"${(g.specialRequests || "").replace(/"/g, '""')}"`,
        new Date(g.createdAt).toLocaleString("en-US")].join(",")
     ).join("\n");
@@ -109,9 +196,17 @@ export default function DailyReport() {
   const toPreArrivalCSV = () => {
     const hdr = "Name,Reservation,Property,Arrival Date,Arrival Time,Early Check-in,Luggage Storage,Submitted\n";
     const rows = preArrivalEntries.map((e) =>
-      [e.name || "—", e.reservationNumber || "—", e.property || "—", e.arrivalDate || "—",
-       e.arrivalTime || "—", e.earlyCheckin ? "YES" : "No", e.luggageStorage ? "YES" : "No",
+      [e.name || "", e.reservationNumber || "", e.property || "", e.arrivalDate || "",
+       e.arrivalTime || "", e.earlyCheckin ? "YES" : "No", e.luggageStorage ? "YES" : "No",
        new Date(e.timestamp).toLocaleString("en-US")].join(",")
+    ).join("\n");
+    return hdr + rows;
+  };
+
+  const toFaqCSV = () => {
+    const hdr = "Question,Count,Category,Last Asked\n";
+    const rows = faqGroups.map((g) =>
+      [`"${g.question.replace(/"/g, '""')}"`, g.count, g.category, new Date(g.lastAsked).toLocaleString("en-US")].join(",")
     ).join("\n");
     return hdr + rows;
   };
@@ -119,14 +214,16 @@ export default function DailyReport() {
   const handleEmailReport = () => {
     const today = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
     const body = [
-      `ROSALINA DAILY REPORT — ${today}`, ``,
-      `SUMMARY`, `Total: ${todayEntries.length}`, `Service: ${serviceEntries.length} (${urgentCount} urgent)`, `Feedback: ${feedbackEntries.length}`, ``,
+      `ROSALINA DAILY REPORT: ${today}`, ``,
+      `SUMMARY`, `Total: ${todayEntries.length}`, `Service: ${serviceEntries.length} (${urgentCount} urgent)`, `Feedback: ${feedbackEntries.length}`, `AI Chat Questions Today: ${todayFaqCount}`, ``,
       serviceEntries.length > 0 ? `SERVICE REQUESTS` : "",
-      ...serviceEntries.map((e) => `[${fmt(e.timestamp)}] Room ${e.room} — ${e.name}: ${e.service} (${e.urgency})${e.details ? " — " + e.details : ""}`),
+      ...serviceEntries.map((e) => `[${fmt(e.timestamp)}] Room ${e.room}, ${e.name}: ${e.service} (${e.urgency})${e.details ? " - " + e.details : ""}`),
       ``, feedbackEntries.length > 0 ? `FEEDBACK` : "",
       ...feedbackEntries.map((e) => `[${fmt(e.timestamp)}] ${e.feedbackType} from ${e.name}: ${e.message}`),
+      ``, faqGroups.length > 0 ? `TOP AI CHAT QUESTIONS (All Time)` : "",
+      ...faqGroups.slice(0, 10).map((g, i) => `${i + 1}. "${g.question}" (${g.count}x, ${g.category})`),
     ].filter(Boolean).join("\n");
-    const subject = encodeURIComponent(`Rosalina Daily Report — ${today}`);
+    const subject = encodeURIComponent(`Rosalina Daily Report: ${today}`);
     window.location.href = `mailto:contact@rosalinapr.com?subject=${subject}&body=${encodeURIComponent(body)}`;
   };
 
@@ -138,16 +235,21 @@ export default function DailyReport() {
     setTimeout(() => setCleared(false), 3000);
   };
 
+  const handleClearFaq = () => {
+    localStorage.setItem("rosalina_chat_faq", "[]");
+    setFaqEntries([]);
+  };
+
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   const tabs: { id: TabType; label: string; count: number; icon: React.ElementType }[] = [
     { id: "today", label: t("Today", "Hoy"), count: todayEntries.length, icon: ClipboardList },
     { id: "prearrivals", label: t("Pre-Arrivals", "Pre-Llegadas"), count: preArrivalEntries.length, icon: Hotel },
-    { id: "guests", label: t("Guest Accounts", "Cuentas"), count: guests.length, icon: Users },
+    { id: "guests", label: t("Guests", "Huéspedes"), count: guests.length, icon: Users },
+    { id: "insights", label: t("AI Insights", "IA Insights"), count: faqEntries.length, icon: BarChart3 },
   ];
 
   return (
     <div className="min-h-screen bg-background font-sans">
-      {/* Header */}
       <div className="px-6 pt-12 pb-8 text-white bg-[#0D1B40]">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
@@ -164,13 +266,12 @@ export default function DailyReport() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="px-6 py-5 bg-secondary/20 grid grid-cols-4 gap-3 text-center">
         {[
           { value: todayEntries.length, label: t("Today", "Hoy") },
           { value: serviceEntries.length, label: t("Requests", "Solicitudes") },
           { value: urgentCount, label: t("Urgent", "Urgentes"), red: urgentCount > 0 },
-          { value: guests.length, label: t("Guests", "Huéspedes") },
+          { value: todayFaqCount, label: t("AI Chats", "Chats IA") },
         ].map((s) => (
           <div key={s.label} className={`bg-card rounded-2xl p-3 border shadow-sm ${s.red ? "border-destructive/40" : "border-border"}`}>
             <p className={`font-serif text-2xl font-medium ${s.red ? "text-destructive" : "text-foreground"}`}>{s.value}</p>
@@ -179,14 +280,13 @@ export default function DailyReport() {
         ))}
       </div>
 
-      {/* Tab bar */}
       <div className="px-6 pt-4 pb-2">
-        <div className="flex gap-1 bg-secondary/30 p-1 rounded-xl">
+        <div className="flex gap-1 bg-secondary/30 p-1 rounded-xl overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab.id ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -202,14 +302,12 @@ export default function DailyReport() {
         </div>
       </div>
 
-      {/* Tab: TODAY */}
       {activeTab === "today" && (
         <div className="px-6 pb-32">
-          {/* Actions */}
           <div className="flex flex-wrap gap-2 py-4">
             <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(toReportCSV()); setCopied("report"); setTimeout(() => setCopied(null), 2500); }} className="flex items-center gap-1.5 rounded-full" data-testid="button-copy-csv" disabled={todayEntries.length === 0}>
               {copied === "report" ? <CheckCircle className="w-3.5 h-3.5 text-green-500" /> : <ClipboardCopy className="w-3.5 h-3.5" />}
-              {copied === "report" ? t("Copied!", "¡Copiado!") : t("Copy CSV", "Copiar CSV")}
+              {copied === "report" ? t("Copied!", "Copiado!") : t("Copy CSV", "Copiar CSV")}
             </Button>
             <Button variant="outline" size="sm" onClick={() => { const d = new Date().toISOString().split("T")[0]; downloadCSV(toReportCSV(), `rosalina-report-${d}.csv`); }} className="flex items-center gap-1.5 rounded-full" data-testid="button-download-csv" disabled={todayEntries.length === 0}>
               <Download className="w-3.5 h-3.5" /> {t("Download CSV", "Descargar CSV")}
@@ -226,7 +324,7 @@ export default function DailyReport() {
             {todayEntries.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
                 <p className="font-serif text-2xl mb-2">{t("No entries today", "Sin registros hoy")}</p>
-                <p className="text-sm">{t("Service requests and feedback will appear here.", "Las solicitudes y comentarios aparecerán aquí.")}</p>
+                <p className="text-sm">{t("Service requests and feedback will appear here.", "Las solicitudes y comentarios apareceran aqui.")}</p>
               </div>
             ) : (
               [...todayEntries].reverse().map((entry, i) => (
@@ -252,7 +350,6 @@ export default function DailyReport() {
         </div>
       )}
 
-      {/* Tab: PRE-ARRIVALS */}
       {activeTab === "prearrivals" && (
         <div className="px-6 pb-32">
           <div className="flex flex-wrap gap-2 py-4">
@@ -264,7 +361,7 @@ export default function DailyReport() {
           <div className="space-y-3">
             {preArrivalEntries.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
-                <p className="font-serif text-2xl mb-2">{t("No pre-arrivals yet", "Sin pre-llegadas aún")}</p>
+                <p className="font-serif text-2xl mb-2">{t("No pre-arrivals yet", "Sin pre-llegadas aun")}</p>
               </div>
             ) : (
               [...preArrivalEntries].reverse().map((e, i) => (
@@ -289,7 +386,6 @@ export default function DailyReport() {
         </div>
       )}
 
-      {/* Tab: GUEST ACCOUNTS */}
       {activeTab === "guests" && (
         <div className="px-6 pb-32">
           <div className="flex flex-wrap gap-2 py-4">
@@ -301,7 +397,7 @@ export default function DailyReport() {
           <div className="space-y-3">
             {guests.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground">
-                <p className="font-serif text-2xl mb-2">{t("No guest accounts yet", "Sin cuentas de huésped aún")}</p>
+                <p className="font-serif text-2xl mb-2">{t("No guest accounts yet", "Sin cuentas de huesped aun")}</p>
               </div>
             ) : (
               [...guests].reverse().map((g, i) => (
@@ -316,8 +412,8 @@ export default function DailyReport() {
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                     <div><span className="text-muted-foreground">Arrival: </span><span className="font-medium">{g.arrivalDate}{g.arrivalTime ? " ~" + g.arrivalTime : ""}</span></div>
                     <div><span className="text-muted-foreground">Guests: </span><span className="font-medium">{g.numGuests}</span></div>
-                    {g.earlyCheckin && <div className="text-primary font-medium">✓ Early check-in</div>}
-                    {g.luggageStorage && <div className="text-amber-700 font-medium">✓ Luggage storage</div>}
+                    {g.earlyCheckin && <div className="text-primary font-medium">Early check-in</div>}
+                    {g.luggageStorage && <div className="text-amber-700 font-medium">Luggage storage</div>}
                     <div className="col-span-2"><span className="text-muted-foreground">Contact: </span><span className="font-medium">{g.preferredContact}</span></div>
                     {g.specialRequests && <div className="col-span-2 pt-1 border-t border-border mt-1"><span className="text-muted-foreground">Notes: </span>{g.specialRequests}</div>}
                   </div>
@@ -332,10 +428,91 @@ export default function DailyReport() {
         </div>
       )}
 
-      {/* Bottom tip */}
+      {activeTab === "insights" && (
+        <div className="px-6 pb-32">
+          <div className="flex flex-wrap gap-2 py-4">
+            <Button variant="outline" size="sm" onClick={() => { const d = new Date().toISOString().split("T")[0]; downloadCSV(toFaqCSV(), `rosalina-faq-${d}.csv`); }} className="flex items-center gap-1.5 rounded-full" disabled={faqGroups.length === 0}>
+              <Download className="w-3.5 h-3.5" /> {t("Download FAQ CSV", "Descargar FAQ CSV")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleClearFaq} className="flex items-center gap-1.5 rounded-full text-destructive hover:text-destructive" disabled={faqEntries.length === 0}>
+              <Trash2 className="w-3.5 h-3.5" /> {t("Reset Data", "Reiniciar Datos")}
+            </Button>
+          </div>
+
+          {faqGroups.length === 0 ? (
+            <div className="text-center py-16 text-muted-foreground">
+              <BarChart3 className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
+              <p className="font-serif text-2xl mb-2">{t("No chat data yet", "Sin datos de chat aun")}</p>
+              <p className="text-sm">{t("Questions from the AI concierge will be tracked here.", "Las preguntas del concierge IA se registraran aqui.")}</p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <p className="text-[10px] font-semibold tracking-[2px] uppercase text-muted-foreground mb-3">
+                  {t("Question Categories", "Categorias de Preguntas")}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {categoryStats.slice(0, 8).map((cat) => {
+                    const maxCount = categoryStats[0]?.count || 1;
+                    const pct = Math.round((cat.count / maxCount) * 100);
+                    return (
+                      <div key={cat.category} className="bg-card border border-border rounded-xl p-3 relative overflow-hidden">
+                        <div
+                          className="absolute inset-y-0 left-0 bg-primary/5"
+                          style={{ width: `${pct}%` }}
+                        />
+                        <div className="relative flex items-center justify-between">
+                          <p className="text-xs font-medium">{t(cat.label, cat.labelEs)}</p>
+                          <span className="text-xs font-mono text-muted-foreground">{cat.count}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[10px] font-semibold tracking-[2px] uppercase text-muted-foreground">
+                  {t("Most Frequent Questions", "Preguntas Mas Frecuentes")}
+                </p>
+                <span className="text-[10px] text-muted-foreground">{faqGroups.length} {t("unique", "unicas")}</span>
+              </div>
+
+              <div className="border border-border rounded-xl overflow-hidden">
+                {faqGroups.slice(0, 20).map((g, i, arr) => (
+                  <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
+                    <span className="text-lg font-serif font-medium text-primary/60 w-6 text-center shrink-0">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{g.question}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] font-semibold tracking-wider uppercase text-primary/40">
+                          {t(
+                            FAQ_CATEGORIES[g.category]?.label || "General",
+                            FAQ_CATEGORIES[g.category]?.labelEs || "General"
+                          )}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {t("Last:", "Ultimo:")} {fmtDate(g.lastAsked)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <TrendingUp className="w-3 h-3 text-muted-foreground/40" />
+                      <span className="text-sm font-mono font-semibold text-foreground">{g.count}x</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border px-6 py-3">
         <p className="text-xs text-muted-foreground text-center">
-          {activeTab === "today"
+          {activeTab === "insights"
+            ? t("AI chat questions are tracked automatically. Export to CSV for detailed analysis.", "Las preguntas del chat IA se rastrean automaticamente. Exporte a CSV para analisis detallado.")
+            : activeTab === "today"
             ? t('Tip: Use "Download CSV" to import to Google Sheets.', 'Tip: Use "Descargar CSV" para importar a Google Sheets.')
             : t("Download guest data to keep track of all registrations.", "Descargue los datos para llevar registro de todas las reservas.")
           }

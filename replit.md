@@ -58,7 +58,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Google Meet live concierge: meet.google.com/rcs-ugkv-cyk
   - Google Review link: share.google/dMZZbAfY87Z3CDP7e
   - Emergency contacts (tap-to-call): 787-438-9393 (24/7), 787-304-3335 (8AM–2AM)
-  - AI chat widget ("Rosa") — floating bottom-right button → streaming chat panel
+  - AI chat widget ("Rosa" / ROSALINA EXPERIENCE AI) — floating bottom-right button → streaming chat panel with concierge avatar; tracks all guest questions to localStorage for FAQ analytics
   - Property showcase carousel: swipeable photos for Ocean Park + Isla Verde with selection
   - Location distance map: visual PR map showing ~12km / 25 min between both properties
   - Guest account system: created on pre-arrival submit; localStorage key `rosalina_guests`
@@ -72,7 +72,8 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - PIN: `Rosalina2025!` (override via `VITE_STAFF_PIN` env var)
   - Session: 8hr stored in localStorage (`rosalina_staff_session`)
   - Daily Report with KPI stats, CSV export, Email Report, Clear Today
-  - Logs stored in localStorage (`rosalina_report`)
+  - **AI Insights tab**: FAQ tracking from chat widget — auto-categorized questions (WiFi, Check-in, Dining, Activities, etc.), frequency counts, category bar chart, CSV export
+  - Logs stored in localStorage (`rosalina_report`); chat FAQ in `rosalina_chat_faq`
 - **Vite proxy**: `/api` → `http://localhost:8080` (API server)
 
 ### API Server (`artifacts/api-server`)
@@ -81,8 +82,8 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Health endpoint: `GET /api/healthz`
 - **AI Chat endpoint**: `POST /api/chat`
   - Accepts `{ messages: ChatMessage[], property?: string }`
-  - Streams SSE responses from OpenAI gpt-5-mini
-  - "Rosa" persona with full Rosalina hotel context (WiFi, policies, hours, both properties)
+  - Streams SSE responses from OpenAI gpt-4o-mini
+  - "ROSALINA EXPERIENCE AI" persona: premium concierge with personalized recommendations, upselling, max 3 curated options per response, evocative tone
   - OpenAI via Replit AI Integrations (`@workspace/integrations-openai-ai-server`)
   - Env vars: `AI_INTEGRATIONS_OPENAI_BASE_URL`, `AI_INTEGRATIONS_OPENAI_API_KEY` (auto-provisioned)
 
