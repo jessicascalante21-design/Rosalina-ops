@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/ops-hub/"
+title = "Rosalina Operations Hub"
+version = "1.0.0"
+id = "artifacts/ops-hub"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/ops-hub/" ]
+localPort = 24092
+
+[services.development]
+run = "pnpm --filter @workspace/ops-hub run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ops-hub", "run", "build" ]
+publicDir = "artifacts/ops-hub/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24092"
+BASE_PATH = "/ops-hub/"

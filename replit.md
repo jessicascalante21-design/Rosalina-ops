@@ -107,6 +107,15 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - OpenAI via Replit AI Integrations (`@workspace/integrations-openai-ai-server`)
   - Env vars: `AI_INTEGRATIONS_OPENAI_BASE_URL`, `AI_INTEGRATIONS_OPENAI_API_KEY` (auto-provisioned)
 
+### Operations Hub (`artifacts/ops-hub`)
+- Standalone operations management system replacing WhatsApp coordination
+- React + Vite SPA at `/ops-hub/`, port 24092
+- Staff PIN protected: `Rosalina2025!` (sessionStorage: `ops_hub_session`)
+- All data in localStorage: `ops_tasks`, `ops_communications`, `ops_alerts`, `ops_automations`
+- Same brand DNA: dark navy (#0B1730), gold (#B89B5E), Playfair Display + DM Sans
+- 5 pages: Dashboard (KPIs + recent activity + property cards), Tasks (filterable board with CRUD, priority/status/property/department), Communications (structured message log replacing WhatsApp, filter by channel/category), Alerts (severity-based incident tracking with acknowledge/resolve flow), Automations (toggle-based workflow library with trigger stats)
+- Seed data pre-populated on first load (tasks, comms, alerts, automations)
+
 ### Canvas / Mockup Sandbox (`artifacts/mockup-sandbox`)
 - Design sandbox for UI prototyping
 
