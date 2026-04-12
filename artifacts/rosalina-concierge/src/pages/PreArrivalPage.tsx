@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
+import PageHead from "@/components/PageHead";
 import { ClipboardCheck, Clock, Luggage, CheckCircle, ChevronRight, ChevronLeft, Copy, LogIn, Gift, UmbrellaIcon, Phone, Mail as MailIcon, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,6 +113,7 @@ export default function PreArrivalPage() {
 
   return (
     <div className="min-h-screen">
+      <PageHead title="Pre-Arrival" description="Confirm your arrival details for Rosalina Boutique Hotels" />
       <PageHeader
         badge={t("Pre-Arrival", "Pre-Llegada")}
         badgeIcon={<ClipboardCheck className="w-3 h-3" />}

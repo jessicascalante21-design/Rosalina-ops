@@ -5,6 +5,7 @@ import {
   Star, Thermometer, ChevronDown, Mail, Phone, ArrowRight,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
+import PageHead from "@/components/PageHead";
 import logoUrl from "@assets/image_1775935433037.png";
 import conciergeAvatar from "@assets/4536937_1775962091124.png";
 
@@ -106,7 +107,7 @@ export default function WelcomeGuidePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
+      <PageHead title="Guest Guide" description="Everything you need for your stay at Rosalina Boutique Hotels" />
       <div className="relative overflow-hidden text-white" style={{ background: "#0D1B40" }}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(38,65,140,0.5),transparent)] pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />

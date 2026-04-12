@@ -7,6 +7,7 @@ import Splash from "@/components/sections/Splash";
 import PropertyShowcase from "@/components/sections/PropertyShowcase";
 import LocationSection from "@/components/sections/LocationSection";
 import FAQ from "@/components/sections/FAQ";
+import PageHead from "@/components/PageHead";
 import logoUrl from "@assets/image_1775935433037.png";
 
 type StatusType = "am" | "pm" | "late" | "closed";
@@ -91,6 +92,7 @@ export default function HubPage() {
 
   return (
     <>
+      <PageHead title="Concierge Hub" description="Your personal concierge hub for an unforgettable stay in Puerto Rico" />
       <AnimatePresence>{showSplash && <Splash onDismiss={handleSplashDismiss} />}</AnimatePresence>
       {!showSplash && (
         <motion.div

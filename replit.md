@@ -32,6 +32,15 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Type**: React + Vite web app (frontend SPA; calls API server via `/api` proxy)
 - **Preview path**: `/`
 - **Purpose**: Bilingual (EN/ES) guest-facing LiveOps Concierge hub + staff property management system for Rosalina Boutique Hotels (Ocean Park & Isla Verde), Puerto Rico
+- **Optimizations**:
+  - Route-level code splitting via React.lazy() (each page loads on-demand)
+  - Global ErrorBoundary wrapping entire app (catches render crashes gracefully)
+  - Memoized LanguageContext with useMemo/useCallback (prevents unnecessary re-renders)
+  - PageHead component for dynamic page titles (SEO)
+  - DailyReport split into sub-components: PropertyTab, GuestsTab, GlassUI
+  - Vite config gracefully defaults PORT/BASE_PATH for production builds
+  - Derived data (todayEntries, serviceEntries, etc.) wrapped in useMemo
+  - localStorage reads wrapped in try-catch for resilience
 - **Brand palette (CURRENT)**:
   - Background: `hsl(38 22% 96%)` — warm champagne cream
   - Primary: `hsl(224 58% 24%)` — deep navy blue (matches logo)
