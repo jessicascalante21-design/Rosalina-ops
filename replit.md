@@ -88,7 +88,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Rosa AI avatar in sidebar with online status
   - 5 tabs: Today, Property, Guests, Arrivals, AI Insights
   - **Property Hub tab**: Room status board for Ocean Park (19 units) and Isla Verde (6 units) with color-coded status cards (Vacant/Occupied/Cleaning/Maintenance/Check-out), property summary
-  - **Guests tab**: Expandable guest cards with full details, inline editing (room dropdown with auto-lockbox assignment, lockbox code, status, staff notes, special codes reference), guest deletion
+  - **Guests tab**: Manual reservation form (staff can add guests without pre-arrival), expandable guest cards with full details, inline editing (room dropdown with auto-lockbox assignment, lockbox code, phone, email, status, staff notes, special codes reference), "Send Check-in Code" via SMS or WhatsApp (pre-filled message with room number, lockbox code, and self check-in instructions), guest deletion
   - **Today tab**: Daily report with KPI stats, CSV export, Email Report
   - **Arrivals tab**: Pre-arrival submissions list
   - **AI Insights tab**: FAQ tracking from chat widget, auto-categorized questions, frequency bar chart, CSV export

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Trash2, Users, Edit3, Save, X, Key, StickyNote, Building2, Phone, Mail, ChevronDown, ChevronUp, Lock } from "lucide-react";
+import { Download, Trash2, Users, Edit3, Save, X, Key, StickyNote, Building2, Phone, Mail, ChevronDown, ChevronUp, Lock, UserPlus, MessageSquare, Send } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import { GuestRecord, getGuests, saveGuests, updateGuest, PACKAGE_OPTIONS, BEACH_EXTRAS, getLockboxCode, LOCKBOX_CODES, SPECIAL_CODES, OCEAN_PARK_UNITS, ISLA_VERDE_UNITS } from "@/lib/guest-types";
+import { GuestRecord, getGuests, saveGuests, updateGuest, generatePassword, PACKAGE_OPTIONS, BEACH_EXTRAS, getLockboxCode, LOCKBOX_CODES, SPECIAL_CODES, OCEAN_PARK_UNITS, ISLA_VERDE_UNITS } from "@/lib/guest-types";
 import { GlassButton, GlassInput } from "./GlassUI";
 
 interface GuestsTabProps {
@@ -12,10 +12,75 @@ interface GuestsTabProps {
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
+const todayISO = () => new Date().toISOString().split("T")[0];
+
 export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
   const { t } = useLanguage();
   const [editingGuest, setEditingGuest] = useState<string | null>(null);
   const [expandedGuest, setExpandedGuest] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [codeSent, setCodeSent] = useState<{ resNum: string; via: "sms" | "wa" } | null>(null);
+
+  const [newName, setNewName] = useState("");
+  const [newReservation, setNewReservation] = useState("");
+  const [newProperty, setNewProperty] = useState("Ocean Park");
+  const [newPhone, setNewPhone] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newArrival, setNewArrival] = useState(todayISO());
+  const [newArrivalTime, setNewArrivalTime] = useState("");
+  const [newDeparture, setNewDeparture] = useState("");
+  const [newGuests, setNewGuests] = useState("2");
+  const [newRoom, setNewRoom] = useState("");
+  const [newNotes, setNewNotes] = useState("");
+
+  const resetAddForm = () => {
+    setNewName(""); setNewReservation(""); setNewProperty("Ocean Park");
+    setNewPhone(""); setNewEmail(""); setNewArrival(todayISO());
+    setNewArrivalTime(""); setNewDeparture(""); setNewGuests("2");
+    setNewRoom(""); setNewNotes("");
+    setShowAddForm(false);
+  };
+
+  const handleAddGuest = () => {
+    if (!newName.trim() || !newReservation.trim()) return;
+    const password = generatePassword(newName, newReservation);
+    const lockbox = newRoom ? getLockboxCode(newProperty, newRoom) : "";
+    const record: GuestRecord = {
+      name: newName.trim(),
+      reservationNumber: newReservation.trim().toUpperCase(),
+      property: newProperty,
+      arrivalDate: newArrival,
+      arrivalTime: newArrivalTime,
+      departureDate: newDeparture,
+      numGuests: newGuests,
+      earlyCheckin: false,
+      luggageStorage: false,
+      carStatus: "",
+      preferredContact: newPhone ? "whatsapp" : "email",
+      specialRequests: "",
+      createdAt: new Date().toISOString(),
+      password,
+      phone: newPhone,
+      email: newEmail,
+      additionalGuests: "",
+      roomNumber: newRoom,
+      lockboxCode: lockbox,
+      staffNotes: newNotes,
+      status: "pre-arrival",
+      packages: [],
+      beachExtras: [],
+    };
+    const current = getGuests();
+    const exists = current.some((g) => g.reservationNumber.toUpperCase() === record.reservationNumber);
+    if (exists) {
+      alert(t("A guest with this reservation number already exists.", "Ya existe un huesped con este numero de reservacion."));
+      return;
+    }
+    saveGuests([...current, record]);
+    onGuestsChange(getGuests());
+    resetAddForm();
+    setExpandedGuest(record.reservationNumber);
+  };
 
   const handleUpdateGuest = (resNum: string, updates: Partial<GuestRecord>) => {
     updateGuest(resNum, updates);
@@ -35,6 +100,42 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
     saveGuests(updated);
     onGuestsChange(updated);
     setEditingGuest(null);
+  };
+
+  const buildSmsMessage = (g: GuestRecord) => {
+    const firstName = g.name.split(" ")[0];
+    const prefix = g.property === "Ocean Park" ? "OP" : "IV";
+    const roomLabel = g.roomNumber ? `${prefix}-${g.roomNumber}` : "";
+    const doorCode = g.property === "Isla Verde" && parseInt(g.roomNumber) >= 1 && parseInt(g.roomNumber) <= 4
+      ? "\nDoor access code: 2323#" : "";
+    return [
+      `Hello ${firstName}! Welcome to Rosalina Boutique Hotels.`,
+      ``,
+      `Your room for today is ${roomLabel} and your lockbox code is ${g.lockboxCode}.${doorCode}`,
+      ``,
+      `Please make sure you read the check-in instructions in your confirmation email. If you need any assistance, give us a call at 787-304-3335 or message us on WhatsApp at +1 (939) 793-8989.`,
+      ``,
+      `We look forward to hosting you!`,
+      `— Rosalina Concierge Team`,
+    ].join("\n");
+  };
+
+  const handleSendSms = (g: GuestRecord) => {
+    if (!g.phone || !g.roomNumber || !g.lockboxCode) return;
+    const phone = g.phone.replace(/\D/g, "");
+    const msg = buildSmsMessage(g);
+    window.open(`sms:${phone}?body=${encodeURIComponent(msg)}`, "_self");
+    setCodeSent({ resNum: g.reservationNumber, via: "sms" });
+    setTimeout(() => setCodeSent(null), 4000);
+  };
+
+  const handleSendWhatsApp = (g: GuestRecord) => {
+    if (!g.phone || !g.roomNumber || !g.lockboxCode) return;
+    const phone = g.phone.replace(/\D/g, "");
+    const msg = buildSmsMessage(g);
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    setCodeSent({ resNum: g.reservationNumber, via: "wa" });
+    setTimeout(() => setCodeSent(null), 4000);
   };
 
   const toGuestsCSV = () => {
@@ -60,20 +161,134 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex flex-wrap gap-2 mb-5">
+        <GlassButton onClick={() => setShowAddForm(!showAddForm)}>
+          {showAddForm ? <X className="w-3.5 h-3.5" /> : <UserPlus className="w-3.5 h-3.5" />}
+          {showAddForm ? t("Cancel", "Cancelar") : t("Add Reservation", "Agregar Reservacion")}
+        </GlassButton>
         <GlassButton onClick={() => downloadCSV(toGuestsCSV(), `rosalina-guests-${new Date().toISOString().split("T")[0]}.csv`)} disabled={guests.length === 0}>
           <Download className="w-3.5 h-3.5" /> {t("Download Guest List", "Descargar Lista")}
         </GlassButton>
       </div>
+
+      <AnimatePresence>
+        {showAddForm && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden mb-5">
+            <div className="rounded-2xl border border-white/12 p-5" style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(16px)" }}>
+              <div className="flex items-center gap-2 mb-4">
+                <UserPlus className="w-4 h-4 text-white/50" />
+                <p className="text-sm font-semibold text-white/80">{t("Manual Reservation", "Reservacion Manual")}</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Guest Name *", "Nombre del Huesped *")}</p>
+                  <GlassInput value={newName} onChange={setNewName} placeholder="John Smith" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Reservation # *", "# Reservacion *")}</p>
+                  <GlassInput value={newReservation} onChange={setNewReservation} placeholder="RES-12345" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Phone", "Telefono")}</p>
+                  <GlassInput value={newPhone} onChange={setNewPhone} placeholder="+1 787-555-1234" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Email", "Email")}</p>
+                  <GlassInput value={newEmail} onChange={setNewEmail} placeholder="guest@email.com" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Property", "Propiedad")}</p>
+                  <select value={newProperty} onChange={(e) => { setNewProperty(e.target.value); setNewRoom(""); }}
+                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20">
+                    <option value="Ocean Park" className="bg-[#0B1730]">Ocean Park</option>
+                    <option value="Isla Verde" className="bg-[#0B1730]">Isla Verde</option>
+                  </select>
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Room #", "Habitacion #")}</p>
+                  <select value={newRoom} onChange={(e) => setNewRoom(e.target.value)}
+                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20">
+                    <option value="" className="bg-[#0B1730] text-white/60">{t("Assign later", "Asignar despues")}</option>
+                    {getRoomOptions(newProperty).map((num) => (
+                      <option key={num} value={num} className="bg-[#0B1730]">
+                        {newProperty === "Ocean Park" ? "OP" : "IV"}-{num} (Code: {getLockboxCode(newProperty, num)})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Arrival Date", "Fecha Llegada")}</p>
+                  <input type="date" value={newArrival} onChange={(e) => setNewArrival(e.target.value)}
+                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Arrival Time", "Hora Llegada")}</p>
+                  <GlassInput value={newArrivalTime} onChange={setNewArrivalTime} placeholder="3:00 PM" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("Departure Date", "Fecha Salida")}</p>
+                  <input type="date" value={newDeparture} onChange={(e) => setNewDeparture(e.target.value)}
+                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/30 mb-1">{t("# Guests", "# Huespedes")}</p>
+                  <select value={newGuests} onChange={(e) => setNewGuests(e.target.value)}
+                    className="w-full bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20">
+                    {[1,2,3,4,5,6,7,8].map((n) => <option key={n} value={String(n)} className="bg-[#0B1730]">{n}</option>)}
+                  </select>
+                </div>
+                <div className="sm:col-span-2">
+                  <p className="text-[10px] text-white/30 mb-1">{t("Staff Notes", "Notas del Staff")}</p>
+                  <textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)}
+                    className="bg-white/8 border border-white/15 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-1 focus:ring-white/20 w-full min-h-[50px] resize-none"
+                    placeholder={t("Optional notes...", "Notas opcionales...")} />
+                </div>
+              </div>
+
+              {newRoom && (
+                <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-xl bg-green-500/10 border border-green-400/15">
+                  <Lock className="w-3.5 h-3.5 text-green-400" />
+                  <p className="text-xs text-green-300">
+                    {t("Lockbox code", "Codigo candado")}: <span className="font-mono font-bold">{getLockboxCode(newProperty, newRoom)}</span>
+                    {newProperty === "Isla Verde" && parseInt(newRoom) >= 1 && parseInt(newRoom) <= 4 && (
+                      <span className="ml-2 text-green-400/60">| Door: 2323#</span>
+                    )}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-2 mt-4">
+                <button onClick={handleAddGuest} disabled={!newName.trim() || !newReservation.trim()}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ background: "rgba(74,222,128,0.15)", border: "1px solid rgba(74,222,128,0.25)", color: "rgb(134,239,172)" }}>
+                  <Save className="w-3.5 h-3.5" /> {t("Create Reservation", "Crear Reservacion")}
+                </button>
+                <GlassButton onClick={resetAddForm}>
+                  <X className="w-3.5 h-3.5" /> {t("Cancel", "Cancelar")}
+                </GlassButton>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="space-y-3">
-        {guests.length === 0 ? (
+        {guests.length === 0 && !showAddForm ? (
           <div className="text-center py-20">
             <Users className="w-10 h-10 mx-auto mb-4 text-white/15" />
             <p className="font-serif text-2xl text-white/50 mb-2">{t("No guest accounts yet", "Sin cuentas de huesped aun")}</p>
+            <p className="text-white/25 text-sm mb-4">{t("Add a reservation manually or wait for guests to fill out the pre-arrival form.", "Agregue una reservacion manualmente o espere a que los huespedes llenen el formulario de pre-llegada.")}</p>
+            <button onClick={() => setShowAddForm(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium bg-white/8 border border-white/12 text-white/70 hover:bg-white/14 hover:text-white transition-all">
+              <UserPlus className="w-3.5 h-3.5" /> {t("Add First Reservation", "Agregar Primera Reservacion")}
+            </button>
           </div>
         ) : (
           [...guests].reverse().map((g) => {
             const isExpanded = expandedGuest === g.reservationNumber;
             const isEditing = editingGuest === g.reservationNumber;
+            const canSendCode = g.phone && g.roomNumber && g.lockboxCode;
             return (
               <motion.div key={g.reservationNumber} layout className="rounded-2xl border border-white/8 overflow-hidden"
                 style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
@@ -125,6 +340,48 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
                           <span className="text-white/25">Pass: <span className="font-mono text-white/50">{g.password}</span></span>
                         </div>
 
+                        {canSendCode && (
+                          <div className="mt-3 pt-3 border-t border-white/8">
+                            <p className="text-white/30 text-[10px] tracking-wider uppercase font-semibold mb-2">{t("Send Check-in Code", "Enviar Codigo de Check-in")}</p>
+                            <div className="flex gap-2 flex-wrap">
+                              <button onClick={(e) => { e.stopPropagation(); handleSendSms(g); }}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-medium border transition-all ${
+                                  codeSent?.resNum === g.reservationNumber && codeSent.via === "sms"
+                                    ? "bg-green-500/15 border-green-400/20 text-green-300"
+                                    : "bg-blue-500/10 border-blue-400/20 text-blue-300 hover:bg-blue-500/20"
+                                }`}>
+                                {codeSent?.resNum === g.reservationNumber && codeSent.via === "sms"
+                                  ? <><Save className="w-3 h-3" /> {t("SMS opened", "SMS abierto")}</>
+                                  : <><MessageSquare className="w-3 h-3" /> {t("Send via SMS", "Enviar por SMS")}</>}
+                              </button>
+                              <button onClick={(e) => { e.stopPropagation(); handleSendWhatsApp(g); }}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-medium border transition-all ${
+                                  codeSent?.resNum === g.reservationNumber && codeSent.via === "wa"
+                                    ? "bg-green-500/15 border-green-400/20 text-green-300"
+                                    : "bg-green-500/10 border-green-400/20 text-green-300 hover:bg-green-500/20"
+                                }`}>
+                                {codeSent?.resNum === g.reservationNumber && codeSent.via === "wa"
+                                  ? <><Save className="w-3 h-3" /> {t("WhatsApp opened", "WhatsApp abierto")}</>
+                                  : <><Send className="w-3 h-3" /> {t("Send via WhatsApp", "Enviar por WhatsApp")}</>}
+                              </button>
+                            </div>
+                            <p className="text-[9px] text-white/20 mt-1.5 leading-relaxed">
+                              {t(
+                                `Will send: Room ${g.property === "Ocean Park" ? "OP" : "IV"}-${g.roomNumber}, Code: ${g.lockboxCode}, + instructions`,
+                                `Enviara: Habitacion ${g.property === "Ocean Park" ? "OP" : "IV"}-${g.roomNumber}, Codigo: ${g.lockboxCode}, + instrucciones`
+                              )}
+                            </p>
+                          </div>
+                        )}
+
+                        {!canSendCode && g.phone && (
+                          <div className="mt-3 pt-3 border-t border-white/8">
+                            <p className="text-[10px] text-amber-400/60 italic">
+                              {t("Assign a room to enable sending the check-in code via text.", "Asigne una habitacion para poder enviar el codigo de check-in por mensaje.")}
+                            </p>
+                          </div>
+                        )}
+
                         <div className="mt-3 pt-3 border-t border-white/8 space-y-3">
                           <div className="flex items-center justify-between">
                             <p className="text-white/30 text-[10px] tracking-wider uppercase font-semibold">{t("Staff Controls", "Controles del Staff")}</p>
@@ -166,6 +423,25 @@ export default function GuestsTab({ guests, onGuestsChange }: GuestsTabProps) {
                                   {g.lockboxCode && (
                                     <p className="text-[9px] text-green-400/60 mt-0.5">Auto-assigned</p>
                                   )}
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <p className="text-[10px] text-white/30 mb-1">{t("Phone", "Telefono")}</p>
+                                  <GlassInput
+                                    value={g.phone || ""}
+                                    onChange={(v) => handleUpdateGuest(g.reservationNumber, { phone: v })}
+                                    placeholder="+1 787-555-1234"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="text-[10px] text-white/30 mb-1">{t("Email", "Email")}</p>
+                                  <GlassInput
+                                    value={g.email || ""}
+                                    onChange={(v) => handleUpdateGuest(g.reservationNumber, { email: v })}
+                                    placeholder="guest@email.com"
+                                  />
                                 </div>
                               </div>
 
