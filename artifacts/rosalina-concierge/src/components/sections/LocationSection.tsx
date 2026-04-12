@@ -1,10 +1,24 @@
-import { MapPin, Clock, Video, Mail, Phone, Instagram, AlertTriangle, MessageCircle, VideoOff } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Clock, Video, Mail, Phone, Instagram, AlertTriangle, MessageCircle, VideoOff, Navigation } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { useAfterHours } from "@/lib/use-after-hours";
+
+const MAPS = {
+  "Ocean Park": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.7016959460975!2d-66.052866!3d18.4518485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c036f3e09773363%3A0x3efca5b556132dcd!2sRosalina%20Ocean%20Park!5e0!3m2!1sen!2sco!4v1775965547418!5m2!1sen!2sco",
+  "Isla Verde": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.7852440824804!2d-66.03789789999999!3d18.4480574!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c0365fa50942f8b%3A0x446df453c38369dc!2sRosalina%20Isla%20Verde!5e0!3m2!1sen!2sco!4v1775965561419!5m2!1sen!2sco",
+} as const;
+
+const DIRECTIONS = {
+  "Ocean Park": "https://www.google.com/maps/dir//Rosalina+Ocean+Park,+2018+%26+2020+Avenida+McLeary,+San+Juan,+PR+00911",
+  "Isla Verde": "https://www.google.com/maps/dir//Rosalina+Isla+Verde,+84+Calle+J%C3%BApiter,+Carolina,+PR+00979",
+} as const;
+
+type MapTab = "Ocean Park" | "Isla Verde";
 
 export default function LocationSection() {
   const { t } = useLanguage();
   const afterHours = useAfterHours();
+  const [mapTab, setMapTab] = useState<MapTab>("Ocean Park");
 
   return (
     <section className="px-5 py-8">
@@ -71,6 +85,58 @@ export default function LocationSection() {
               </span>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Google Maps */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden mb-4">
+        <div className="flex bg-secondary/30 p-1 m-3 mb-0 rounded-lg">
+          {(["Ocean Park", "Isla Verde"] as MapTab[]).map((p) => (
+            <button
+              key={p}
+              onClick={() => setMapTab(p)}
+              className={`flex-1 py-2 rounded-md text-xs font-semibold tracking-wide transition-all ${
+                mapTab === p ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+        <div className="relative">
+          <iframe
+            src={MAPS[mapTab]}
+            width="100%"
+            height="220"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Rosalina ${mapTab} Map`}
+            className="w-full"
+          />
+        </div>
+        <div className="px-4 py-3 flex items-center justify-between border-t border-border">
+          <div>
+            <p className="text-sm font-medium">
+              Rosalina {mapTab}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              {mapTab === "Ocean Park"
+                ? "2018 & 2020 Av. McLeary, San Juan 00911"
+                : "84 Calle Jupiter, Carolina 00979"
+              }
+            </p>
+          </div>
+          <a
+            href={DIRECTIONS[mapTab]}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary/8 border border-primary/15 text-primary text-xs font-semibold hover:bg-primary/12 transition-colors"
+          >
+            <Navigation className="w-3.5 h-3.5" />
+            {t("Directions", "Cómo llegar")}
+          </a>
         </div>
       </div>
 
