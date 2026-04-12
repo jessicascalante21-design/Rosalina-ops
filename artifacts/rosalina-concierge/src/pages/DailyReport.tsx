@@ -10,6 +10,7 @@ import { GuestRecord, getGuests } from "@/lib/guest-types";
 import { GlassButton } from "@/components/admin/GlassUI";
 import PropertyTab from "@/components/admin/PropertyTab";
 import GuestsTab from "@/components/admin/GuestsTab";
+import TodayArrivals from "@/components/admin/TodayArrivals";
 import PageHead from "@/components/PageHead";
 
 type TabType = "today" | "prearrivals" | "guests" | "insights" | "property";
@@ -308,6 +309,7 @@ export default function DailyReport() {
             {/* TAB: TODAY */}
             {activeTab === "today" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <TodayArrivals guests={guests} onGuestsChange={setGuests} />
                 <div className="flex flex-wrap gap-2 mb-5">
                   <GlassButton onClick={() => { navigator.clipboard.writeText(toReportCSV()); setCopied("report"); setTimeout(() => setCopied(null), 2500); }} disabled={todayEntries.length === 0} testId="button-copy-csv">
                     {copied === "report" ? <CheckCircle className="w-3.5 h-3.5 text-green-400" /> : <ClipboardCopy className="w-3.5 h-3.5" />}

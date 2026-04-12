@@ -87,9 +87,9 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
   - Luxury glassmorphism dashboard with cinematic property photo background slider
   - Rosa AI avatar in sidebar with online status
   - 5 tabs: Today, Property, Guests, Arrivals, AI Insights
-  - **Property Hub tab**: Room status board for Ocean Park (19 units) and Isla Verde (6 units) with color-coded status cards (Vacant/Occupied/Cleaning/Maintenance/Check-out), property summary
+  - **Property Hub tab**: Room status board for Ocean Park (19 units) and Isla Verde (6 units) with auto-derived statuses from guest data (checked-in→occupied, departure today→checkout, arrival today→arriving), lockbox codes visible on each room card, guest name shown on occupied rooms, arriving/departing today summary panels, manual override for cleaning/maintenance. Color-coded: Vacant, Occupied, Cleaning, Maintenance, Check-out, Arriving.
+  - **Today tab**: TodayArrivals component at top (quick room assignment + check-out), then daily report with KPI stats, CSV export, Email Report
   - **Guests tab**: Manual reservation form (staff can add guests without pre-arrival), expandable guest cards with full details, inline editing (room dropdown with auto-lockbox assignment, lockbox code, phone, email, status, staff notes, special codes reference), "Send Check-in Code" via SMS or WhatsApp (pre-filled message with room number, lockbox code, and self check-in instructions), guest deletion
-  - **Today tab**: Daily report with KPI stats, CSV export, Email Report
   - **Arrivals tab**: Pre-arrival submissions list
   - **AI Insights tab**: FAQ tracking from chat widget, auto-categorized questions, frequency bar chart, CSV export
   - Room statuses stored in localStorage (`rosalina_room_status`)
