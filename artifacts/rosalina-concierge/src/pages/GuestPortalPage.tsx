@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogIn, Key, User, CalendarClock, MessageCircle, Mail, Video, CheckCircle, Luggage, Clock, MapPin } from "lucide-react";
+import { LogIn, Key, User, CalendarClock, Mail, Video, CheckCircle, Luggage, Clock, MapPin, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -157,29 +157,27 @@ export default function GuestPortalPage() {
             </p>
             <div className="grid grid-cols-1 gap-2">
               <a
-                href={`https://wa.me/17874389393?text=Hello, this is ${encodeURIComponent(guest.name)}, reservation ${encodeURIComponent(guest.reservationNumber)}. I have a question.`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 p-4 rounded-2xl bg-green-50 border border-green-100 hover:bg-green-100/80 transition-all active:scale-[0.97]"
+                href={`mailto:contact@rosalinapr.com?subject=Guest Inquiry – ${guest.name} (${guest.reservationNumber})&body=Hello, my name is ${guest.name}, reservation ${guest.reservationNumber}. I have a question.`}
+                className="flex items-center gap-3 p-4 rounded-2xl bg-primary/6 border border-primary/15 hover:bg-primary/10 transition-all active:scale-[0.97]"
               >
-                <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center shrink-0">
-                  <MessageCircle className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+                  <Mail className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-green-800">WhatsApp</p>
-                  <p className="text-xs text-green-600/70">{t("Message us directly", "Escríbanos directamente")}</p>
+                  <p className="font-semibold text-sm text-primary">{t("Email Our Team", "Escribir al Equipo")}</p>
+                  <p className="text-xs text-muted-foreground">contact@rosalinapr.com</p>
                 </div>
               </a>
               <a
-                href={`mailto:contact@rosalinapr.com?subject=Guest Inquiry – ${guest.name} (${guest.reservationNumber})`}
+                href="tel:17873043335"
                 className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all active:scale-[0.97]"
               >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-primary" />
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5 text-foreground/70" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">Email</p>
-                  <p className="text-xs text-muted-foreground">contact@rosalinapr.com</p>
+                  <p className="font-semibold text-sm">{t("Call Concierge", "Llamar al Concierge")}</p>
+                  <p className="text-xs text-muted-foreground">787-304-3335 · 8 AM – 2 AM</p>
                 </div>
               </a>
               <a

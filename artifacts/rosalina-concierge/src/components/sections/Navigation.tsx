@@ -1,4 +1,4 @@
-import { Home, MessageSquare, ClipboardCheck, ClipboardList, Star, Phone, Globe, BarChart2 } from "lucide-react";
+import { Home, MessageSquare, ClipboardCheck, ClipboardList, Star, Phone, Globe, BarChart2, BookOpen } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { Link, useLocation } from "wouter";
 import logoUrl from "@assets/image_1775935433037.png";
@@ -13,13 +13,18 @@ export default function Navigation() {
     { href: "/",            icon: Home,          label: t("Hub", "Inicio") },
     { href: "/pre-arrival", icon: ClipboardCheck, label: t("Pre-Arrival", "Pre-Llegada") },
     { href: "/concierge",   icon: MessageSquare,  label: "Concierge" },
-    { href: "/feedback",    icon: Star,           label: t("Feedback", "Reseñas") },
+    { href: "/guide",       icon: BookOpen,       label: t("Guide", "Guía") },
     { href: "/emergency",   icon: Phone,          label: "SOS" },
   ];
 
   const desktopTabs = [
-    ...tabs,
-    { href: "/request", icon: ClipboardList, label: t("Request", "Pedir") },
+    { href: "/",            icon: Home,          label: t("Hub", "Inicio") },
+    { href: "/pre-arrival", icon: ClipboardCheck, label: t("Pre-Arrival", "Pre-Llegada") },
+    { href: "/concierge",   icon: MessageSquare,  label: "Concierge" },
+    { href: "/guide",       icon: BookOpen,       label: t("Guide", "Guía") },
+    { href: "/request",     icon: ClipboardList,  label: t("Request", "Pedir") },
+    { href: "/feedback",    icon: Star,           label: t("Feedback", "Reseñas") },
+    { href: "/emergency",   icon: Phone,          label: "SOS" },
   ];
 
   const isActive = (href: string) =>
@@ -44,7 +49,7 @@ export default function Navigation() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-medium transition-colors ${
+                className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors ${
                   active
                     ? "text-primary bg-primary/8 font-semibold"
                     : "text-foreground/60 hover:text-foreground hover:bg-black/4"
@@ -120,7 +125,8 @@ export default function Navigation() {
       </header>
 
       {/* ── Mobile Bottom Tab Bar ────────────────────────── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch h-[60px] bg-background/95 backdrop-blur-xl border-t border-border/40 shadow-[0_-4px_24px_rgba(0,0,0,0.07)]"
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch h-[60px] bg-background/95 backdrop-blur-xl border-t border-border/40 shadow-[0_-4px_24px_rgba(0,0,0,0.07)]"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         {tabs.map((tab) => {
@@ -139,11 +145,9 @@ export default function Navigation() {
               }`}
               data-testid={`nav-${tab.href.replace("/", "") || "home"}`}
             >
-              {/* Active pill indicator */}
               {active && (
                 <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] bg-primary rounded-b-full" />
               )}
-
               <tab.icon
                 style={{ width: "1.15rem", height: "1.15rem" }}
                 strokeWidth={active ? 2.2 : 1.8}

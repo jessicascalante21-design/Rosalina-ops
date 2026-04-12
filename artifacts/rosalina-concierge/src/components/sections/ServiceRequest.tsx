@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
-import { MessageCircle } from "lucide-react";
+import { Mail, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,7 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
     t("Luggage Storage", "Guardar Equipaje"),
     t("Noise Complaint", "Queja de Ruido"),
     t("Maintenance", "Mantenimiento"),
+    t("Lost & Found", "Objetos Perdidos"),
     t("Other", "Otro"),
   ];
 
@@ -39,8 +40,19 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
     const entry = { type: "service", timestamp, name, room, service, urgency, details: details || "" };
     const existing = JSON.parse(localStorage.getItem("rosalina_report") || "[]");
     localStorage.setItem("rosalina_report", JSON.stringify([...existing, entry]));
-    const message = `Hello Rosalina team! I have a service request.\n\nRoom: ${room}\nName: ${name}\nRequest: ${service}\nUrgency: ${urgency}\nDetails: ${details || "None"}`;
-    window.open(`https://wa.me/17874389393?text=${encodeURIComponent(message)}`, "_blank");
+
+    const subject = encodeURIComponent(`[Guest Request] ${service} – Room ${room} – ${name}`);
+    const body = encodeURIComponent(
+      `ROSALINA GUEST REQUEST\n\n` +
+      `Name: ${name}\n` +
+      `Room: ${room}\n` +
+      `Request: ${service}\n` +
+      `Urgency: ${urgency}\n` +
+      `Details: ${details || "None"}\n` +
+      `Submitted: ${new Date().toLocaleString("en-US")}\n\n` +
+      `--- Sent via Rosalina Concierge Hub ---`
+    );
+    window.open(`mailto:contact@rosalinapr.com?subject=${subject}&body=${body}`, "_blank");
     setSubmitted(true);
   };
 
@@ -49,20 +61,32 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
       {!pageMode && (
         <div className="mb-8">
           <h2 className="font-serif text-4xl text-foreground mb-3">{t("Service Request", "Solicitud de Servicio")}</h2>
-          <p className="text-muted-foreground">{t("Need something? Let us know and we'll handle it via WhatsApp.", "¿Necesita algo? Avísenos y lo gestionaremos vía WhatsApp.")}</p>
+          <p className="text-muted-foreground">{t("Need something? Let us know and our team will respond promptly.", "¿Necesita algo? Avísenos y nuestro equipo responderá prontamente.")}</p>
         </div>
       )}
 
       {submitted ? (
         <div className="bg-card border border-border rounded-2xl p-10 text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-            <MessageCircle className="w-8 h-8 text-green-600" />
+            <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <div>
-            <p className="font-serif text-2xl mb-1">{t("Request sent!", "¡Solicitud enviada!")}</p>
-            <p className="text-muted-foreground text-sm">{t("Opening WhatsApp with your request...", "Abriendo WhatsApp con su solicitud...")}</p>
+            <p className="font-serif text-2xl mb-2">{t("Request sent!", "¡Solicitud enviada!")}</p>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+              {t(
+                "Your request has been logged and emailed to our team. We'll respond within 15 minutes during concierge hours.",
+                "Su solicitud ha sido registrada y enviada a nuestro equipo. Responderemos en 15 minutos durante el horario de concierge."
+              )}
+            </p>
           </div>
-          <button onClick={() => { setService(""); setName(""); setRoom(""); setDetails(""); setUrgency("No rush"); setSubmitted(false); }} className="text-sm text-primary hover:underline">
+          <div className="bg-secondary/30 border border-border rounded-xl px-4 py-3 text-xs text-muted-foreground">
+            {t("Urgent issue? Call our 24/7 line: ", "¿Urgente? Llame nuestra línea 24/7: ")}
+            <a href="tel:17874389393" className="font-semibold text-foreground">787-438-9393</a>
+          </div>
+          <button
+            onClick={() => { setService(""); setName(""); setRoom(""); setDetails(""); setUrgency("No rush"); setSubmitted(false); }}
+            className="text-sm text-primary hover:underline"
+          >
             {t("New request", "Nueva solicitud")}
           </button>
         </div>
@@ -104,7 +128,14 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
 
               <div>
                 <Label htmlFor="req-details" className="text-foreground/70 mb-1.5 block text-sm">{t("Details (optional)", "Detalles (opcional)")}</Label>
-                <Textarea id="req-details" placeholder={t("Any extra info...", "Cualquier información extra...")} value={details} onChange={(e) => setDetails(e.target.value)} className="bg-background/60 min-h-[90px] resize-none" data-testid="textarea-req-details" />
+                <Textarea
+                  id="req-details"
+                  placeholder={t("Any extra info...", "Cualquier información extra...")}
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  className="bg-background/60 min-h-[90px] resize-none"
+                  data-testid="textarea-req-details"
+                />
               </div>
 
               <div>
@@ -123,10 +154,19 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
                 </RadioGroup>
               </div>
 
-              <Button type="submit" className="w-full h-13 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-sm" disabled={!name || !room} data-testid="button-submit-request">
-                <MessageCircle className="w-5 h-5 mr-2" />
-                {t("Send via WhatsApp", "Enviar por WhatsApp")}
+              <Button
+                type="submit"
+                className="w-full h-12 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 shadow-sm"
+                disabled={!name || !room}
+                data-testid="button-submit-request"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                {t("Send Request to Team", "Enviar Solicitud al Equipo")}
               </Button>
+
+              <p className="text-center text-xs text-muted-foreground">
+                {t("Requests are tracked for quality and responded to within 15 min.", "Las solicitudes se rastrean para calidad y se responden en 15 min.")}
+              </p>
             </form>
           )}
         </div>
@@ -135,6 +175,5 @@ export default function ServiceRequest({ pageMode = false }: ServiceRequestProps
   );
 
   if (pageMode) return form;
-
   return <section id="request" className="bg-secondary/10">{form}</section>;
 }

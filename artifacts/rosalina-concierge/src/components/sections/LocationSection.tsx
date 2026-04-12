@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { MapPin, Clock, Video, MessageCircle, Mail, Phone, Instagram } from "lucide-react";
+import { MapPin, Clock, Video, Mail, Phone, Instagram } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 
 export default function LocationSection() {
@@ -113,36 +112,34 @@ export default function LocationSection() {
         </a>
 
         <a
-          href="https://wa.me/17874389393"
-          target="_blank"
-          rel="noreferrer"
-          className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-green-50 border border-green-100 hover:bg-green-100/80 transition-all active:scale-[0.97] text-center"
-          data-testid="link-whatsapp"
+          href="mailto:contact@rosalinapr.com"
+          className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/20 transition-all active:scale-[0.97] text-center"
+          data-testid="link-email"
         >
-          <div className="w-9 h-9 rounded-xl bg-green-500 flex items-center justify-center">
-            <MessageCircle className="w-4 h-4 text-white" />
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Mail className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-sm text-green-700">WhatsApp</p>
-            <p className="text-[11px] text-green-600/70">787-438-9393</p>
+            <p className="font-semibold text-sm text-primary">{t("Email Us", "Escríbanos")}</p>
+            <p className="text-[11px] text-muted-foreground">contact@rosalinapr.com</p>
           </div>
         </a>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
         <a
-          href="mailto:contact@rosalinapr.com"
-          className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-all active:scale-[0.97] text-center"
-        >
-          <Mail className="w-4 h-4 text-primary/60" />
-          <p className="text-[11px] font-medium text-foreground/70">Email</p>
-        </a>
-        <a
           href="tel:17873043335"
           className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-all active:scale-[0.97] text-center"
         >
           <Phone className="w-4 h-4 text-primary/60" />
           <p className="text-[11px] font-medium text-foreground/70">787-304-3335</p>
+        </a>
+        <a
+          href="tel:17874389393"
+          className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-card border border-red-100 hover:border-red-300 transition-all active:scale-[0.97] text-center"
+        >
+          <Phone className="w-4 h-4 text-red-500/70" />
+          <p className="text-[11px] font-medium text-red-600/70">{t("Emergency", "Emergencia")}</p>
         </a>
         <a
           href="https://www.instagram.com/rosalinaexperience"
